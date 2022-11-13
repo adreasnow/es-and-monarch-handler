@@ -14,4 +14,8 @@ from .functions import evToNm, nmToEv, stripIllegal, smiles2xyz, rmsd, fluoropho
 from .monarchhandler import monarchHandler
 
 
+def main() -> None:
+    return
 
+if __name__ == "__main__":
+    main()
