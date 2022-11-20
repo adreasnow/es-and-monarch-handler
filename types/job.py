@@ -75,6 +75,7 @@ class Job():
             if self.job in [Jobs.casscfOpt, Jobs.casscf]:
                 norbs, nelec = self.casscf
                 self.path = f'{self.rootpath}/{self.rootfolder}/{self.fluorophore.name}/{self.solv.name}/{self.state.name}/{self.job}-{norbs}-{nelec}'
+                self.name = f'{self.name}-{norbs}-{nelec}'
             else:
                 self.path = f'{self.rootpath}/{self.rootfolder}/{self.fluorophore.name}/{self.solv.name}/{self.state.name}/{self.job}'
             self.crestpath = f'{self.rootpath}/{self.rootfolder}/{self.fluorophore.name}/{self.solv.name}/crest'
