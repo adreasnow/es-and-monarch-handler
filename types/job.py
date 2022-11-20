@@ -35,6 +35,7 @@ class Job():
     grid: Grids = Grids.g75_302
     procs: int = 16
     mem: int = 64
+    time: int = 24
     partner: bool = True
     submit: bool = False
     submitFlags: str = '-NS'
@@ -71,7 +72,11 @@ class Job():
             self.infile = f'{self.path}/{self.fluorophore.name}-crest{self.software.ext}'
             self.xyzfile = f'{self.path}/crest_best.xyz'
         else:
-            self.path = f'{self.rootpath}/{self.rootfolder}/{self.fluorophore.name}/{self.solv.name}/{self.state.name}/{self.job}'
+            if self.job in [Jobs.casscfOpt, Jobs.casscf]:
+                norbs, nelec = self.casscf
+                self.path = f'{self.rootpath}/{self.rootfolder}/{self.fluorophore.name}/{self.solv.name}/{self.state.name}/{self.job}-{norbs}-{nelec}'
+            else:
+                self.path = f'{self.rootpath}/{self.rootfolder}/{self.fluorophore.name}/{self.solv.name}/{self.state.name}/{self.job}'
             self.crestpath = f'{self.rootpath}/{self.rootfolder}/{self.fluorophore.name}/{self.solv.name}/crest'
             self.infile = f'{self.path}/{self.name}{self.software.ext}'
             self.xyzfile = f'{self.path}/{self.name}/{self.name}.xyz'
