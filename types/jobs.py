@@ -8,11 +8,12 @@ class Jobs(NewEnum):
       return self.long
 
     #       
-    opt    = 'optimisation'
-    freq   = 'frequencies'
-    sp     = 'single point'
-    td     = 'td-dft'
-    grad   = 'gradient'
-    crest  = 'crest'
-    casscf = 'casscf'
+    opt       = 'optimisation'
+    freq      = 'frequencies'
+    sp        = 'single_point'
+    td        = 'td-dft'
+    grad      = 'gradient'
+    crest     = 'crest'
+    casscf    = 'casscf_single_point'
+    casscfOpt = 'casscf_optimisation'
 

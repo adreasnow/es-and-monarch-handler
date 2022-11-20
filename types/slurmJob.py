@@ -6,6 +6,7 @@ class slurmStatus(NewEnum):
     RUNNING = auto()
     COMPLETING = auto()
     FAILED = auto()
+    TIMED_OUT = auto()
     NONE = auto()
 
 @dataclass

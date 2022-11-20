@@ -14,7 +14,7 @@ from .types.slurmJob import slurmJob, slurmStatus
 from .qm_handlers.crest import buildCRESTOpt
 from .qm_handlers.orca import buildORCAOpt
 from .qm_handlers.psi4 import psi4CasscfScan
-from .qm_handlers.pyscf import pyscfCasscfScan
+from .qm_handlers.pyscf import pyscfCasscfScan, pyscfCasscfOpt
 from time import time
 
 class monarchHandler:
@@ -26,6 +26,8 @@ class monarchHandler:
         self.jobkey = jobkey
         self.slurmTime = 0
         self.slurmFreq = 60 # seconds
+        self.TOTime = 0
+        self.TOFreq = 60 # seconds
         return
 
     def __enter__(self):
@@ -39,6 +41,7 @@ class monarchHandler:
     def _checkSLURM(self, job:Job | None = None ) -> slurmStatus:
         if self.slurmTime == 0 or (time() - self.slurmTime) > 60:
             self.jobdict = {}
+            scratchFolders = []
             self.slurmTime = time()
             statusDict = {"PENDING": slurmStatus.PENDING,
                          "RUNNING": slurmStatus.RUNNING, 
@@ -50,6 +53,21 @@ class monarchHandler:
                 if line != '':
                     splitline = line.split()
                     self.jobdict[splitline[2].split('.')[0]] = slurmJob(splitline[0], splitline[2].split('.')[0], statusDict[splitline[3]])
+            out, err = self.run('ls -lah ~/scratch/')
+            for line in out:
+                try:
+                    scratchFolder = line.split()[8] 
+                    if scratchFolder not in ['.', '..']:
+                        scratchFolders += [scratchFolder]
+                except:
+                    pass
+
+            for scratch in scratchFolders:
+                try:
+                    self.jobdict[scratch]
+                except KeyError:
+                    self.jobdict[scratch] = slurmJob(0, scratch, slurmStatus.TIMED_OUT) 
+            self.slurmTime = time()
 
         if job != None:
             try:
@@ -58,6 +76,14 @@ class monarchHandler:
                 return slurmStatus.NONE
         else:
             return slurmStatus.NONE
+
+    def timed_out(self, printJobs=True) -> list[str]:
+        self._checkSLURM()
+        jobs = [i for i in self.jobdict if self.jobdict[i].status == slurmStatus.TIMED_OUT]
+        if printJobs:
+            for job in jobs:
+                print(job)
+        return jobs
 
     def _openSSH(self) -> None:
         '''Opens up the SSH tunnel'''
@@ -83,6 +109,7 @@ class monarchHandler:
     def writeFile(self, content: str, filename: str) -> None:
         '''Writes a file, given a string of contents to put in the file, and the filepath'''
         self._openSSH()
+        print(filename)
         with self.sftp.file(filename, "w+", -1) as f:
             f.write(content)
         return
@@ -113,31 +140,6 @@ class monarchHandler:
             lines = self.readFile(job.xyzfile)
             xyz = ''.join(lines[2:])
         return xyz
-
-    def timedOut(self, printJobs: bool=True) -> list[str]:
-        '''Returns a list of jobs that are in scratch, but not in the slurm queue'''
-        scratchFolders = []
-        jobNames = []
-        out = []
-        out, err = self.run('ls -lah ~/scratch/')
-        for line in out:
-            try:
-                scratchFolder = line.split()[8] 
-                if scratchFolder not in ['.', '..']:
-                    scratchFolders += [scratchFolder]
-            except:
-                pass
-
-        self._checkSLURM()
-
-        for scratch in scratchFolders:
-            try:
-                self.jobdict[scratch]
-            except KeyError:
-                out += [scratch]
-                if printJobs == True: print(scratch)
-
-        return out
 
     def sbatch(self, job:Job) -> None:
         if job.software in [Software.crest]:
@@ -177,33 +179,37 @@ class monarchHandler:
     def checkJobStatus(self, job:Job) -> Status:
         slurm = self._checkSLURM(job)
         if job.software == Software.orca:
-            slurmToOrca = {slurmStatus.RUNNING: Status.SMD.running, slurmStatus.PENDING: Status.SMD.queued}
+            slurmToOrca = {slurmStatus.RUNNING: Status.SMD.running,
+                           slurmStatus.PENDING: Status.SMD.queued,
+                           slurmStatus.TIMED_OUT: Status.SMD.timed_out}
             try:
                 status = slurmToOrca[slurm]
             except KeyError:
                 status = self.checkOrcaStatus(job)
 
         elif job.software == Software.crest:
-            slurmToCrest = {slurmStatus.RUNNING: Status.Crest.running, slurmStatus.PENDING: Status.Crest.queued}
-            try:
-                status = slurmToCrest[slurm]
-            except KeyError:
-                status = self.checkCrestStatus(job)
+            status = self.checkCrestStatus(job)
 
         elif job.software == Software.psi4Script and job.job == Jobs.casscf:
-            slurmToPsi4 = {slurmStatus.RUNNING: Status.CASSCF.running, slurmStatus.PENDING: Status.CASSCF.queued}
+            slurmToPsi4 = {slurmStatus.RUNNING: Status.CASSCF.running,
+                           slurmStatus.PENDING: Status.CASSCF.queued,
+                           slurmStatus.TIMED_OUT: Status.CASSCF.timed_out}
             try:
                 status = slurmToPsi4[slurm]
             except KeyError:
                 status = self.checkPsi4Status(job)
-        elif job.software == Software.pyscf and job.job == Jobs.casscf:
-            slurmToPsi4 = {slurmStatus.RUNNING: Status.CASSCF.running, slurmStatus.PENDING: Status.CASSCF.queued}
+
+        elif job.software == Software.pyscf and job.job in [Jobs.casscf, Jobs.casscfOpt]:
+            slurmToPyscf = {slurmStatus.RUNNING: Status.CASSCF.running,
+                           slurmStatus.PENDING: Status.CASSCF.queued,
+                           slurmStatus.TIMED_OUT: Status.CASSCF.timed_out}
             try:
-                status = slurmToPsi4[slurm]
+                status = slurmToPyscf[slurm]
             except KeyError:
                 status = self.checkPyscfStatus(job)
         else:
             raise Exception(f'Job type {job.software} not implemented')
+        
         return status
 
     def buildJob(self, job:Job) -> None:
@@ -223,6 +229,12 @@ class monarchHandler:
             py, slm = pyscfCasscfScan(job, lines[2:])
             self.writeFile(py, job.infile)
             self.writeFile(slm, f'{job.path}/{job.name}.slm')
+
+        if job.software == Software.pyscf and job.job == Jobs.casscfOpt:
+            lines, err = self.run(f'cat "{job.catxyzpath}"')
+            py, slm = pyscfCasscfOpt(job, lines[2:])
+            self.writeFile(py, job.infile)
+            self.writeFile(slm, f'{job.path}/{job.name}.slm')
     
         if job.software == Software.orca:
             lines, err = self.run(f'cat "{job.catxyzpath}"')
@@ -236,6 +248,8 @@ class monarchHandler:
         if job.submit == True and job.software in [Software.orca]:
             if job.partner == False:
                 job.submitFlags += 'o'
+            if job.time != 24:
+                job.submitFlags += f' -H {time}'
             self.submitFiles(job.submitFlags, job.infile)
         elif job.submit == True and job.software in [Software.crest, Software.psi4Script, Software.pyscf]:
             out, err = self.sbatch(job)
@@ -256,7 +270,7 @@ class monarchHandler:
                 started = True
 
         if started == True:
-            out, err = self.run(f'tail -n 100 {job.path}/slurm*.out | tail -n 100')
+            out, err = self.run(f'tail -n 100 {job.path}/slurm*.out')
 
         for line in out:
             if 'CREST terminated normally.' in line:
@@ -284,16 +298,13 @@ class monarchHandler:
                 started = True
 
         if started == True:
-            out, err = self.run(f'tail -n 100 {job.path}/slurm*.out')
+            out, err = self.run(f'tail -n 100 {job.path}/{job.name}.out')
             for line in out:
                 if 'Exit status:' in line:
                     if 'Exit status: 0' in line:
                         finished = True
                     else: 
                         failed = True
-        # for line in out:
-        #     if f'{job.name}.out' in line:
-        #         started = True
         if none == True: return None
         elif failed == True: return Status.CASSCF.failed
         elif finished == True: return Status.CASSCF.finished
@@ -301,11 +312,11 @@ class monarchHandler:
         elif queued == True: return Status.CASSCF.queued
         
     def checkPyscfStatus(self, job:Job) -> Status | None:
-        out, err = self.run(f'cat {job.path}/{job.name}.out')
+        out, err = self.run(f'tail -n 100 {job.path}/{job.name}.out')
         if 'No such file or directory' in err[0]:
             return None
         else:
-            out, err = self.run(f'cat {job.path}/{job.name}.out')
+            out, err = self.run(f'tail -n 100 {job.path}/{job.name}.out')
             for line in out:
                 if '	Exit status: ' in line:
                     if line.split()[2] == '0':
@@ -316,32 +327,12 @@ class monarchHandler:
 
 
     def checkOrcaStatus(self, job:Job) -> Status | None:
-        out, err = self.run(f'ls -lah {job.path}')
-
-        started = False
-        finished = False
-        queued = False
-        none = True
+        out, err = self.run(f'tail -n 100 {job.path}/{job.name}/{job.name}.out')
+        if 'No such file or directory' in err[0]:
+            return None
         for line in out:
-            if job.name in line:
-                none = False
-        
-        for line in out:
-            if f'{job.name}.out' in line:
-                    scrOut, err = self.run(f'ls -lah ~/scratch/')
-                    for scrLine in scrOut:
-                        if job.name in scrLine:
-                            started = True
-            else:
-                outLines, err = self.run(f'tail -n 100 {job.path}/{job.name}/{job.name}.out')
-                for outLine in outLines:
-                    if '****ORCA TERMINATED NORMALLY****' in outLine:
-                        finished = True
-                if finished != True and err != ['']:
-                    queued = True
+            if '****ORCA TERMINATED NORMALLY****' in line:
+                return Status.SMD.finished
+        return Status.SMD.failed
 
-        if none       == True: return None
-        elif finished == True: return Status.SMD.finished
-        elif started  == True: return Status.SMD.running 
-        elif queued   == True: return Status.SMD.queued
-        else:                  return Status.SMD.failed
+
