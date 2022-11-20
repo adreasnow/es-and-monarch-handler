@@ -194,9 +194,9 @@ def pyscfCasscfOpt(job:Job, xyz:str) -> tuple[str, str]:
     pyscfString += f'nelec = {elec}\n\n'
 
     pyscfString += 'mc = mol.CASSCF(norbs, nelec)\n'
-    pyscfString += 'mc.max_cycle_macro = 500\n'
-    pyscfString += 'mc.max_cycle_micro = 10\n'
-    pyscfString += 'mc.max_stepsize = 0.001\n'
+    pyscfString += 'mc.max_cycle_macro = 1000\n'
+    pyscfString += 'mc.max_cycle_micro = 20\n'
+    pyscfString += 'mc.max_stepsize = 0.0005\n'
     pyscfString += 'mc.natorb = True\n'
     pyscfString += 'mc.fcisolver.nstates = nstates\n'
     pyscfString += 'mc.state_specific_(state=state)\n'
