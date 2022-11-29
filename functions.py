@@ -50,6 +50,20 @@ def fluorophores_solvents_methods() -> tuple[list[Fluorophores], list[Solvents],
     methods = [method for method in Methods if bool(method) == True]
     return fluorophores, solvents, methods
 
+def script_builder(filePath:str, strName:str) -> str:
+    with open(filePath, 'r') as f:
+        lines = f.readlines()
+    
+    outStr = f'{strName} = \'\'\n'
+    for line in lines:
+        line = line.replace('\n', '\\n')
+        line = line.replace('\t', '\\t')
+        line = line.replace('\'', '\"')
+        outStr += f'{strName} += f\'{line}\'\n'
+
+    outStr += f'\nreturn {strName}\n'
+
+    return outStr
 
 class dsLoad(object):
     import pandas as pd
