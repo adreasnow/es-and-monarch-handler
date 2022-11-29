@@ -29,18 +29,18 @@ class Basis(NewEnum):
 
     #               basis               orca               qchem             nwchem              psi4               pyscf           𝜁  Polar  Diff         Family
     none         = 'None',             None,              None,              None,              None,              None,            0, False, False,  Family.none
-    ccpvdz       = 'cc-pVDZ',         'cc-pvdz',         'cc-pvdz',         'cc-pvdz',         'cc-pvdz',         'ccpvdz',         2, True,  False,  Family.dunning
-    ccpvtz       = 'cc-pVTZ',         'cc-pvtz',         'cc-pvtz',         'cc-pvtz',         'cc-pvtz',         'ccpvtz',         3, True,  False,  Family.dunning
-    ccpvqz       = 'cc-pVQZ',         'cc-pvqz',         'cc-pvqz',         'cc-pvqz',         'cc-pvqz',         'ccpvqz',         4, True,  False,  Family.dunning
-    augccpvdz    = 'aug-cc-pVDZ',     'aug-cc-pvdz',     'aug-cc-pvdz',     'aug-cc-pvdz',     'aug-cc-pvdz',     'augccpvdz',      2, True,  True,   Family.dunning
-    augccpvtz    = 'aug-cc-pVTZ',     'aug-cc-pvtz',     'aug-cc-pvtz',     'aug-cc-pvtz',     'aug-cc-pvtz',     'augccpvtz',      3, True,  True,   Family.dunning
-    augccpvqz    = 'aug-cc-pVQZ',     'aug-cc-pvqz',     'aug-cc-pvqz',     'aug-cc-pvqz',     'aug-cc-pvqz',     'augccpvqz',      4, True,  True,   Family.dunning
-    def2svp      = 'Def2-SVP',        'def2-svp',        'def2-svp',        'def2-svp',        'def2-svp',        'def2svp',        1, True,  False,  Family.karlsruhe
-    def2tzvp     = 'Def2-TZVP',       'def2-tzvp',       'def2-tzvp',       'def2-tzvp',       'def2-tzvp',       'def2tzvp',       3, True,  False,  Family.karlsruhe
-    def2qzvp     = 'Def2-QZVP',       'def2-qzvp',       'def2-qzvp',       'def2-qzvp',       'def2-qzvp',       'def2qzvp',       4, True,  False,  Family.karlsruhe
-    def2svpd     = 'Def2-SVPD',       'def2-svpd',       'def2-svpd',       'def2-svpd',       'def2-svpd',       'def2svpd',       1, True,  True,   Family.karlsruhe
-    def2tzvpd    = 'Def2-TZVPD',      'def2-tzvpd',      'def2-tzvpd',      'def2-tzvpd',      'def2-tzvpd',      'def2tzvpd',      3, True,  True,   Family.karlsruhe
-    def2qzvpd    = 'Def2-QZVPD',      'def2-qzvpd',      'def2-qzvpd',      'def2-qzvpd',      'def2-qzvpd',      'def2qzvpd',      4, True,  True,   Family.karlsruhe
+    ccpvdz       = 'cc-pVDZ',         'cc-pvdz',         'cc-pvdz',         'cc-pvdz',         'cc-pvdz',         'cc-pvdz',        2, True,  False,  Family.dunning
+    ccpvtz       = 'cc-pVTZ',         'cc-pvtz',         'cc-pvtz',         'cc-pvtz',         'cc-pvtz',         'cc-pvtz',        3, True,  False,  Family.dunning
+    ccpvqz       = 'cc-pVQZ',         'cc-pvqz',         'cc-pvqz',         'cc-pvqz',         'cc-pvqz',         'cc-pvqz',        4, True,  False,  Family.dunning
+    augccpvdz    = 'aug-cc-pVDZ',     'aug-cc-pvdz',     'aug-cc-pvdz',     'aug-cc-pvdz',     'aug-cc-pvdz',     'aug-cc-pvdz',    2, True,  True,   Family.dunning
+    augccpvtz    = 'aug-cc-pVTZ',     'aug-cc-pvtz',     'aug-cc-pvtz',     'aug-cc-pvtz',     'aug-cc-pvtz',     'aug-cc-pvtz',    3, True,  True,   Family.dunning
+    augccpvqz    = 'aug-cc-pVQZ',     'aug-cc-pvqz',     'aug-cc-pvqz',     'aug-cc-pvqz',     'aug-cc-pvqz',     'aug-cc-pvqz',    4, True,  True,   Family.dunning
+    def2svp      = 'Def2-SVP',        'def2-svp',        'def2-svp',        'def2-svp',        'def2-svp',        'def2-svp',       1, True,  False,  Family.karlsruhe
+    def2tzvp     = 'Def2-TZVP',       'def2-tzvp',       'def2-tzvp',       'def2-tzvp',       'def2-tzvp',       'def2-tzvp',      3, True,  False,  Family.karlsruhe
+    def2qzvp     = 'Def2-QZVP',       'def2-qzvp',       'def2-qzvp',       'def2-qzvp',       'def2-qzvp',       'def2-qzvp',      4, True,  False,  Family.karlsruhe
+    def2svpd     = 'Def2-SVPD',       'def2-svpd',       'def2-svpd',       'def2-svpd',       'def2-svpd',       'def2-svpd',      1, True,  True,   Family.karlsruhe
+    def2tzvpd    = 'Def2-TZVPD',      'def2-tzvpd',      'def2-tzvpd',      'def2-tzvpd',      'def2-tzvpd',      'def2-tzvpd',     3, True,  True,   Family.karlsruhe
+    def2qzvpd    = 'Def2-QZVPD',      'def2-qzvpd',      'def2-qzvpd',      'def2-qzvpd',      'def2-qzvpd',      'def2-qzvpd',     4, True,  True,   Family.karlsruhe
     def2tzvppd   = 'Def2-TZVPPD',     'def2-tzvppd',     'def2-tzvppd',     'def2-tzvppd',      None,              None,            3, True,  True,   Family.karlsruhe
     def2qzvppd   = 'Def2-QZVPPD',     'def2-qzvppd',     'def2-qzvppd',     'def2-qzvppd',      None,              None,            4, True,  True,   Family.karlsruhe
     madef2svp    = 'ma-Def2-SVP',     'ma-def2-svp',      None,              None,              None,              None,            1, True,  True,   Family.karlsruhe
