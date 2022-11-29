@@ -43,11 +43,11 @@ class Methods(NewEnum):
 
     #              Method               orca               nwchem                            qchem         psi4         pyscf         rank              ω        dispersion         spin scaling         used
     b3lyp       = 'B3LYP',            'B3LYP',           'B3LYP',                           'B3LYP',     'b3LYP',     'b3LYP',      Rank.hybrid,       False,   Dispersion.none,   Spin_Scaling.none,   False
-    cb3lyp      = 'CAM-B3LYP',        'CAM-B3LYP',       'hyb_gga_xc_cam_b3lyp',            'cam-b3lyp', 'cam-b3lyp', 'camb3lyp',   Rank.hybrid,       True,    Dispersion.none,   Spin_Scaling.none,   True
-    bmk         = 'BMK',               None,             'GGA_C_BMK  HYB_MGGA_X_BMK',       'bmk',       'bmk',       'bmk',        Rank.hybridMeta,   False,   Dispersion.none,   Spin_Scaling.none,   True
+    cb3lyp      = 'CAM-B3LYP',        'CAM-B3LYP',       'hyb_gga_xc_cam_b3lyp',            'cam-b3lyp', 'cam-b3lyp', 'camb3lyp',   Rank.hybrid,       True,    Dispersion.none,   Spin_Scaling.none,   False
+    bmk         = 'BMK',               None,             'GGA_C_BMK  HYB_MGGA_X_BMK',       'bmk',       'bmk',       'bmk',        Rank.hybridMeta,   False,   Dispersion.none,   Spin_Scaling.none,   False
     wb97xd      = 'ωB97X-D3',         'wb97x-d3',        'hyb_gga_xc_wb97x_D3',             'wb97x-d3',  'wb97x-d',   'wb97xd',     Rank.hybrid,       True,    Dispersion.d3,     Spin_Scaling.none,   True
     wb97mv      = 'ωB97M-V',          'wb97m-v',          None,                             'wb97m-v',   'wb97m-v',   'wb97mv',     Rank.hybridMeta,   True,    Dispersion.vv10,   Spin_Scaling.none,   False
-    m062x       = 'M06-2X',           'm06-2x',          'MGGA_C_M06_2X HYB_MGGA_X_M06_2X', 'm06-2x',    'm06-2x',    'm062x',      Rank.hybridMeta,   False,   Dispersion.none,   Spin_Scaling.none,   True
+    m062x       = 'M06-2X',           'm06-2x',          'MGGA_C_M06_2X HYB_MGGA_X_M06_2X', 'm06-2x',    'm06-2x',    'm062x',      Rank.hybridMeta,   False,   Dispersion.none,   Spin_Scaling.none,   False
     sospbeqidh  = 'SOS-PBE-QIDH',     'ri-sos-pbe-qidh',  None,                              None,        None,        None,        Rank.doubleHybrid, False,   Dispersion.none,   Spin_Scaling.sos,    False
     soswpbepp86 = 'SOS-PBE-ωPBEPP86', 'ri-sos-wpbepp86',  None,                              None,        None,        None,        Rank.doubleHybrid, True,    Dispersion.none,   Spin_Scaling.sos,    False
     crest       = None,                None,              None,                              None,        None,        None,        Rank.none,         False,   Dispersion.none,   Spin_Scaling.none,   False   
