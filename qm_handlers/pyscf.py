@@ -80,7 +80,7 @@ def pyscfCasscfScan(job:Job, xyz:str) -> tuple[str, str]:
     return pyscfString, pyscfSlmString
 
 def pyscfCasscfOpt(job:Job, xyz:str) -> tuple[str, str]:
-    PySCFString  =  'from pyscf import gto, lib, mrpt, mcscf\n'
+    PySCFString  =  'from pyscf import gto, lib, mrpt, mcscf, mp\n'
     PySCFString +=  'import numpy as np\n'
     PySCFString +=  'import matplotlib.pyplot as plt\n'
     PySCFString +=  'from matplotlib.colors import hsv_to_rgb\n'
@@ -249,6 +249,10 @@ def pyscfCasscfOpt(job:Job, xyz:str) -> tuple[str, str]:
     PySCFString +=  'weights_ss[state] = 1\n'
     PySCFString +=  'weights_sa = np.ones(nstates)/nstates\n\n'
 
+    PySCFString +=  'mf = mol.RHF().run()\n'
+    PySCFString +=  'mmp = mp.UMP2(mf).run()\n'
+    PySCFString +=  'noons, natorbs = mcscf.addons.make_natural_orbitals(mmp)\n\n'
+
     PySCFString +=  '# SS Opt Cycle\n'
     PySCFString +=  'mc_ss = mol.CASSCF(norbs, nelec).state_average(weights_ss)\n'
     PySCFString +=  'mc_ss.max_cycle_macro = 300\n'
@@ -256,6 +260,7 @@ def pyscfCasscfOpt(job:Job, xyz:str) -> tuple[str, str]:
     PySCFString +=  'mc_ss.max_stepsize = 0.1\n'
     PySCFString +=  'mc_ss.conv_tol = opt_conv_e\n'
     PySCFString +=  'mc_ss.fix_spin_(ss=spin)\n'
+    PySCFString +=  'mc_ss.kernel(natorbs)\n'
     PySCFString +=  'new_mol = mc_ss.nuc_grad_method().as_scanner().optimizer().kernel()\n\n'
 
     PySCFString +=  'with open(f"{jobName}.xyz", "w+") as f:\n'
