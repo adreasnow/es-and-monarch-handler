@@ -69,16 +69,16 @@ class dsLoad(object):
     import pandas as pd
 
     def __init__(self, ds: str='fluorophores-ds', df:str='dataset') -> None:
-        self.df_path = f'/Users/adrea/gdrive/Notebooks/Excited States/resources/databases/{ds}/{df}.json'
+        self.main_path = f'/Users/adrea/gdrive/Notebooks/Excited States/resources/databases/fluorophores-ds'
+        self.db = f'{self.main_path}/{df}'
         return
 
     def __enter__(self) -> pd.DataFrame:
-        print(self.df_path)
-        self.df = self.pd.read_json(self.df_path, orient='table')
+        self.df = self.pd.read_pickle(self.db)
         return self.df
 
     def __exit__(self, a, b, c) -> None:
-        self.df.to_json(self.df_path, indent=2, orient='table')
+        self.df.to_pickle(self.db)
         return
 
 class statusLoad(object):
