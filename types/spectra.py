@@ -3,8 +3,10 @@ from dataclasses import dataclass
 
 class spectraType(NewEnum):
     emission = auto()
-    absborbance = auto()
+    absorbance = auto()
     excitation = auto()
+    ftir = auto()
+    qy = auto()
 
 @dataclass
 class gaussian():
@@ -23,8 +25,38 @@ class deconvParams():
 @dataclass
 class spectrum():
     spectrum: spectraType
-    params: deconvParams
-    residual: float
+    params: deconvParams | None
+    residual: float | None
     x: list[float]
     y: list[float]
-    peaks: list[gaussian]
+    peaks: list[gaussian] | None
+
+    @property
+    def peaks_sorted_forward(self) -> list[gaussian]:
+        centerList = [gauss.center for gauss in self.peaks]
+        sortList = sorted(centerList)
+        outGaussList = []
+        for center in sortList:
+            for gauss in self.peaks:
+                if gauss.center == center:
+                    outGaussList += [gauss]
+        return outGaussList
+
+    @property
+    def peaks_sorted_reverse(self) -> list[gaussian]:
+        return reversed(self.peaks_sorted_forward)
+
+@dataclass
+class _simpleSpectrum():
+    maxy: float
+    integrand: float
+    x: list[float]
+    y: list[float]
+
+@dataclass
+class spectrumSeries():
+    spectrum: spectraType
+    absorbanceSpectra: list[_simpleSpectrum]
+    emissionSpectra: list[_simpleSpectrum]
+    excitation: int
+    qy: float | None 

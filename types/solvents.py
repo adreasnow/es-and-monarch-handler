@@ -24,10 +24,10 @@ class Solvents(NewEnum):
     def __bool__(self):
         return self.ds
 
+    def __repr__(self):
+        return self.solvent
+
     #        Name           XTB              SMD                NWChem            ε     n       α     β      γ     φ     ψ     used
-    gas    = 'Gas',         None,           None,              None,              1.00, 1.0000, 0.00, 0.00,  0.00, 0.00, 0.00, False
-    nhex   = 'Hexane',     'hexane',       'n-hexane',        'hexane'  ,         1.88, 1.3749, 0.00, 0.00, 25.75, 0.00, 0.00, False
-    nhep   = 'Heptane',    'hexane',       'n-heptane',       'heptane',          1.91, 1.3878, 0.00, 0.00, 28.28, 0.00, 0.00, False
     tol    = 'Toluene',    'toluene',      'toluene',         'toluene',          2.37, 1.4969, 0.00, 0.14, 40.21, 0.86, 0.00
     ans    = 'Anisole',    'ether',        'anisole',         'anisole',          4.22, 1.5170, 0.00, 0.29, 50.90, 0.75, 0.00
     ether  = 'Ether',      'ether',        'diethyl ether',   'ether',            4.24, 1.3473, 0.00, 0.41, 24.68, 0.00, 0.00
@@ -39,4 +39,12 @@ class Solvents(NewEnum):
     acn    = 'ACN',        'acetonitrile', 'mecn',            'acetntrl',        35.69, 1.3441, 0.07, 0.32, 40.82, 0.00, 0.00
     dmf    = 'DMF',        'dmf',          'dmf',             'dmf',             37.22, 1.4305, 0.00, 0.74, 52.85, 0.00, 0.00
     dmso   = 'DMSO',       'dmso',         'dmso',            'dmso',            46.83, 1.4793, 0.00, 0.88, 62.40, 0.00, 0.00
+
+    gas    = 'Gas',         None,           None,              None,              1.00, 1.0000, 0.00, 0.00,  0.00, 0.00, 0.00, False
+    # nhex   = 'Hexane',     'hexane',       'n-hexane',        'hexane'  ,         1.88, 1.3749, 0.00, 0.00, 25.75, 0.00, 0.00, False
+    # nhep   = 'Heptane',    'hexane',       'n-heptane',       'heptane',          1.91, 1.3878, 0.00, 0.00, 28.28, 0.00, 0.00, False
+    dox    = 'Dioxane',     None,           None,              None,              2.25, 1.4224, 0.00, 0.00,  0.00, 0.00, 0.00, False
+    meoh   = 'Methanol',   'methanol',     'methanol',        'methanol',        32.70, 1.3270, 0.37, 0.48, 22.50, 0.00, 0.00, False
     h2o    = 'water',      'water',        'water',           'water',           78.40, 1.3330, 0.82, 0.00,  0.00, 0.00, 0.00, False
+
+    none   = 'None',        None,           None,              None,              0.00, 0.0000, 0.00, 0.00,  0.00, 0.00, 0.00, False
