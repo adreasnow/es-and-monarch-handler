@@ -7,6 +7,7 @@ class spectraType(NewEnum):
     excitation = auto()
     ftir = auto()
     qy = auto()
+    lifetime = auto()
 
 @dataclass
 class gaussian():
@@ -60,3 +61,20 @@ class spectrumSeries():
     emissionSpectra: list[_simpleSpectrum]
     excitation: int
     qy: float | None 
+
+@dataclass
+class decay():
+    I0: float
+    t: float
+    v: float
+    h: float
+
+@dataclass
+class Lifetime():
+    spectrum: spectraType
+    irf: list[float]
+    trf: list[float]
+    time: list[float]
+    binWidth: int
+    irf_fit: decay
+    t: list[decay]
