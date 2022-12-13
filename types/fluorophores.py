@@ -43,8 +43,8 @@ class Fluorophores(NewEnum):
     bod493    = 'BODIPY 493/503',                             'Cc1c2N(c(C)c1)[B-](F)(F)[N+]1c([C]2C)c(cc1C)C',                                   (0,0),   0,      Solvents.none,   000,   0.968,   Solvents.tol,   500,   False, True
     #
     ndi       = 'Naphthalene diimide',                        'none',                                                                            (0,0),   0,      Solvents.none,   000,   0.00,    Solvents.none,  000,   False, 
-    #
-    nda       = 'Naphthalamide',                              'none',                                                                            (0,0),   0,      Solvents.none,   000,   0.00,    Solvents.none,  000,   False, 
+    #                                                                                                                                                  10.1016/j.dyepig.2015.11.007 (SI)  10.1016/j.dyepig.2015.11.007 (SI)
+    nda       = 'Naphthalamide',                              'O=C1C=2C=CC=C3C(O)=CC=C(C(=O)N1CCC)C32',                                          (0,0),   10000,  Solvents.dmso,   378,   0.77,    Solvents.dmso,  554,   False, True
     #
     pro       = 'Prodan',                                     'CCC(=O)C1=CC2=C(C=C1)C=C(C=C2)N(C)C',                                             (0,0),   0,      Solvents.none,   000,   0.00,    Solvents.none,  000,   False,
     #
@@ -60,7 +60,7 @@ class Fluorophores(NewEnum):
     #                                                                                                                                https://omlc.org/spectra/PhotochemCAD/html/009.html  10.1351/PAC-REP-10-09-31
     rb        = 'Rhodamine B',                                'CC/[N+](CC)=C1C=CC2=C(C3=CC=CC=C3C(O)=O)C4=C(C=C(N(CC)CC)C=C4)OC2=C\\1',          (0,0),   106000, Solvents.etoh,   543,   0.70,    Solvents.meoh,  348,   True,  False,  +1
     #                                                                                                                                                     10.1021/ac101329h               https://iss.com/resources/reference/data_tables/FL_QuantumYieldStandards.html
-    cv        = 'Cresyl Violet',                              '[Cl-].N=1c4c(OC=3C=1c2ccccc2\C(=[NH2+])\C=3)cc(c(c4)C)N(C)C',                     (0,0),   63574,  Solvents.etoh,   611,   0.53,    Solvents.meoh,  580,   True,  False,  +1
+    cv        = 'Cresyl Violet',                              'N=1c4c(OC=3C=1c2ccccc2\C(=[NH2+])\C=3)cc(c(c4)C)N(C)C',                           (0,0),   63574,  Solvents.etoh,   611,   0.53,    Solvents.meoh,  580,   True,  False,  +1
 
 
 
