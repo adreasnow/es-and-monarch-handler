@@ -63,11 +63,16 @@ class spectrumSeries():
     qy: float | None 
 
 @dataclass
-class decay():
+class irf():
     I0: float
+    d: float
+    b: float
     t: float
-    v: float
-    h: float
+
+@dataclass
+class trf():
+    t: float
+    c: float
 
 @dataclass
 class Lifetime():
@@ -76,5 +81,10 @@ class Lifetime():
     trf: list[float]
     time: list[float]
     binWidth: int
-    irf_fit: decay
-    t: list[decay]
+    irf_fit: irf
+    trf_fit: list[trf]
+    residual: float
+    chi2: float
+    I0: float
+    d: float
+    b: float
