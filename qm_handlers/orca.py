@@ -1,7 +1,4 @@
-from ..types.job import Job
-from ..types.jobs import Jobs
-from ..types.job import Solvents
-from ..types.job import PCM
+from ..types.job import Job, Solvents, PCM, Jobs, Orbs
 from ..functions import evToNm
 
 def buildORCAOpt(job:Job, xyz:list[str]) -> str:
@@ -20,6 +17,8 @@ def buildORCAOpt(job:Job, xyz:list[str]) -> str:
 
     if job.job == Jobs.opt:
         jobLine = 'Opt tightopt'
+    elif job.job == Jobs.freq:
+        jobLine = 'Freq'
     else:
         raise Exception(f'Job type {job.job} not implemented.')
 
