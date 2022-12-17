@@ -38,27 +38,23 @@ class Fluorophores(NewEnum):
     #                                                                                                                                                     10.1002/marc.201900234 (SI)     10.1002/marc.201900234 (SI)
     aaq       = '1-Aminoanthraquinone',                       'C1=CC=C2C(=C1)C(=O)C3=C(C2=O)C(=CC=C3)N',                                         (0,0),   7380,   Solvents.acn,    465,   0.031,   Solvents.chcl3, 300,   0.00,  Solvents.none,  False, True
     #                                                                                                                                                                                     10.1021/ac101329h
-    c120      = 'Coumarin 153',                               'C1CC2=CC3=C(C4=C2N(C1)CCC4)OC(=O)C=C3C(F)(F)F',                                   (0,0),   0,      Solvents.none,   000,   0.54,    Solvents.dcm,   402,   0.00,  Solvents.none,  False, True    
-    #                                                                                                                                                     10.1021/ac60235a020             10.1021/jo061369v
-    nr        = 'Nile Red',                                   'O=C1C=C2OC(C=C(N(CC)CC)C=C3)=C3N=C2C4=C1C=CC=C4',                                 (0,0),   38000,  Solvents.dox,    519,   0.38,    Solvents.meoh,  553,   0.00,  Solvents.none,  False, True
+    c153      = 'Coumarin 153',                               'C1CC2=CC3=C(C4=C2N(C1)CCC4)OC(=O)C=C3C(F)(F)F',                                   (0,0),   0,      Solvents.none,   000,   0.54,    Solvents.dcm,   402,   0.00,  Solvents.none,  False, True    
+    #                                                                                                                                                     10.1021/ac60235a020             10.1021/jo061369v               10.1117/1.JBO.20.9.096002
+    nr        = 'Nile Red',                                   'O=C1C=C2OC(C=C(N(CC)CC)C=C3)=C3N=C2C4=C1C=CC=C4',                                 (0,0),   38000,  Solvents.dox,    519,   0.38,    Solvents.meoh,  553,   3.656, Solvents.etoh,  False, True
     #                                                                                                                                                                                     0.93 toluene
     #                       `                                                                                                           `                 10.1021/acs.joc.5b00691         10.1007/s43630-022-00250-y      10.1021/jp0525078
     bod493    = 'BODIPY 493/503',                             'Cc1c2N(c(C)c1)[B-](F)(F)[N+]1c([C]2C)c(cc1C)C',                                   (0,0),   97100,  Solvents.tol,    500,   0.968,   Solvents.tol,   500,   5.6,   Solvents.tol,   False, True
     #                                                                                                                                                  10.1016/j.dyepig.2015.11.007 (SI)  10.1016/j.dyepig.2015.11.007 (SI)   
     nda       = 'Naphthalamide',                              'O=C1C=2C=CC=C3C(O)=CC=C(C(=O)N1CCC)C32',                                          (0,0),   10000,  Solvents.dmso,   378,   0.77,    Solvents.dmso,  554,   0.00,  Solvents.none,  False, True
-
-
-
-    #
-    ndi       = 'Naphthalene diimide',                        'none',                                                                            (0,0),   0,      Solvents.none,   000,   0.00,    Solvents.none,  000,   0.00,  Solvents.none,  False, 
-    #
-    pro       = 'Prodan',                                     'CCC(=O)C1=CC2=C(C=C1)C=C(C=C2)N(C)C',                                             (0,0),   0,      Solvents.none,   000,   0.00,    Solvents.none,  000,   0.00,  Solvents.none,  False,
-    #
-    daa       = 'Dansyl amide',                               'CN(C)C1=CC=CC2=C1C=CC=C2S(=O)(=O)N',                                              (0,0),   0,      Solvents.none,   000,   0.00,    Solvents.none,  000,   0.00,  Solvents.none,  False,  
     #                                                                                                                                                     10.1016/0307-4412(94)90083-3    10.1111/j.1751-1097.1990.tb01686.x
-    dapi      = 'DAPI',                                       'N=C(C1=CC2=C(C=C1)C=C(C3=CC=C(C(N)=N)C=C3)N2)N',                                  (0,0),   27000,  Solvents.dmso,   333,   0.58,    Solvents.dmso,  310,   0.00,  Solvents.none,  False,  
+    dapi      = 'DAPI',                                       'N=C(C1=CC2=C(C=C1)C=C(C3=CC=C(C(N)=N)C=C3)N2)N',                                  (0,0),   27000,  Solvents.dmso,   333,   0.58,    Solvents.dmso,  310,   0.00,  Solvents.none,  False, True  
+    #                                                                                                                                                                                     10.1016/0003-2697(92)90003-P   10.1016/0003-2697(92)90003-P
+    daa       = 'Dansyl amide',                               'CN(C)C1=CC=CC2=C1C=CC=C2S(=O)(=O)N',                                              (0,0),   0,      Solvents.none,   000,   0.39,    Solvents.etoh,  000,  17.1,   Solvents.etoh,  False, True
+    #                                                                                                                                                     10.1021/ja980508q               10.1021/ja980508q               10.1021/ja980508q
+    bsc       = 'Boron Subphthalocyanine Chloride',           'B1(N2C3=C4C=CC=CC4=C2N=C5N1C(=NC6=NC(=N3)C7=CC=CC=C76)C8=CC=CC=C85)Cl',           (0,0),   63000,  Solvents.tol,    569,   0.25,    Solvents.tol,   000,   3.3,   Solvents.tol,   False, True
+    #                                                                                                                                                                                     10.1039/c4cc09206f              10.1039/c4cc09206f
+    asp       = 'α-Sexithiophene',                            'c1csc(c1)-c2ccc(s2)-c3ccc(s3)-c4ccc(s4)-c5ccc(s5)-c6cccs6',                       (0,0),   0,      Solvents.none,   000,   0.41,    Solvents.dcm,   436,   1.0,   Solvents.dcm,   False, True
 
-    
     # ref
     #                                                                                                                                https://omlc.org/spectra/PhotochemCAD/html/083.html  10.1351/PAC-REP-10-09-31
     r6g       = 'Rhodamine 6G',                               'CC1=CC(C(C2=CC=CC=C2C(OCC)=O)=C3C=C/4C)=C(C=C1NCC)OC3=CC4=[NH+]\\CC',             (0,0),   116000, Solvents.etoh,   530,   0.94,    Solvents.etoh,  488,   0.00,  Solvents.none,  True,  False,  +1
@@ -68,14 +64,18 @@ class Fluorophores(NewEnum):
     cv        = 'Cresyl Violet',                              'N=1c4c(OC=3C=1c2ccccc2\C(=[NH2+])\C=3)cc(c(c4)C)N(C)C',                           (0,0),   63574,  Solvents.etoh,   611,   0.53,    Solvents.meoh,  580,   0.00,  Solvents.none,  True,  False,  +1
 
 
-
-
-
-
     # r123      = 'Rhodamine 123',                              '[NH2+]=C1C=C2OC3=C(C=CC(N)=C3)C(C4=CC=CC=C4C(OC)=O)=C2C=C1',                      (0,0),   85700,  Solvents.etoh,   000,   0.86,    Solvents.etoh,  000,   0.00,  Solvents.none,  True,  False, +1
     # mca       = 'Merocyanine 540',                            'CCCCN1C(=O)C(=C/C=C/C=C\\2/N(c3ccccc3O2)CCCS(=O)(=O)[O-])C(=O)N(C1=O)CCCC',       (0,0),   0,      Solvents.none,   000,   0.00,    Solvents.none,  000,   0.00,  Solvents.none,  True,  False, -1
 
+    # #                                                                                                                                                                                     10.1039/c4cc09206f              10.1039/c4cc09206f
+    # th4       = 'Quaterthiophene',                            'c1csc(c1)-c2ccc(s2)-c3ccc(s3)-c4cccs4',                                           (0,0),   0,      Solvents.none,   000,   0.18,    Solvents.dcm,   392,   0.49,  Solvents.dcm,   False
 
+
+
+    #                                                                                                                                       https://www.photochemcad.com/databases/common-compounds/coumarins/urolithin-b     
+    # uro       = 'Urolithin B',                                'OC(C=C1)=CC2=C1C3=CC=CC=C3C(O2)=O',                                               (0,0),   11300,  Solvents.etoh,   278,   0.21,    Solvents.dmf,   000,   0.00,  Solvents.none,  False
+    # #
+    # pro       = 'Prodan',                                     'CCC(=O)C1=CC2=C(C=C1)C=C(C=C2)N(C)C',                                             (0,0),   0,      Solvents.none,   000,   0.00,    Solvents.none,  000,   0.00,  Solvents.none,  False
 
     # Legacy
     # icm       = 'Indigo carmine',                             '[O-]S(=O)(=O)c3cc4C(=O)\\C(=C2\\C(=O)c1cc(ccc1N2)S([O-])(=O)=O)Nc4cc3',           (0,0),   0,      Solvents.none,   000,   0.00,    Solvents.none,  000,   0.00,  Solvents.none,  False, False,  -2
