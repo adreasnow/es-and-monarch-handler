@@ -16,4 +16,5 @@ class Jobs(NewEnum):
     crest     = 'crest'
     casscf    = 'casscf_single_point'
     casscfOpt = 'casscf_optimisation'
+    mp2Natorb = 'mp2-natural-orbitals'
 

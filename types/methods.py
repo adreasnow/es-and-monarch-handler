@@ -52,3 +52,4 @@ class Methods(NewEnum):
     soswpbepp86 = 'SOS-PBE-ωPBEPP86', 'ri-sos-wpbepp86',  None,                              None,        None,        None,        Rank.doubleHybrid, True,    Dispersion.none,   Spin_Scaling.sos,    False
     crest       = None,                None,              None,                              None,        None,        None,        Rank.none,         False,   Dispersion.none,   Spin_Scaling.none,   False   
     casscf      = None,                None,              None,                              None,        'casscf',    'casscf',    Rank.none,         False,   Dispersion.none,   Spin_Scaling.none,   False
+    mp2         = 'MP2',               'RI-MP2',          None,                              None,        None,        None,        Rank.none,         False,   Dispersion.none,   Spin_Scaling.none,   False 

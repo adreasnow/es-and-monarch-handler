@@ -14,7 +14,7 @@ from .types.slurmJob import slurmJob, slurmStatus
 from .qm_handlers.crest import buildCRESTOpt
 from .qm_handlers.orca import buildORCAOpt
 from .qm_handlers.psi4 import psi4CasscfScan
-from .qm_handlers.pyscf import pyscfCasscfScan, pyscfCasscfOpt
+from .qm_handlers.pyscf import pyscfCasscfScan, pyscfCasscfOpt, pyscfMP2Natorbs
 from time import time
 
 class monarchHandler:
@@ -199,10 +199,16 @@ class monarchHandler:
             except KeyError:
                 status = self.checkPsi4Status(job)
 
-        elif job.software == Software.pyscf and job.job in [Jobs.casscf, Jobs.casscfOpt]:
-            slurmToPyscf = {slurmStatus.RUNNING: Status.CASSCF.running,
-                           slurmStatus.PENDING: Status.CASSCF.queued,
-                           slurmStatus.TIMED_OUT: Status.CASSCF.timed_out}
+        elif job.software == Software.pyscf and job.job in [Jobs.casscf, Jobs.casscfOpt, Jobs.mp2Natorb]:
+            if job.job in [Jobs.casscf, Jobs.casscfOpt]:
+                slurmToPyscf = {slurmStatus.RUNNING: Status.CASSCF.running,
+                            slurmStatus.PENDING: Status.CASSCF.queued,
+                            slurmStatus.TIMED_OUT: Status.CASSCF.timed_out}
+            elif job.job == Jobs.mp2Natorb:
+                slurmToPyscf = {slurmStatus.RUNNING: Status.MP2.running,
+                            slurmStatus.PENDING: Status.MP2.queued,
+                            slurmStatus.TIMED_OUT: Status.MP2.timed_out}
+
             try:
                 status = slurmToPyscf[slurm]
             except KeyError:
@@ -224,11 +230,17 @@ class monarchHandler:
             self.writeFile(py, job.infile)
             self.writeFile(slm, f'{job.path}/{job.name}.slm')
         
-        if job.software == Software.pyscf and job.job == Jobs.casscf:
-            lines, err = self.run(f'cat "{job.catxyzpath}"')
-            py, slm = pyscfCasscfScan(job, lines[2:])
-            self.writeFile(py, job.infile)
-            self.writeFile(slm, f'{job.path}/{job.name}.slm')
+        if job.software == Software.pyscf:
+            if job.job == Jobs.casscf:
+                lines, err = self.run(f'cat "{job.catxyzpath}"')
+                py, slm = pyscfCasscfScan(job, lines[2:])
+                self.writeFile(py, job.infile)
+                self.writeFile(slm, f'{job.path}/{job.name}.slm')
+            if job.job == Jobs.mp2Natorb:
+                lines, err = self.run(f'cat "{job.catxyzpath}"')
+                py, slm = pyscfMP2Natorbs(job, lines[2:])
+                self.writeFile(py, job.infile)
+                self.writeFile(slm, f'{job.path}/{job.name}.slm')
 
         if job.software == Software.pyscf and job.job == Jobs.casscfOpt:
             lines, err = self.run(f'cat "{job.catxyzpath}"')
@@ -312,6 +324,16 @@ class monarchHandler:
         elif queued == True: return Status.CASSCF.queued
         
     def checkPyscfStatus(self, job:Job) -> Status | None:
+        out, err = self.run(f'ls {job.path} | grep slurm | tail -n 1')
+        slurmOut = []
+        for line in out: 
+            if 'slurm' in line:
+                slurmOut, err = self.run(f'tail -n 100 {job.path}/{line}')
+        for slurmLine in slurmOut:
+            if 'oom-kill event(s) in StepId=' in slurmLine:
+                if job.job == Jobs.mp2Natorb: return Status.MP2.timed_out
+                else: return Status.CASSCF.failed
+
         out, err = self.run(f'tail -n 100 {job.path}/{job.name}.out')
         if 'No such file or directory' in err[0]:
             return None
@@ -320,11 +342,12 @@ class monarchHandler:
             for line in out:
                 if '	Exit status: ' in line:
                     if line.split()[2] == '0':
-                        
-                        return Status.CASSCF.finished
-                    else:
-                        return Status.CASSCF.failed
 
+                        if job.job == Jobs.mp2Natorb: return Status.MP2.finished
+                        else: return Status.CASSCF.finished
+                    else:
+                        if job.job == Jobs.mp2Natorb: return Status.MP2.failed
+                        else: return Status.CASSCF.failed
 
     def checkOrcaStatus(self, job:Job) -> Status | None:
         out, err = self.run(f'tail -n 100 {job.path}/{job.name}/{job.name}.out')

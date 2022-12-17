@@ -375,3 +375,58 @@ def pyscfCasscfOpt(job:Job, xyz:str) -> tuple[str, str]:
     pyscfSlmString += 'curl -s -X POST -H "Content-Type: application/json" -d \'{"value1": "\'`echo $SLURM_JOB_NAME | cut -d\'.\' -f 1`\'" , "value2": "finished", "value3": "MonARCH"}\' https://maker.ifttt.com/trigger/$JOBID/with/key/$JOBKEY > /dev/null\n\n'
 
     return PySCFString, pyscfSlmString
+
+
+def pyscfMP2Natorbs(job:Job, xyz:str) -> tuple[str, str]:
+    PySCFString  =  'from pyscf import gto, lib\n'
+    PySCFString  += 'from pyscf.mp.dfmp2_native import DFRMP2\n'
+    PySCFString  += 'from pyscf.tools import molden\n'
+    PySCFString +=  'import numpy as np\n'
+    PySCFString +=  'import os\n\n'
+
+    PySCFString += f'lib.num_threads({job.procs})\n'
+    PySCFString +=  'jobName = os.environ["SLURM_JOB_NAME"].split(".")[0]\n\n'
+
+    PySCFString +=  'mol = gto.Mole()\n'
+    PySCFString +=  'mol.atom = """ \n'
+    for line in xyz:
+        PySCFString += f'\n{line}'
+    PySCFString += '\n"""\n\n'
+
+    PySCFString += f'mol.charge = {job.fluorophore.charge}\n'
+    PySCFString += f'mol.basis = "{job.basis.pyscf}"\n'
+    PySCFString += f'mol.max_memory = {job.mem.total_mb}\n'
+    PySCFString +=  'mol.verbose = 4\n'
+    PySCFString +=  'mol.output = f"{jobName}.out"\n'
+    PySCFString +=  'mol.build()\n\n'
+
+    PySCFString +=  'mf = mol.RHF().run()\n'
+    PySCFString +=  'mp = mf.MP2()\n'
+    PySCFString +=  'mol_opt = mp.nuc_grad_method().as_scanner().optimizer().kernel()\n\n'
+
+    PySCFString +=  'mf = mol_opt.RHF().run()\n'
+    PySCFString +=  'mp = DFRMP2(mf)\n\n'
+
+    PySCFString +=  'mo_occ, orbs = mp.make_natorbs()\n'
+    PySCFString +=  'molden.from_mo(mol, f"{jobName}.molden.input", orbs, ene=mp.mo_energy, occ=np.multiply(mp.occ_mask, 2))\n'
+
+    pyscfSlmString = '#!/bin/bash\n'
+    pyscfSlmString += '#SBATCH --time=24:00:00\n'
+    pyscfSlmString += f'#SBATCH --ntasks={job.procs}\n'
+    pyscfSlmString += '#SBATCH --cpus-per-task=1\n'
+    pyscfSlmString += f'#SBATCH --ntasks-per-node={job.procs}\n'
+    pyscfSlmString += f'#SBATCH --mem={job.mem.total_gb}GB\n'
+    if job.partner == True: pyscfSlmString += '#SBATCH --qos=partner\n'
+    pyscfSlmString += '#SBATCH --partition=comp,short\n\n'
+
+    pyscfSlmString += 'export PROJECT="p2015120004"\n\n'
+
+    pyscfSlmString += 'curl -s -X POST -H "Content-Type: application/json" -d \'{"value1": "\'`echo $SLURM_JOB_NAME | cut -d\'.\' -f 1`\'" , "value2": "running", "value3": "MonARCH"}\' https://maker.ifttt.com/trigger/$JOBID/with/key/$JOBKEY > /dev/null\n\n'
+
+    pyscfSlmString += 'source /mnt/lustre/projects/p2015120004/apps/pyscf/activate_pyscf_job.sh\n'
+    pyscfSlmString += f'cd {job.path}\n\n'
+    pyscfSlmString += f'/usr/bin/time -v python {job.name}.py > {job.name}.out 2>&1\n\n'
+
+    pyscfSlmString += 'curl -s -X POST -H "Content-Type: application/json" -d \'{"value1": "\'`echo $SLURM_JOB_NAME | cut -d\'.\' -f 1`\'" , "value2": "finished", "value3": "MonARCH"}\' https://maker.ifttt.com/trigger/$JOBID/with/key/$JOBKEY > /dev/null\n\n'
+
+    return PySCFString, pyscfSlmString

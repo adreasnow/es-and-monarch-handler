@@ -9,8 +9,9 @@ from .types.jobs import Jobs
 from .types.status import Status
 from .types.grids import Grids
 from .types.job import Job
+from .types.orbs import Orbs
 from .types.slurmJob import slurmStatus, slurmJob
-from .types.spectra import spectraType, spectrum, gaussian, deconvParams, _simpleSpectrum, spectrumSeries, decay, Lifetime
+from .types.spectra import spectraType, spectrum, gaussian, deconvParams, _simpleSpectrum, spectrumSeries, trf, irf, Lifetime
 from .functions import evToNm, nmToEv, stripIllegal, smiles2xyz, script_builder
 from .functions import  rmsd, fluorophores_solvents_methods, dsLoad, statusLoad
 from .monarchhandler import monarchHandler

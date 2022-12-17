@@ -8,6 +8,7 @@ from .software import Software
 from .pcm import PCM
 from .grids import Grids
 from .jobs import Jobs
+from .orbs import Orbs
 
 class _mem():
     def __int__(self):
@@ -56,7 +57,9 @@ class Job():
     # casscf specific settings
     casscf:tuple[int,int] = (4,4)
     casscfend:tuple[int,int] = (12,12)
-    
+
+    #orbs
+    orbs:Orbs=Orbs.can
 
     def __str__(self):
         return self.name

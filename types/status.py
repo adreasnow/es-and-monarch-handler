@@ -28,3 +28,10 @@ class Status(NewEnum):
         finished  = auto()
         failed    = auto()
         timed_out = auto()
+
+    class MP2(NewEnum):
+        queued    = auto()
+        running   = auto()
+        finished  = auto()
+        failed    = auto()
+        timed_out = auto()
