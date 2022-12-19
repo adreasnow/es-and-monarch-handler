@@ -324,6 +324,12 @@ class monarchHandler:
         elif queued == True: return Status.CASSCF.queued
         
     def checkPyscfStatus(self, job:Job) -> Status | None:
+        if job.job == Jobs.mp2Natorb:
+            out, err = self.run(f'ls {job.path} | grep \'.molden.input\'')
+            for line in out:
+                if '.molden.input' in line:
+                    return Status.MP2.finished
+
         out, err = self.run(f'ls {job.path} | grep slurm | tail -n 1')
         slurmOut = []
         for line in out: 
@@ -331,8 +337,11 @@ class monarchHandler:
                 slurmOut, err = self.run(f'tail -n 100 {job.path}/{line}')
         for slurmLine in slurmOut:
             if 'oom-kill event(s) in StepId=' in slurmLine:
-                if job.job == Jobs.mp2Natorb: return Status.MP2.timed_out
+                if job.job == Jobs.mp2Natorb: return Status.MP2.failed
                 else: return Status.CASSCF.failed
+            if 'DUE TO TIME LIMIT ***' in slurmLine:
+                if job.job == Jobs.mp2Natorb: return Status.MP2.timed_out
+                else: return Status.CASSCF.timed_out
 
         out, err = self.run(f'tail -n 100 {job.path}/{job.name}.out')
         if 'No such file or directory' in err[0]:
