@@ -9,6 +9,7 @@ from .pcm import PCM
 from .grids import Grids
 from .jobs import Jobs, MetaJobs
 from .orbs import Orbs
+from .tddft import TDDFT
 
 class _mem():
     def __int__(self):
@@ -31,6 +32,7 @@ class Job():
     eq: PCM.Eq
     state: States
     job: Jobs
+    tddft: TDDFT
 
     # presets
     grid: Grids = Grids.g75_302
@@ -71,19 +73,9 @@ class Job():
 
     @classmethod
     def from_MetaJob(cls, metajob:MetaJobs, fluorophore:Fluorophores, solvent:Solvents, state:States):
-        x = cls(metajob.software, fluorophore, solvent, metajob.method, 
-                metajob.basis, metajob.pcm, metajob.eq, state, metajob.job, grid=metajob.grid, nroots=metajob.nroots, pcm_es=metajob.excited)
-        return x
-
-    software: Software
-    fluorophore: Fluorophores
-    solv: Solvents
-    method: Methods
-    basis: Basis
-    pcm: PCM
-    eq: PCM.Eq
-    state: States
-    job: Jobs
+        return cls(metajob.software, fluorophore, solvent, metajob.method, 
+                metajob.basis, metajob.pcm, metajob.eq, state, metajob.job, grid=metajob.grid, nroots=metajob.nroots, 
+                pcm_es=metajob.excited, tddft=metajob.tddft)
 
     def __post_init__(self):
         if self.solv == Solvents.gas:

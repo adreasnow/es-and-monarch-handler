@@ -4,10 +4,11 @@ from .methods import Methods
 from .basis import Basis
 from .grids import Grids
 from .pcm import PCM
+from .tddft import TDDFT
 
 class Jobs(NewEnum):
     def __init__(self, long:str) -> None:
-            self.long    = long
+            self.long = long
             return
     
     def __str__(self):
@@ -27,7 +28,7 @@ class Jobs(NewEnum):
     mp2Natorb = 'mp2-natural-orbitals'
 
 class MetaJobs(NewEnum):
-    def __init__(self, long:str, software:Software, job:Jobs, method:Methods, basis:Basis, grid:Grids, pcm:PCM, eq:PCM.Eq, excited:PCM.ExcitedModel, nroots:float, gs:bool, es:bool, used:bool=False, gasonly:bool=False) -> None:
+    def __init__(self, long:str, software:Software, job:Jobs, method:Methods, basis:Basis, grid:Grids, pcm:PCM, eq:PCM.Eq, excited:PCM.ExcitedModel, nroots:float, gs:bool, es:bool, used:bool, gasonly:bool) -> None:
             self.long       = long
             self.software   = software
             self.job        = job
@@ -42,34 +43,40 @@ class MetaJobs(NewEnum):
             self.gasonly    = gasonly
             self.gs         = gs
             self.es         = es
+            self.tddft      = tddft
             return
     
     def __str__(self):
         return self.long
 
-    #                     job Decription                       Software        JobType             Method              Basis                Grid         PCM            Eq       Excitation Treatment  Nroots   GS      ES    Used Gas Only
-    none               = 'None',                            'none',           'none',           'none',             'none',            'none',          'none',    'none',        'none',                 0,   False,  False, False
+    #                     job Decription                       Software        JobType             Method              Basis                Grid         TDDFT           PCM            Eq       Excitation Treatment  Nroots   GS      ES    Used    Gas Only
+    none               = 'None',                            'none',           'none',           'none',             'none',            'none',          'none',        'none',    'none',        'none',                 0,   False,  False, False, False
+    
     # optimisations
-    or_wb_opt_gs       = 'orca wb gs opt',                  Software.orca,    Jobs.opt,         Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   PCM.smd,   PCM.Eq.eq,     PCM.ExcitedModel.none,  1,   True,   False, True
-    or_wb_opt_es       = 'orca wb es opt',                  Software.orca,    Jobs.opt,         Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   PCM.smd,   PCM.Eq.eq,     PCM.ExcitedModel.lr,    4,   False,  True,  True
-    qc_wb_opt_gs       = 'qchem wb ss opt',                 Software.qchem,   Jobs.opt,         Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   PCM.cpcm,  PCM.Eq.eq,     PCM.ExcitedModel.none,  1,   True,   False
-    qc_wb_opt_es       = 'qchem wb lr opt',                 Software.qchem,   Jobs.opt,         Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   PCM.cpcm,  PCM.Eq.eq,     PCM.ExcitedModel.lr,    4,   False,  True
-    qc_wb_opt_ss_es    = 'qchem wb ss opt',                 Software.qchem,   Jobs.opt,         Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   PCM.cpcm,  PCM.Eq.eq,     PCM.ExcitedModel.clr,   4,   False,  True
-    crest              = 'crest',                           Software.crest,   Jobs.crest,       Methods.crest,      Basis.none,        Grids.none,      PCM.alpb,  PCM.Eq.none,   PCM.ExcitedModel.none,  1,   True,   False
-    casscf_opt         = 'casscf_optimisation',             Software.pyscf,   Jobs.casscfOpt,   Methods.casscf,     Basis.augccpvdz,   Grids.none,      PCM.none,  PCM.Eq.none,   PCM.ExcitedModel.none, 10,   True,   True,  False,  True
-    mp2Natorb          = 'mp2-natural-orbitals',            Software.pyscf,   Jobs.mp2Natorb,   Methods.mp2,        Basis.d631pgd,     Grids.none,      PCM.none,  PCM.Eq.none,   PCM.ExcitedModel.none,  1,   True,   False, True,  True
+    or_wb_opt_gs       = 'orca wb gs opt',                  Software.orca,    Jobs.opt,         Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.none,     PCM.smd,   PCM.Eq.eq,     PCM.ExcitedModel.none,  1,   True,   False, True,  False
+    or_wb_opt_es       = 'orca wb es opt',                  Software.orca,    Jobs.opt,         Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.tddft,    PCM.smd,   PCM.Eq.eq,     PCM.ExcitedModel.lr,    4,   False,  True,  True,  False
+    qc_wb_opt_gs       = 'qchem wb opt',                    Software.qchem,   Jobs.opt,         Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.none,     PCM.cpcm,  PCM.Eq.eq,     PCM.ExcitedModel.none,  1,   True,   False, False, False
+    qc_wb_opt_es       = 'qchem wb lr opt',                 Software.qchem,   Jobs.opt,         Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.tddft,    PCM.cpcm,  PCM.Eq.eq,     PCM.ExcitedModel.lr,    4,   False,  True,  False, False
+    qc_wb_opt_ss_es    = 'qchem wb ss opt',                 Software.qchem,   Jobs.opt,         Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.tddft,    PCM.cpcm,  PCM.Eq.eq,     PCM.ExcitedModel.clr,   4,   False,  True,  False, False
+    crest              = 'crest',                           Software.crest,   Jobs.crest,       Methods.crest,      Basis.none,        Grids.none,      TDDFT.none,     PCM.alpb,  PCM.Eq.none,   PCM.ExcitedModel.none,  1,   True,   False, False, False
+    casscf_opt         = 'casscf_optimisation',             Software.pyscf,   Jobs.casscfOpt,   Methods.casscf,     Basis.augccpvdz,   Grids.none,      TDDFT.none,     PCM.none,  PCM.Eq.none,   PCM.ExcitedModel.none, 10,   True,   True,  False, True
+    mp2Natorb          = 'mp2-natural-orbitals',            Software.pyscf,   Jobs.mp2Natorb,   Methods.mp2,        Basis.d631pgd,     Grids.none,      TDDFT.none,     PCM.none,  PCM.Eq.none,   PCM.ExcitedModel.none,  1,   True,   False, True,  True
+    
     # frequencies 
-    or_wb_freq_gs      = 'orca wb gs freq',                 Software.orca,    Jobs.freq,        Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   PCM.smd,   PCM.Eq.none,   PCM.ExcitedModel.none,  4,   True,   False
-    or_wb_freq_es      = 'orca wb es freq',                 Software.orca,    Jobs.freq,        Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   PCM.smd,   PCM.Eq.eq,     PCM.ExcitedModel.lr,    4,   False,  True
-    qc_wb_freq_gs      = 'qchem wb gs freq',                Software.qchem,   Jobs.freq,        Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   PCM.cpcm,  PCM.Eq.none,   PCM.ExcitedModel.none,  4,   True,   False
-    qc_wb_freq_es      = 'qchem wb es freq',                Software.qchem,   Jobs.freq,        Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   PCM.cpcm,  PCM.Eq.eq,     PCM.ExcitedModel.lr,    4,   False,  True
-    qc_wb_freq_ss_es   = 'qchem wb es freq',                Software.qchem,   Jobs.freq,        Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   PCM.cpcm,  PCM.Eq.eq,     PCM.ExcitedModel.clr,   4,   False,  True
+    or_wb_freq_gs      = 'orca wb gs freq',                 Software.orca,    Jobs.freq,        Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.none,     PCM.smd,   PCM.Eq.eq,     PCM.ExcitedModel.none,  4,   True,   False, True,  False
+    or_wb_freq_es      = 'orca wb es freq',                 Software.orca,    Jobs.freq,        Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.tddft,    PCM.smd,   PCM.Eq.eq,     PCM.ExcitedModel.lr,    4,   False,  True,  False, False
+    qc_wb_freq_gs      = 'qchem wb gs freq',                Software.qchem,   Jobs.freq,        Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.none,     PCM.cpcm,  PCM.Eq.eq,     PCM.ExcitedModel.none,  4,   True,   False, False, False
+    qc_wb_freq_es      = 'qchem wb es freq',                Software.qchem,   Jobs.freq,        Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.tdddt,    PCM.cpcm,  PCM.Eq.eq,     PCM.ExcitedModel.lr,    4,   False,  True,  False, False
+    qc_wb_freq_ss_es   = 'qchem wb es freq',                Software.qchem,   Jobs.freq,        Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.tdddt,    PCM.cpcm,  PCM.Eq.eq,     PCM.ExcitedModel.clr,   4,   False,  True,  False, False
+    
     # excitations
-    or_wb_ex           = 'orca wb smd ex',                  Software.orca,    Jobs.ex,          Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   PCM.smd,   PCM.Eq.neq,    PCM.ExcitedModel.lr,   10,   True,   True
-    qc_wb_ex           = 'qchem wb ex',                     Software.qchem,   Jobs.ex,          Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   PCM.cpcm,  PCM.Eq.neq,    PCM.ExcitedModel.lr,   10,   True,   True
-    qc_wb_ss_ex        = 'qchem wb ss ex',                  Software.qchem,   Jobs.ex,          Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   PCM.cpcm,  PCM.Eq.neq,    PCM.ExcitedModel.clr,  10,   True,   True
+    or_wb_ex           = 'orca wb smd ex',                  Software.orca,    Jobs.ex,          Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.tddft,    PCM.smd,   PCM.Eq.neq,    PCM.ExcitedModel.lr,   10,   True,   True,  False, False
+    qc_wb_ex           = 'qchem wb ex',                     Software.qchem,   Jobs.ex,          Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.tddft,    PCM.cpcm,  PCM.Eq.neq,    PCM.ExcitedModel.lr,   10,   True,   True,  False, False
+    qc_wb_ss_ex        = 'qchem wb ss ex',                  Software.qchem,   Jobs.ex,          Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.tddft,    PCM.cpcm,  PCM.Eq.neq,    PCM.ExcitedModel.clr,  10,   True,   True,  False, False
+    
     # emission
-    qc_wb_em           = 'qchem wb em',                     Software.qchem,   Jobs.em,          Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   PCM.cpcm,  PCM.Eq.eq_neq, PCM.ExcitedModel.lr,    4,   False,  True
-    qc_wb_ss_em        = 'qchem wb ss em',                  Software.qchem,   Jobs.em,          Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   PCM.cpcm,  PCM.Eq.eq_neq, PCM.ExcitedModel.clr,   4,   False,  True, True
+    qc_wb_em           = 'qchem wb em',                     Software.qchem,   Jobs.em,          Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.tddft,    PCM.cpcm,  PCM.Eq.eq_neq, PCM.ExcitedModel.lr,    4,   False,  True,  False, False
+    qc_wb_ss_em        = 'qchem wb ss em',                  Software.qchem,   Jobs.em,          Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.tddft,    PCM.cpcm,  PCM.Eq.eq_neq, PCM.ExcitedModel.clr,   4,   False,  True,  True,  False
+    
     # single point
-    casscf_scan        = 'casscf_single_point',             Software.pyscf,   Jobs.casscf,      Methods.casscf,     Basis.augccpvdz,   Grids.none,      PCM.none,  PCM.Eq.none,   PCM.ExcitedModel.clr,  10,   True,  True, False,  True
+    casscf_scan        = 'casscf_single_point',             Software.pyscf,   Jobs.casscf,      Methods.casscf,     Basis.augccpvdz,   Grids.none,      TDDFT.none,     PCM.none,  PCM.Eq.none,   PCM.ExcitedModel.clr,  10,   True,   True,  False, True

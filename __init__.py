@@ -10,6 +10,7 @@ from .types.status import Status
 from .types.grids import Grids
 from .types.job import Job
 from .types.orbs import Orbs
+from .types.tddft import TDDFT
 from .types.slurmJob import slurmStatus, slurmJob
 from .types.spectra import spectraType, spectrum, gaussian, deconvParams, _simpleSpectrum, spectrumSeries, trf, irf, Lifetime
 from .functions import evToNm, nmToEv, stripIllegal, smiles2xyz, script_builder
