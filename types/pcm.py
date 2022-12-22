@@ -18,41 +18,42 @@ class PCM(NewEnum):
     
     @skip
     class Radii(NewEnum):
-        uff      = auto()
-        smd      = auto()
-        bondi    = auto()
-        arlinger = auto()
+        uff      = 'uff'
+        smd      = 'smd'
+        bondi    = 'bondi'
+        arlinger = 'arlinger'
     
     @skip
     class Cavity(NewEnum):
-        gepol      = auto()
-        sas        = auto()
-        ses        = auto()
-        isodensity = auto()
-        spherical  = auto()
+        gepol      = 'gepol'
+        sas        = 'sas'
+        ses        = 'ses'
+        isodensity = 'iso'
+        spherical  = 'spherical'
     
     @skip
     class Switching(NewEnum):
-        swig  = auto()
-        iswig = auto()
-        none  = auto()
+        swig  = 'swig'
+        iswig = 'iswig'
+        none  = 'none'
     
     @skip
     class Discretisation(NewEnum):
-        lebedev  = auto()
-        tesserae = auto()
+        lebedev  = 'lebedev'
+        tesserae = 'tesserae'
     
     @skip
     class ExcitedModel(NewEnum):
-        vem   = auto()
-        clr   = auto()
-        lr    = auto()
-        ibsf  = auto()
+        none  = 'none'
+        vem   = 'vem'
+        clr   = 'clr'
+        lr    = 'lr'
+        ibsf  = 'ibsf'
     
     @skip
     class NonEl(NewEnum):
-        smssp = auto()
-        smd   = auto()
+        smssp = 'smssp'
+        smd   = 'smd'
 
     @skip
     class Formalism(NewEnum):
@@ -68,9 +69,11 @@ class PCM(NewEnum):
         ssvpe   = 'SS(V)PE'
         cosmo   = 'COSMO'
 
-    cpcm  = auto()
-    smd   = auto()
-    vem   = auto()
-    smssp = auto()
-    alpb  = auto()
-    none  = auto()
+    cpcm  = 'cpcm'
+    smd   = 'smd'
+    lrpcm = 'lrpcm'
+    sspcm = 'sspcm'
+    vem   = 'vem' 
+    smssp = 'smssp'
+    alpb  = 'alpb'
+    none  = 'none'

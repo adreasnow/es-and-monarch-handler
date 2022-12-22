@@ -1,24 +1,24 @@
 from .newenum import *
 class Methods(NewEnum):
     class Rank(Enum):
-        lda          = auto()
-        gga          = auto()
-        meta         = auto()
-        hybrid       = auto()
-        hybridMeta   = auto()
-        doubleHybrid = auto()
-        none         = auto()
+        lda          = 'lda'
+        gga          = 'gga'
+        meta         = 'meta'
+        hybrid       = 'hybrid'
+        hybridMeta   = 'hybridmeta'
+        doubleHybrid = 'doublehybrid'
+        none         = 'none'
 
     class Dispersion(Enum):
-        none = auto()
-        d3   = auto()
-        vv10 = auto()
+        none = 'none'
+        d3   = 'd3'
+        vv10 = 'vv10'
 
     class Spin_Scaling(Enum):
-        none = auto()
-        sos = auto()
-        srs = auto()
-        sns = auto()
+        none = 'none'
+        sos  = 'sos'
+        srs  = 'srs'
+        sns  = 'sns'
 
     def __init__(self, method:str, orca:str, nwchem:str, qchem:str, psi4:str, pyscf:str,
                  rank:Rank, range_separated:bool, dispersion:Dispersion, spin_scaling:Spin_Scaling, used:bool) -> None:

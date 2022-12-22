@@ -2,12 +2,12 @@ from dataclasses import dataclass
 from .newenum import NewEnum, auto
 
 class slurmStatus(NewEnum):
-    PENDING = auto()
-    RUNNING = auto()
-    COMPLETING = auto()
-    FAILED = auto()
-    TIMED_OUT = auto()
-    NONE = auto()
+    PENDING    = 'pending'
+    RUNNING    = 'running'
+    COMPLETING = 'completing'
+    FAILED     = 'failed'
+    TIMED_OUT  = 'timedout'
+    NONE       = 'none'
 
 @dataclass
 class slurmJob():

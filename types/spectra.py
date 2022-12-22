@@ -2,12 +2,12 @@ from .newenum import *
 from dataclasses import dataclass
 
 class spectraType(NewEnum):
-    emission = auto()
-    absorbance = auto()
-    excitation = auto()
-    ftir = auto()
-    qy = auto()
-    lifetime = auto()
+    emission   = 'em'
+    absorbance = 'abs'
+    excitation = 'ex'
+    ftir       = 'ftir'
+    qy         = 'qr'
+    lifetime   = 'tr'
 
 @dataclass
 class gaussian():

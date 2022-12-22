@@ -2,16 +2,16 @@ from .newenum import *
 from .software import Software
 class Basis(NewEnum):
     class Family(Enum):
-        dunning   = auto()
-        pople     = auto()
-        jensen    = auto()
-        karlsruhe = auto()
-        none      = auto()
+        dunning   = 'dunning'
+        pople     = 'pople'
+        jensen    = 'jensen'
+        karlsruhe = 'karlsruhe'
+        none      = 'none'
 
     def __init__(self, basis:str, orca:str, qchem:str, nwchem:str, psi4:str, pyscf:str, zeta:int, augmented:bool, diffuse:bool, family:Family) -> None:
             self.basis     = basis
             self.orca      = orca
-            self.pyscf      = pyscf
+            self.pyscf     = pyscf
             self.qchem     = qchem
             self.nwchem    = nwchem
             self.psi4      = psi4
