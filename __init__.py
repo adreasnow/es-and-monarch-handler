@@ -5,7 +5,7 @@ from .types.basis import Basis
 from .types.methods import Methods
 from .types.software import Software
 from .types.pcm import PCM
-from .types.jobs import Jobs
+from .types.jobs import Jobs, MetaJobs
 from .types.status import Status
 from .types.grids import Grids
 from .types.job import Job
