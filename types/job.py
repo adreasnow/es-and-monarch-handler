@@ -43,6 +43,19 @@ class Job():
     submit: bool = False
     submitFlags: str = '-NS'
 
+    # TDDFT
+    tda: TDDFT.TDA = TDDFT.TDA.off
+    triplets: TDDFT.Triplets = TDDFT.Triplets.off
+
+    # PCM
+    pcm_es: PCM.ExcitedModel = PCM.ExcitedModel.none
+    pcm_form: PCM.Formalism = PCM.Formalism.iefpcm
+    pcm_disc: PCM.Discretisation = PCM.Discretisation.default
+    pcm_radii: PCM.Radii = PCM.Radii.default
+    pcm_VDWScale: float = 1.2
+    pcm_probe_radii: float = 0.0
+    pcm_surfaceType: PCM.Cavity = PCM.Cavity.default
+
     nroots: bool = 4
     rootpath: str = '/home/asnow/p2015120004/asnow'
     rootfolder: str = 'fluorophores-ds'
@@ -63,8 +76,6 @@ class Job():
     #orbs
     orbs:Orbs=Orbs.can
 
-    pcm_es:PCM.ExcitedModel=PCM.ExcitedModel.none
-
     def __str__(self):
         return self.name
 
@@ -72,10 +83,12 @@ class Job():
         return self.name
 
     @classmethod
-    def from_MetaJob(cls, metajob:MetaJobs, fluorophore:Fluorophores, solvent:Solvents, state:States):
+    def from_MetaJob(cls, metajob:MetaJobs, fluorophore:Fluorophores, solvent:Solvents, state:States, **kwargs):
         return cls(metajob.software, fluorophore, solvent, metajob.method, 
-                metajob.basis, metajob.pcm, metajob.eq, state, metajob.job, grid=metajob.grid, nroots=metajob.nroots, 
-                pcm_es=metajob.excited, tddft=metajob.tddft)
+                metajob.basis, metajob.pcm, metajob.eq, state, metajob.job, metajob.tddft, grid=metajob.grid, nroots=metajob.nroots, 
+                pcm_es=metajob.excited, triplets=metajob.triplets, pcm_form=metajob.pcm_form, pcm_disc=metajob.pcm_disc, 
+                pcm_radii=metajob.pcm_radii, pcm_VDWScale=metajob.pcm_VDWScale, 
+                pcm_probe_radii=metajob.pcm_probe_radii, pcm_surfaceType=metajob.pcm_surfaceType, **kwargs)
 
     def __post_init__(self):
         if self.solv == Solvents.gas:

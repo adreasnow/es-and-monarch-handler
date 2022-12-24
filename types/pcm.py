@@ -1,5 +1,4 @@
 from .newenum import *
-from .software import Software
 
 class PCM(NewEnum):
     @skip
@@ -22,25 +21,26 @@ class PCM(NewEnum):
         smd      = 'smd'
         bondi    = 'bondi'
         arlinger = 'arlinger'
+        ff       = 'from_ff'
+        read     = 'from_file'
+        default  = 'default'
     
     @skip
     class Cavity(NewEnum):
-        gepol      = 'gepol'
         sas        = 'sas'
         ses        = 'ses'
         isodensity = 'iso'
         spherical  = 'spherical'
+        default    = 'default'
     
-    @skip
-    class Switching(NewEnum):
-        swig  = 'swig'
-        iswig = 'iswig'
-        none  = 'none'
-    
+
     @skip
     class Discretisation(NewEnum):
         lebedev  = 'lebedev'
         tesserae = 'tesserae'
+        swig     = 'swig'
+        iswig    = 'iswig'
+        default  = 'default'
     
     @skip
     class ExcitedModel(NewEnum):
@@ -68,6 +68,8 @@ class PCM(NewEnum):
         iefpcm  = 'IEF-PCM'
         ssvpe   = 'SS(V)PE'
         cosmo   = 'COSMO'
+        pb      = 'Poisson-Boltzmann'
+        none    = 'none'
 
     cpcm  = 'cpcm'
     smd   = 'smd'
