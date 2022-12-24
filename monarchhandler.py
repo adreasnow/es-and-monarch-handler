@@ -15,11 +15,12 @@ from .qm_handlers.crest import buildCRESTOpt
 from .qm_handlers.orca import buildORCAOpt
 from .qm_handlers.psi4 import psi4CasscfScan
 from .qm_handlers.pyscf import pyscfCasscfScan, pyscfCasscfOpt, pyscfMP2Natorbs
+from .qm_handlers.qchem import buildQChemOpt
 from time import time
 
 class monarchHandler:
     from paramiko import SSHClient, AutoAddPolicy
-    def __init__(self, host:str="monarch.erc.monash.edu", user:str="asnow", jobid:str="job_id_done", jobkey:str="eEvfCdvzr4jy_SX51JYjKhAILZjPa53n8MFcQd1FErB") -> None:
+    def __init__(self, host:str="monarch.erc.monash.edu", user:str="asnow", jobid:str="job_id_done", jobkey:str="eEvfCdvzr4jy_SX51JYjKhAILZjPa53n8MFcQd1FErB", pythonEXE:str='/home/asnow/miniconda3/bin/python3') -> None:
         self.host = host
         self.user = user
         self.jobid = jobid
@@ -28,6 +29,7 @@ class monarchHandler:
         self.slurmFreq = 60 # seconds
         self.TOTime = 0
         self.TOFreq = 60 # seconds
+        self.pythonEXE = pythonEXE
         return
 
     def __enter__(self):
@@ -151,7 +153,7 @@ class monarchHandler:
     def submitFiles(self, flags: str, files: str|list[str]) -> None:
         keys = f'export JOBID="{self.jobid}"; export JOBKEY="{self.jobkey}"; '
         if type(files) == str:
-            out, err = self.run(f'{keys} /home/asnow/miniconda3/bin/python3 /home/asnow/p2015120004/asnow/bin/slmUtilities/2slm.py {flags} "{files}"')
+            out, err = self.run(f'{keys} {self.pythonEXE} /home/asnow/p2015120004/asnow/bin/slmUtilities/2slm.py {flags} "{files}"')
             if err != ['']:
                 print(err)
             else:
@@ -159,7 +161,7 @@ class monarchHandler:
                 print(out[1])
         elif type(files) == list:
             for file in files:
-                out, err = self.run(f'{keys} /home/asnow/miniconda3/bin/python3 /home/asnow/p2015120004/asnow/bin/slmUtilities/2slm.py {flags} "{files}"')
+                out, err = self.run(f'{keys} {self.pythonEXE} /home/asnow/p2015120004/asnow/bin/slmUtilities/2slm.py {flags} "{files}"')
                 if err != ['']:
                     print(err)
                 else:
@@ -200,7 +202,7 @@ class monarchHandler:
         return status
 
     def buildJob(self, job:Job) -> None:
-        if job.software not in [Software.orca, Software.crest, Software.psi4Script, Software.pyscf]:
+        if job.software not in [Software.orca, Software.crest, Software.psi4Script, Software.pyscf, Software.qchem]:
             raise Exception(f'Job type {job.software} not implemented')
 
         self.run(f'mkdir -p {job.path}')
@@ -237,12 +239,18 @@ class monarchHandler:
             self.writeFile(smiles2xyz(job.fluorophore.smiles), f'{job.path}/{job.fluorophore.name}.xyz')
             self.writeFile(buildCRESTOpt(job), job.infile)
 
+        elif job.software == Software.qchem:
+            lines, err = self.run(f'cat "{job.catxyzpath}"')
+            self.writeFile(buildQChemOpt(job, lines), job.infile)
+            
         # submit block
         if job.submit == True and job.software in [Software.orca]:
             if job.partner == False:
                 job.submitFlags += 'o'
-            if job.time != 24:
+            if job.time < 24:
                 job.submitFlags += f' -H {time}'
+            if job.time <=24:
+                job.submitFlags += f's'
             self.submitFiles(job.submitFlags, job.infile)
         elif job.submit == True and job.software in [Software.crest, Software.psi4Script, Software.pyscf]:
             out, err = self.sbatch(job)
