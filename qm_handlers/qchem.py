@@ -1,96 +1,158 @@
-from ..types.job import Job
-from ..types.jobs import Jobs
-from ..types.job import Solvents
-from ..types.job import PCM
+from ..types.job import Job, PCM, Jobs, TDDFT
 
-    # def pullEnergyQChem(self, file: str, state: int=0, roots: int=0) -> Union[None, tuple[Union[float, List[float]], Union[float, List[float]]]]:
-    #     # e.g. /home/asnow/p2015120004/asnow/fluorophore-small/geoms/rb0-chcl3/orca-opt/rb0-chcl3-opt/rb0-chcl3-opt.out
-    #     out, err = self.run(f'cat {file} | grep \'CIS_N_ROOTS\\|: excitation energy (eV) =\\|END OF GEOMETRY OPTIMIZER USING LIBOPT3\'')
-    #     results = []
-    #     excitations = []
-    #     complete = False
-    #     for line in out:
-    #         if 'CIS_N_ROOTS' in line:   
-    #             nroots = int(line.split()[1])
-    #         elif ': excitation energy (eV) =' in line:
-    #             results += [line]
-    #         elif 'END OF GEOMETRY OPTIMIZER USING LIBOPT3' in line:
-    #             complete = True
+def buildQChemOpt(job:Job, xyz:list[str]) -> str:
+    jobDict = {Jobs.opt:  'OPT', 
+               Jobs.freq: 'FREQ', 
+               Jobs.sp:   'SP',
+               Jobs.ex:   'SP',
+               Jobs.em:   'SP',
+               Jobs.grad: 'GRADIENT'}
+    try:
+        jobType = jobDict[job.job]
+    except KeyError:
+        raise Exception("Job type not implemented")
 
-    #     for i in results[-nroots:]:
-    #         excitations += [float(i.split()[7])]
+    #################### TDDFT Params ###################
+    triplets = 0 if job.triplets == TDDFT.Triplets.off else 1
+    rpa = 0 if job.tda == TDDFT.TDA.on else 1 if job.tda == TDDFT.TDA.fitting else 2
 
-    #     excitations = excitations[-nroots:]
+    ##################### PCM Params ####################
+    if job.pcm in [PCM.cpcm, PCM.lrpcm, PCM.sspcm]: 
+        pcm = 'PCM'
+    elif job.pcm == PCM.smd: 
+        pcm = 'SMD'
+    elif job.pcm == PCM.none:
+        pcm = ''
+    else:
+        raise Exception("Solvation type not implemented.")
 
-    #     if roots != 0:
-    #         excitations = excitations[-roots:]
+    PCMFiller = ''
+    
+    # Formalism
+    formalismDict = {PCM.Formalism.cpcm:   'CPCM', 
+                     PCM.Formalism.cosmo:  'COSMO', 
+                     PCM.Formalism.iefpcm: 'IEFPCM',
+                     PCM.Formalism.ssvpe:  'SSVPE'}
+    try:
+        pcmFormalism = formalismDict[job.pcm_form]
+    except KeyError:
+        raise Exception("PCM formalism not implemented")
 
-    #     if state != 0:
-    #         excitations = excitations[(state-1)]
+    # Radii
+    radiiDict = {PCM.Radii.uff:     'UFF', 
+                 PCM.Radii.bondi:   'BONDI', 
+                 PCM.Radii.default: ''}
+    try:
+        pcm_radii = radiiDict[job.pcm_radii]
+        PCMFiller += f'\tRadii                  {pcm_radii}\n'
+    except KeyError:
+        raise Exception("PCM Radii not implemented")
 
-    #     if complete == True:
-    #         return excitations, evToNm(excitations)
-    #     else:
-    #         return
+    # VDWScale
+    if job.pcm_VDWScale != 1.2:
+        PCMFiller += f'\tvdwScale               {job.pcm_VDWScale}\n'
+    
+    # Probe Radii
+    if job.pcm_probe_radii != 0.0:
+        PCMFiller += f'\tSASradius              {job.pcm_probe_radii}\n'
+    # Cavity
+    cavityDict = {PCM.Cavity.sas:     'VDW_SAS', 
+                  PCM.Cavity.ses:     'SES', 
+                  PCM.Cavity.default: ''}
+    try:
+        PCMFiller += f'\tSurfaceType            {cavityDict[job.pcm_surfaceType]}\n'
+    except KeyError:
+        raise Exception("Cavity Type not implemented")
+    
+    #####################################################
+    ######################## Job 1 ######################
+    #####################################################
+
+    QChemInput =  '$molecule\n'
+    for line in xyz[2:]:
+        if len(line.split()) > 2:
+            QChemInput += f'{line}\n'
+    QChemInput +=  '$end\n\n'
+
+    remBlock =  '$rem\n'
+    remBlock += f'\tMEM_TOTAL             {job.mem.total_mb}\n'
+    remBlock +=  '\tGUI                   2\n'
+    if jobType != 'SP': 
+        remBlock += f'\tJOBTYPE               {jobType}\n'
+    remBlock += f'\tEXCHANGE              {job.method.qchem}\n'
+    remBlock += f'\tBASIS                 {job.basis.qchem}\n'
+    remBlock += f'\tXC_GRID               {job.grid.qchem}\n'
+    remBlock +=  '\tSYMMETRY              false\n'
+    if job.tddft == TDDFT.tddft:
+        remBlock += f'\tCIS_N_ROOTS           {job.nroots}\n'
+        remBlock += f'\tRPA                   {rpa}\n'
+        remBlock += f'\tCIS_TRIPLETS          {triplets}\n'
+        remBlock +=  '\tCIS_RELAXED_DENSITY   TRUE\n'
+        if job.job in [Jobs.freq, Jobs.grad, Jobs.opt]:
+            remBlock += f'\tCIS_STATE_DERIV       {job.state.root}\n'
+    if pcm != '':
+        remBlock += f'\tSOLVENT_METHOD        {pcm}\n'
+    QChemInput +=  remBlock
+    QChemInput +=  '$rem\n\n'
+
+    if pcm != '':
+        if job.solv in [PCM.smd]:
+            solventBlock  =  '$smx\n'
+            solventBlock += f'\tsolvent           {job.solv.smd}\n'
+            solventBlock +=  '\tprint             2\n'
+            solventBlock +=  '$end\n\n'
 
 
-    # def buildQChemOptSMD(self, key: str, method: str, basis: str, charge: int, solvent: str, 
-    #                      nroots: int=4, root: int=0, mult: int=1, singlets: bool=True, 
-    #                      triplets: bool=False) -> str:
-    #     qchemmethod = 'CAM-B3LYP' if method == 'cb3lyp' else 'WB97XD' if method == 'wb97x-d3' else method
-    #     solvent = 'trichloromethane' if solvent == 'chloroform' else solvent[2:] if solvent[0:2] == 'n-' else solvent
-    #     name = stripIllegal(f'{key}-qchem-smd-opt-{method}-{basis}-r{root}')
+        if job.pcm in [PCM.cpcm, PCM.lrpcm, PCM.sspcm]:
+            solventBlock  =  '$solvent\n'
+            solventBlock += f'\tDielectric             {job.solv.e:.4f}\n'
+            solventBlock += f'\tOpticalDielectric      {job.solv.n**2:.4f}\n'
+            solventBlock +=  '$end\n\n'
 
-    #     QChemInput = f'$molecule\n'
-    #     QChemInput += f'{charge} {1}\n'
-    #     lines, err = self.run(f'cat "/home/asnow/p2015120004/asnow/fluorophore-small/geoms/{key}/crest/crest_best.xyz"')
-    #     for line in lines[2:]:
-    #         if len(line.split()) > 2:
-    #             QChemInput += f'{line}\n'
-    #     QChemInput +=  '$end\n\n'
-    #     QChemInput +=  '$rem\n'
-    #     QChemInput +=  '\tMEM_TOTAL          32768\n'
-    #     QChemInput +=  '\tJOBTYPE            opt\n'
-    #     QChemInput += f'\tMETHOD             {qchemmethod}\n'
-    #     QChemInput += f'\tBASIS              {basis}\n'
-    #     QChemInput +=  '\tGUI                2\n'
-    #     if root != 0:
-    #         QChemInput += f'\tCIS_N_ROOTS        {nroots}\n'
-    #         QChemInput += f'\tCIS_SINGLETS       {singlets}\n'
-    #         QChemInput += f'\tCIS_TRIPLETS       {triplets}\n'
-    #         QChemInput += f'\tCIS_STATE_DERIV    {root}\n'
-    #         QChemInput +=  '\tRPA                2\n'
-    #     QChemInput +=  '\tXC_GRID            3\n'
-    #     QChemInput +=  '\tSOLVENT_METHOD     SMD\n'
-    #     QChemInput +=  '$end\n\n'
-    #     QChemInput +=  '$smx\n'
-    #     QChemInput += f'\tSOLVENT            {solvent}\n'
-    #     QChemInput +=  '\tprint              2\n'
-    #     QChemInput +=  '$end\n\n'
+            # For cLR emission
+            if job.pcm == PCM.sspcm and job.job == Jobs.em:
+                QChemInput +=  '$pcm\n'
+                QChemInput += f'\tTheory                {pcmFormalism}\n'
+                QChemInput +=  '\tChargeSeparation      Marcus\n'
+                QChemInput +=  '\tStateSpecific         Perturb\n'
+                QChemInput +=  PCMFiller
+                QChemInput +=  '$end\n\n'
 
-    #     if root == 0:
-    #         QChemInput += '@@@\n\n'
-    #         QChemInput +=  '$molecule\n'
-    #         QChemInput +=  '   read\n'
-    #         QChemInput +=  '$end\n\n'
-    #         QChemInput +=  '$rem\n'
-    #         QChemInput +=  '\tJOBTYPE            sp\n'
-    #         QChemInput += f'\tMETHOD             {qchemmethod}\n'
-    #         QChemInput += f'\tBASIS              {basis}\n'
-    #         QChemInput +=  '\tGUI                2\n'
-    #         QChemInput += f'\tCIS_N_ROOTS        {nroots}\n'
-    #         QChemInput += f'\tCIS_SINGLETS       {singlets}\n'
-    #         QChemInput += f'\tCIS_TRIPLETS       {triplets}\n'
-    #         QChemInput +=  '\tRPA                2\n'
-    #         QChemInput +=  '\tXC_GRID            3\n'
-    #         QChemInput +=  '\tSOLVENT_METHOD     SMD\n'
-    #         QChemInput +=  '$end\n\n'
-    #         QChemInput +=  '$smx\n'
-    #         QChemInput += f'\tSOLVENT            {solvent}\n'
-    #         QChemInput +=  '\tprint              2\n'
-    #         QChemInput +=  '$end\n\n'
+            # For cLR excitations
+            if job.pcm == PCM.sspcm and job.job == Jobs.em:
+                QChemInput +=  '$pcm\n'
+                QChemInput += f'\tTheory                {pcmFormalism}\n'
+                QChemInput +=  '\tChargeSeparation      Excited\n'
+                QChemInput += f'\tStateSpecific         {job.state.root}\n'
+                QChemInput +=  PCMFiller
+                QChemInput +=  '$end\n\n'
 
-    #     filename = f'/home/asnow/p2015120004/asnow/fluorophore-small/geoms/{key}/{name}.inp'.replace('()', '')
+        # For LR-PCM, no $pcm block is needed
 
-    #     self.writeFile(QChemInput, filename)
-    #     return filename
+        QChemInput += solventBlock
+
+    #####################################################
+    ######################## Job 2 ######################
+    #####################################################
+
+    if (job.job == Jobs.em) and (pcm != ''):
+        QChemInput +=  '@@@\n\n'
+
+        QChemInput +=  '$molecule\n'
+        QChemInput +=  '\tREAD\n'
+        QChemInput +=  '$end\n\n'
+
+        QChemInput +=  remBlock
+        QChemInput +=  '\tSCF_GUESS             READ\n'
+        QChemInput +=  '$rem\n\n'
+
+
+        QChemInput +=  '$pcm\n'
+        QChemInput += f'\tTheory                {pcmFormalism}\n'
+        QChemInput +=  '\tStateSpecific         Marcus\n'
+        QChemInput +=  PCMFiller
+        QChemInput +=  '$end\n\n'
+
+        QChemInput += solventBlock
+
+    return QChemInput
