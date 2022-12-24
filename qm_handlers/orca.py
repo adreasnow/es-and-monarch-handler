@@ -1,4 +1,4 @@
-from ..types.job import Job, Solvents, PCM, Jobs, Orbs
+from ..types.job import Job, Solvents, PCM, Jobs, Orbs, TDDFT
 from ..functions import evToNm
 
 def buildORCAOpt(job:Job, xyz:list[str]) -> str:
@@ -8,8 +8,8 @@ def buildORCAOpt(job:Job, xyz:list[str]) -> str:
     soscfstring = 'soscf ' if job.soscf == True else 'nososcf '
     notrahstring = 'notrah ' if job.notrah == True else ''
 
-    if (job.pcm == PCM.cpcm or job.pcm == PCM.smd or job.pcm == PCM.none):
-        cpcm = f'CPCM ' if job.solv != Solvents.gas else ''
+    if job.pcm in [PCM.cpcm, PCM.smd, PCM.none]:
+        cpcm = f'CPCM ' if (job.solv != Solvents.gas) or (job.pcm != PCM.none) else ''
     else:
         raise Exception("Solvation type not implemented.")
 
@@ -29,8 +29,14 @@ def buildORCAOpt(job:Job, xyz:list[str]) -> str:
     elif (job.solv != 'gas' and job.pcm == PCM.cpcm): ORCAInput += f'%cpcm\n\tepsilon {job.solv.e}\n\trefrac {job.solv.n}\nend\n\n'
 
     ORCAInput += job.grid.orca
-    if job.scfstring != '': ORCAInput += f'%scf\n\t{job.scfstring}\nend\n\n'
-    ORCAInput += f'%tddft\n\tnroots {job.nroots}\n\tIRoot {job.state.root}\n\tcpcmeq {cpcmeq}\n\ttda false\nend\n\n'
+    if job.scfstring != '': 
+        ORCAInput += f'%scf\n\t{job.scfstring}\nend\n\n'
+
+    if job.tddft == TDDFT.tddft: 
+        if job.tda == TDDFT.TDA.off:
+             tdaLine = '\n\ttda false'
+        ORCAInput += f'%tddft\n\tnroots {job.nroots}\n\tIRoot {job.state.root}\n\tcpcmeq {cpcmeq}{tdaLine}\nend\n\n'
+
     if job.xyzpath == '':
         ORCAInput += f'* xyz {job.fluorophore.charge} {job.state.mult}\n'
         
@@ -40,7 +46,6 @@ def buildORCAOpt(job:Job, xyz:list[str]) -> str:
         ORCAInput += '*\n\n'
     else:
         ORCAInput += f'* xyzfile {job.fluorophore.charge} {job.fluorophore.mult} {job.xyzpath}\n\n'
-    
 
     return ORCAInput
 
