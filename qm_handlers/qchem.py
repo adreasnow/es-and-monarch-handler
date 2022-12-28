@@ -43,24 +43,25 @@ def buildQChemOpt(job:Job, xyz:list[str]) -> str:
                  PCM.Radii.bondi:   'BONDI', 
                  PCM.Radii.default: ''}
     try:
-        pcm_radii = radiiDict[job.pcm_radii]
-        PCMFiller += f'\tRadii                  {pcm_radii}\n'
+        if job.pcm_radii != PCM.Radii.default:
+            PCMFiller += f'    Radii                  {radiiDict[job.pcm_radii]}\n'
     except KeyError:
         raise Exception("PCM Radii not implemented")
 
     # VDWScale
     if job.pcm_VDWScale != 1.2:
-        PCMFiller += f'\tvdwScale               {job.pcm_VDWScale}\n'
+        PCMFiller += f'    vdwScale               {job.pcm_VDWScale}\n'
     
     # Probe Radii
     if job.pcm_probe_radii != 0.0:
-        PCMFiller += f'\tSASradius              {job.pcm_probe_radii}\n'
+        PCMFiller += f'    SASradius              {job.pcm_probe_radii}\n'
     # Cavity
     cavityDict = {PCM.Cavity.sas:     'VDW_SAS', 
                   PCM.Cavity.ses:     'SES', 
                   PCM.Cavity.default: ''}
     try:
-        PCMFiller += f'\tSurfaceType            {cavityDict[job.pcm_surfaceType]}\n'
+        if job.pcm_surfaceType != PCM.Cavity.default:
+            PCMFiller += f'    SurfaceType            {cavityDict[job.pcm_surfaceType]}\n'
     except KeyError:
         raise Exception("Cavity Type not implemented")
     
@@ -68,62 +69,64 @@ def buildQChemOpt(job:Job, xyz:list[str]) -> str:
     ######################## Job 1 ######################
     #####################################################
 
-    QChemInput =  '$molecule\n'
+    QChemInput =   '$molecule\n'
+    QChemInput += f'{job.fluorophore.charge} {job.state.mult}\n'
     for line in xyz[2:]:
         if len(line.split()) > 2:
             QChemInput += f'{line}\n'
     QChemInput +=  '$end\n\n'
 
     remBlock =  '$rem\n'
-    remBlock += f'\tMEM_TOTAL             {job.mem.total_mb}\n'
-    remBlock +=  '\tGUI                   2\n'
+    remBlock += f'    MEM_TOTAL             {job.mem.total_mb}\n'
+    remBlock +=  '    GUI                   2\n'
     if jobType != 'SP': 
-        remBlock += f'\tJOBTYPE               {jobType}\n'
-    remBlock += f'\tEXCHANGE              {job.method.qchem}\n'
-    remBlock += f'\tBASIS                 {job.basis.qchem}\n'
-    remBlock += f'\tXC_GRID               {job.grid.qchem}\n'
-    remBlock +=  '\tSYMMETRY              false\n'
+        remBlock += f'    JOBTYPE               {jobType}\n'
+    remBlock += f'    EXCHANGE              {job.method.qchem}\n'
+    remBlock += f'    BASIS                 {job.basis.qchem}\n'
+    remBlock += f'    XC_GRID               {job.grid.qchem}\n'
+    remBlock +=  '    SYMMETRY              false\n'
     if job.tddft == TDDFT.tddft:
-        remBlock += f'\tCIS_N_ROOTS           {job.nroots}\n'
-        remBlock += f'\tRPA                   {rpa}\n'
-        remBlock += f'\tCIS_TRIPLETS          {triplets}\n'
-        remBlock +=  '\tCIS_RELAXED_DENSITY   TRUE\n'
+        remBlock += f'    CIS_N_ROOTS           {job.nroots}\n'
+        remBlock += f'    RPA                   {rpa}\n'
+        remBlock += f'    CIS_TRIPLETS          {triplets}\n'
+        remBlock +=  '    CIS_RELAXED_DENSITY   TRUE\n'
+        remBlock +=  '    CIS_MAX_CYCLES        100\n'
         if job.job in [Jobs.freq, Jobs.grad, Jobs.opt]:
-            remBlock += f'\tCIS_STATE_DERIV       {job.state.root}\n'
+            remBlock += f'    CIS_STATE_DERIV       {job.state.root}\n'
     if pcm != '':
-        remBlock += f'\tSOLVENT_METHOD        {pcm}\n'
+        remBlock += f'    SOLVENT_METHOD        {pcm}\n'
     QChemInput +=  remBlock
-    QChemInput +=  '$rem\n\n'
+    QChemInput +=  '$end\n\n'
 
     if pcm != '':
         if job.solv in [PCM.smd]:
             solventBlock  =  '$smx\n'
-            solventBlock += f'\tsolvent           {job.solv.smd}\n'
-            solventBlock +=  '\tprint             2\n'
+            solventBlock += f'    solvent           {job.solv.smd}\n'
+            solventBlock +=  '    print             2\n'
             solventBlock +=  '$end\n\n'
 
 
         if job.pcm in [PCM.cpcm, PCM.lrpcm, PCM.sspcm]:
             solventBlock  =  '$solvent\n'
-            solventBlock += f'\tDielectric             {job.solv.e:.4f}\n'
-            solventBlock += f'\tOpticalDielectric      {job.solv.n**2:.4f}\n'
+            solventBlock += f'    Dielectric             {job.solv.e:.4f}\n'
+            solventBlock += f'    OpticalDielectric      {job.solv.n**2:.4f}\n'
             solventBlock +=  '$end\n\n'
+
+            # For cLR sxitation
+            if job.pcm == PCM.sspcm and job.job == Jobs.ex:
+                QChemInput +=  '$pcm\n'
+                QChemInput += f'    Theory                {pcmFormalism}\n'
+                QChemInput +=  '    ChargeSeparation      Marcus\n'
+                QChemInput +=  '    StateSpecific         Perturb\n'
+                QChemInput +=  PCMFiller
+                QChemInput +=  '$end\n\n'
 
             # For cLR emission
             if job.pcm == PCM.sspcm and job.job == Jobs.em:
                 QChemInput +=  '$pcm\n'
-                QChemInput += f'\tTheory                {pcmFormalism}\n'
-                QChemInput +=  '\tChargeSeparation      Marcus\n'
-                QChemInput +=  '\tStateSpecific         Perturb\n'
-                QChemInput +=  PCMFiller
-                QChemInput +=  '$end\n\n'
-
-            # For cLR excitations
-            if job.pcm == PCM.sspcm and job.job == Jobs.em:
-                QChemInput +=  '$pcm\n'
-                QChemInput += f'\tTheory                {pcmFormalism}\n'
-                QChemInput +=  '\tChargeSeparation      Excited\n'
-                QChemInput += f'\tStateSpecific         {job.state.root}\n'
+                QChemInput += f'    Theory                {pcmFormalism}\n'
+                QChemInput +=  '    ChargeSeparation      Excited\n'
+                QChemInput += f'    StateSpecific         {job.state.root}\n'
                 QChemInput +=  PCMFiller
                 QChemInput +=  '$end\n\n'
 
@@ -139,17 +142,17 @@ def buildQChemOpt(job:Job, xyz:list[str]) -> str:
         QChemInput +=  '@@@\n\n'
 
         QChemInput +=  '$molecule\n'
-        QChemInput +=  '\tREAD\n'
+        QChemInput +=  '    READ\n'
         QChemInput +=  '$end\n\n'
 
         QChemInput +=  remBlock
-        QChemInput +=  '\tSCF_GUESS             READ\n'
-        QChemInput +=  '$rem\n\n'
+        QChemInput +=  '    SCF_GUESS             READ\n'
+        QChemInput +=  '$end\n\n'
 
 
         QChemInput +=  '$pcm\n'
-        QChemInput += f'\tTheory                {pcmFormalism}\n'
-        QChemInput +=  '\tStateSpecific         Marcus\n'
+        QChemInput += f'    Theory                {pcmFormalism}\n'
+        QChemInput +=  '    StateSpecific         Marcus\n'
         QChemInput +=  PCMFiller
         QChemInput +=  '$end\n\n'
 

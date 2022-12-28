@@ -192,6 +192,9 @@ class monarchHandler:
             elif job.software == Software.crest:
                 status = self.checkCrestStatus(job)
 
+            elif job.software == Software.qchem:
+                status = self.checkQChemStatus(job)
+
             elif job.software == Software.psi4Script and job.job == Jobs.casscf:
                 status = self.checkPsi4Status(job)
 
@@ -244,13 +247,15 @@ class monarchHandler:
             self.writeFile(buildQChemOpt(job, lines), job.infile)
             
         # submit block
-        if job.submit == True and job.software in [Software.orca]:
+        if job.submit == True and job.software in [Software.orca, Software.qchem]:
             if job.partner == False:
                 job.submitFlags += 'o'
             if job.time < 24:
                 job.submitFlags += f' -H {time}'
-            if job.time <=24:
-                job.submitFlags += f's'
+
+            if job.software == Software.qchem:
+                job.submitFlags += f' -c {job.procs}'
+
             self.submitFiles(job.submitFlags, job.infile)
         elif job.submit == True and job.software in [Software.crest, Software.psi4Script, Software.pyscf]:
             out, err = self.sbatch(job)
@@ -356,4 +361,15 @@ class monarchHandler:
                 return Status.finished
         return Status.failed
 
-
+    def checkQChemStatus(self, job:Job) -> Status | None:
+        out, err = self.run(f'ls {job.path} | grep slurm | tail -n 1')
+        slurmOut = []
+        for line in out: 
+            if 'slurm' in line:
+                slurmOut, err = self.run(f'tail -n 100 {job.path}/{line}')
+        for line in slurmOut:
+            if '	Exit status: ' in line:
+                if line.split()[2] == '0':
+                    return Status.finished
+                elif line.split()[2] != '0':
+                    return Status.failed
