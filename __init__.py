@@ -13,6 +13,7 @@ from .types.orbs import Orbs
 from .types.tddft import TDDFT
 from .types.slurmJob import slurmStatus, slurmJob
 from .types.spectra import spectraType, spectrum, gaussian, deconvParams, _simpleSpectrum, spectrumSeries, trf, irf, Lifetime
+from .types.energy import Energy
 from .functions import evToNm, nmToEv, stripIllegal, smiles2xyz, script_builder
 from .functions import  rmsd, fluorophores_solvents_methods, dsLoad, statusLoad
 from .monarchhandler import monarchHandler
