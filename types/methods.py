@@ -7,6 +7,9 @@ class Methods(NewEnum):
         hybrid       = 'hybrid'
         hybridMeta   = 'hybridmeta'
         doubleHybrid = 'doublehybrid'
+        cas          = 'cas'
+        posthf       = 'posthf'
+        se           = 'semiempirical'
         none         = 'none'
 
     class Dispersion(Enum):
@@ -50,6 +53,8 @@ class Methods(NewEnum):
     m062x       = 'M06-2X',           'm06-2x',          'MGGA_C_M06_2X HYB_MGGA_X_M06_2X', 'm06-2x',    'm06-2x',    'm062x',      Rank.hybridMeta,   False,   Dispersion.none,   Spin_Scaling.none,   False
     sospbeqidh  = 'SOS-PBE-QIDH',     'ri-sos-pbe-qidh',  None,                              None,        None,        None,        Rank.doubleHybrid, False,   Dispersion.none,   Spin_Scaling.sos,    False
     soswpbepp86 = 'SOS-PBE-ωPBEPP86', 'ri-sos-wpbepp86',  None,                              None,        None,        None,        Rank.doubleHybrid, True,    Dispersion.none,   Spin_Scaling.sos,    False
-    crest       = None,                None,              None,                              None,        None,        None,        Rank.none,         False,   Dispersion.none,   Spin_Scaling.none,   False   
-    casscf      = None,                None,              None,                              None,        'casscf',    'casscf',    Rank.none,         False,   Dispersion.none,   Spin_Scaling.none,   False
-    mp2         = 'MP2',               'RI-MP2',          None,                              None,        None,        None,        Rank.none,         False,   Dispersion.none,   Spin_Scaling.none,   False 
+    crest       = 'CREST',             None,              None,                              None,        None,        None,        Rank.se,           False,   Dispersion.none,   Spin_Scaling.none,   False   
+    casscf      = 'CASSCF',           'CASSCF',           None,                              None,        'casscf',    'casscf',    Rank.cas,          False,   Dispersion.none,   Spin_Scaling.none,   False
+    mp2         = 'MP2',              'RI-MP2',           None,                              None,        None,        None,        Rank.posthf,       False,   Dispersion.none,   Spin_Scaling.none,   False 
+    caspt2      = 'CASPT2',           'RI-CASPT2',        None,                              None,        None,        None,        Rank.cas,          False,   Dispersion.none,   Spin_Scaling.none,   False
+    nevpt2      = 'NEVPT2',           'RI-NEVPT2',        None,                              None,        None,        None,        Rank.cas,          False,   Dispersion.none,   Spin_Scaling.none,   False
