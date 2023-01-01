@@ -13,7 +13,7 @@ class Grids(NewEnum):
         return self.gridString
 
     #           grid     gridstring     orca4      orca                                  nwchem                   qchem               psi4 
-    none     = (None, None),  'None',  'None',  'None',                                'None',                 'None',                  'None'  
+    none     = (None, None),  'None',   '',      '',                                    '',                     '',             ''  
     # gx_50    = (  , 50),   '(  ,50)',   'grid1', '%method\n    AngularGrid 1\nend\n\n', 'grid lebedev    2',    '0000  000050', 'dft_radial_points         \ndft_spherical_points   50\n'  
     # gx_110   = (  , 110),  '(  ,110)',  'grid2', '%method\n    AngularGrid 2\nend\n\n', 'grid lebedev    5',    '0000  000110', 'dft_radial_points         \ndft_spherical_points   110\n'  
     g50_194  = (50, 194),  '(50,194)',  'grid3', '%method\n    AngularGrid 3\nend\n\n', 'grid lebedev 50 8',    '000050000194', 'dft_radial_points       50\ndft_spherical_points   194\n'  
