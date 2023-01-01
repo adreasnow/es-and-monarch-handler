@@ -12,11 +12,12 @@ from .types.status import Status
 from .types.job import Job
 from .types.slurmJob import slurmJob, slurmStatus
 from .qm_handlers.crest import buildCRESTOpt
-from .qm_handlers.orca import buildORCAOpt
+from .qm_handlers.orca import buildORCA, pullORCA
 from .qm_handlers.psi4 import psi4CasscfScan
 from .qm_handlers.pyscf import pyscfCasscfScan, pyscfCasscfOpt, pyscfMP2Natorbs
-from .qm_handlers.qchem import buildQChemOpt
+from .qm_handlers.qchem import buildQChem, pullQChem
 from time import time
+from typing import Any 
 
 class monarchHandler:
     from paramiko import SSHClient, AutoAddPolicy
@@ -169,20 +170,25 @@ class monarchHandler:
                     print(out[1])
         return
 
-
-    def pullJobEnergy(self, job:Job) -> Status:
+    def pullJobEnergy(self, job:Job) -> Any:
         if job.software == Software.orca:
-            out, err = self.run(f'cat {job.outfile} | grep \'Number of roots to be determined\\|:  E=  \\|****ORCA TERMINATED NORMALLY****\'')
-            status = self.pullEnergyORCA(job, out)
+            out, err = self.run(f'cat {job.finaloutfile}')
+            return pullORCA(job, out)
+
+        if job.software == Software.qchem:
+            out, err = self.run(f'cat {job.finaloutfile}')
+            return pullQChem(job, out)
+
+        # if job.software == Software.pyscf:
+        #     return
         else:
-            raise Exception(f'Job type {job.software} not implemented')
-        return status
+            raise Exception(f'{job.software} not implemented')
 
     def checkJobStatus(self, job:Job) -> Status:
         slurm = self._checkSLURM(job)
         slurmTo = {slurmStatus.RUNNING: Status.running,
-                           slurmStatus.PENDING: Status.queued,
-                           slurmStatus.TIMED_OUT: Status.timed_out}
+                   slurmStatus.PENDING: Status.queued,
+                   slurmStatus.TIMED_OUT: Status.timed_out}
         try:
             status = slurmTo[slurm]
         except KeyError:
@@ -236,7 +242,7 @@ class monarchHandler:
     
         if job.software == Software.orca:
             lines, err = self.run(f'cat "{job.catxyzpath}"')
-            self.writeFile(buildORCAOpt(job, lines), job.infile)
+            self.writeFile(buildORCA(job, lines), job.infile)
 
         elif job.software == Software.crest:
             self.writeFile(smiles2xyz(job.fluorophore.smiles), f'{job.path}/{job.fluorophore.name}.xyz')
@@ -244,7 +250,7 @@ class monarchHandler:
 
         elif job.software == Software.qchem:
             lines, err = self.run(f'cat "{job.catxyzpath}"')
-            self.writeFile(buildQChemOpt(job, lines), job.infile)
+            self.writeFile(buildQChem(job, lines), job.infile)
             
         # submit block
         if job.submit == True and job.software in [Software.orca, Software.qchem]:

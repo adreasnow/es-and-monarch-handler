@@ -1,6 +1,6 @@
 from ..types.job import Job, PCM, Jobs, TDDFT
 
-def buildQChemOpt(job:Job, xyz:list[str]) -> str:
+def buildQChem(job:Job, xyz:list[str]) -> str:
     jobDict = {Jobs.opt:  'OPT', 
                Jobs.freq: 'FREQ', 
                Jobs.sp:   'SP',
@@ -85,6 +85,7 @@ def buildQChemOpt(job:Job, xyz:list[str]) -> str:
     remBlock += f'    BASIS                 {job.basis.qchem}\n'
     remBlock += f'    XC_GRID               {job.grid.qchem}\n'
     remBlock +=  '    SYMMETRY              false\n'
+    remBlock +=  '    SYM_IGNORE            true\n'
     if job.tddft == TDDFT.tddft:
         remBlock += f'    CIS_N_ROOTS           {job.nroots}\n'
         remBlock += f'    RPA                   {rpa}\n'
@@ -159,3 +160,55 @@ def buildQChemOpt(job:Job, xyz:list[str]) -> str:
         QChemInput += solventBlock
 
     return QChemInput
+
+
+def pullQChem(job:Job, out:list[str]):
+    if job.job in [Jobs.em]:
+        return pullQChem_En(job, out)
+    else:
+        raise Exception(f'Job type {job.software} {job.job} not implemented')
+
+def pullQChem_En(job:Job, out:list[str]) -> tuple[float, 
+                                                 list[float], 
+                                                 list[float], 
+                                                 tuple[float, float, float]
+                                                ]:
+
+    if job.job == Jobs.em:
+        for count, line in enumerate(out):
+            if 'Running Job 2 of 2' in line:
+                split = count
+    out = out[split:-1]
+
+    e_trans = []
+    f = []
+    t = []
+    e = []
+
+    for count, line in enumerate(out):
+        if 'Total energy for state' in line:
+            e += [float(line.split()[5])]
+        elif 'excitation energy (eV) =' in line:
+            e_trans += [float(line.split()[7])]
+        elif 'Trans. Mom.:' in line:
+            tx = float(line.split()[2])
+            ty = float(line.split()[4])
+            tz = float(line.split()[6])
+            t += [(tx, ty, tz)]
+        elif 'Strength   :' in line:
+            f += [float(line.split()[2])]
+        
+    return e[job.state.mult-1], e_trans, f, t
+
+# def pullQChem_Freq(job:Job, out:list[str]) -> tuple[float, float, float]:
+#     neg = 0
+#     e = 0
+#     zpve = 0
+#     for line in out:
+#         if '***imaginary mode***' in line:
+#             neg += 1
+#         elif 'Zero point energy' in line:
+#             zpve = float(line.split()[4])
+#         elif 'Electronic energy' in line:
+#             e = float(line.split()[3])
+#     return e, zpve, neg
