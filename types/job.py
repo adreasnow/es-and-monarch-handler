@@ -71,7 +71,7 @@ class Job():
 
     # casscf specific settings
     casscf:tuple[int,int] = (4,4)
-    casscfend:tuple[int,int] = (12,12)
+    perturbedRoots:int = 4
 
     #orbs
     orbs:Orbs=Orbs.can
@@ -87,10 +87,11 @@ class Job():
         return cls(metajob.software, fluorophore, solvent, metajob.method, 
                 metajob.basis, metajob.pcm, metajob.eq, state, metajob.job, metajob.tddft, grid=metajob.grid, nroots=metajob.nroots, 
                 pcm_es=metajob.excited, triplets=metajob.triplets, pcm_form=metajob.pcm_form, pcm_disc=metajob.pcm_disc, 
-                pcm_radii=metajob.pcm_radii, pcm_VDWScale=metajob.pcm_VDWScale, 
+                pcm_radii=metajob.pcm_radii, pcm_VDWScale=metajob.pcm_VDWScale, perturbedRoots=metajob.perturbed
                 pcm_probe_radii=metajob.pcm_probe_radii, pcm_surfaceType=metajob.pcm_surfaceType, **kwargs)
 
     def __post_init__(self):
+        self.casscf = self.fluorophore.active
         if self.solv == Solvents.gas:
             self.pcm = PCM.none
             self.eq = PCM.Eq.none
@@ -111,6 +112,7 @@ class Job():
             self.infile = f'{self.path}/{self.name}{self.software.ext}'
             self.xyzfile = f'{self.path}/{self.name}/{self.name}.xyz'
         self.outfile = f'{self.path}/{self.name}.out'
+        self.finaloutfile = f'{self.path}/{self.name}/{self.name}.out'
 
 
     
