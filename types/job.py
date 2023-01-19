@@ -41,7 +41,7 @@ class Job():
     time: int = 24
     partner: bool = True
     submit: bool = False
-    submitFlags: str = '-NS'
+    submitFlags: str = '-NSt'
 
     # TDDFT
     tda: TDDFT.TDA = TDDFT.TDA.off
@@ -68,6 +68,9 @@ class Job():
     kdiis:bool=False
     soscf:bool=True
     notrah:bool=True
+    refJob:Jobs=None
+    restart:bool=False
+    verytightopt:bool=False
 
     # casscf specific settings
     casscf:tuple[int,int] = (4,4)
@@ -87,7 +90,7 @@ class Job():
         return cls(metajob.software, fluorophore, solvent, metajob.method, 
                 metajob.basis, metajob.pcm, metajob.eq, state, metajob.job, metajob.tddft, grid=metajob.grid, nroots=metajob.nroots, 
                 pcm_es=metajob.excited, triplets=metajob.triplets, pcm_form=metajob.pcm_form, pcm_disc=metajob.pcm_disc, 
-                pcm_radii=metajob.pcm_radii, pcm_VDWScale=metajob.pcm_VDWScale, perturbedRoots=metajob.perturbed
+                pcm_radii=metajob.pcm_radii, pcm_VDWScale=metajob.pcm_VDWScale, perturbedRoots=metajob.perturbed,
                 pcm_probe_radii=metajob.pcm_probe_radii, pcm_surfaceType=metajob.pcm_surfaceType, **kwargs)
 
     def __post_init__(self):
