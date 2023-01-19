@@ -163,7 +163,7 @@ def buildQChem(job:Job, xyz:list[str]) -> str:
 
 
 def pullQChem(job:Job, out:list[str]):
-    if job.job in [Jobs.em]:
+    if job.job in [Jobs.em, Jobs.ex]:
         return pullQChem_En(job, out)
     else:
         raise Exception(f'Job type {job.software} {job.job} not implemented')
@@ -174,10 +174,12 @@ def pullQChem_En(job:Job, out:list[str]) -> tuple[float,
                                                  tuple[float, float, float]
                                                 ]:
 
+    split = 0
     if job.job == Jobs.em:
         for count, line in enumerate(out):
             if 'Running Job 2 of 2' in line:
                 split = count
+
     out = out[split:-1]
 
     e_trans = []
