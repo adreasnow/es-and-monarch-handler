@@ -51,7 +51,7 @@ class monarchHandler:
                          "COMPLETING": slurmStatus.COMPLETING, 
                          "FAILED": slurmStatus.FAILED}
 
-            out, err = self.run('squeue -o\'%.18i %u %.100j %.8T\' --sort=\'-T,j\' | grep asnow')
+            out, err = self.run('/opt/slurm-latest/bin/squeue -o\'%.18i %u %.100j %.8T\' --sort=\'-T,j\' | grep asnow')
             for line in out:
                 if line != '':
                     splitline = line.split()
@@ -154,33 +154,24 @@ class monarchHandler:
     def submitFiles(self, flags: str, files: str|list[str]) -> None:
         keys = f'export JOBID="{self.jobid}"; export JOBKEY="{self.jobkey}"; '
         if type(files) == str:
-            out, err = self.run(f'{keys} {self.pythonEXE} /home/asnow/p2015120004/asnow/bin/slmUtilities/2slm.py {flags} "{files}"')
+            files = [files]
+
+        for file in files:
+            out, err = self.run(f'{keys} {self.pythonEXE} /home/asnow/p2015120004/asnow/bin/slmUtilities/2slm.py {flags} "{file}"')
             if err != ['']:
                 print(err)
             else:
                 print(out[0])
                 print(out[1])
-        elif type(files) == list:
-            for file in files:
-                out, err = self.run(f'{keys} {self.pythonEXE} /home/asnow/p2015120004/asnow/bin/slmUtilities/2slm.py {flags} "{files}"')
-                if err != ['']:
-                    print(err)
-                else:
-                    print(out[0])
-                    print(out[1])
         return
 
     def pullJobEnergy(self, job:Job) -> Any:
-        if job.software == Software.orca:
+        if job.software in [Software.orca, Software.qchem]:
             out, err = self.run(f'cat {job.finaloutfile}')
-            return pullORCA(job, out)
-
-        if job.software == Software.qchem:
-            out, err = self.run(f'cat {job.finaloutfile}')
-            return pullQChem(job, out)
-
-        # if job.software == Software.pyscf:
-        #     return
+            if err != ['']:
+                raise Exception(f'There was an error catting {job.name}\nDid you select the right states?\nError:\n{err}')
+            elif job.software == Software.orca: return pullORCA(job, out)
+            elif job.software == Software.qchem: return pullQChem(job, out)
         else:
             raise Exception(f'{job.software} not implemented')
 
@@ -256,8 +247,11 @@ class monarchHandler:
         if job.submit == True and job.software in [Software.orca, Software.qchem]:
             if job.partner == False:
                 job.submitFlags += 'o'
+            if job.time <= 24:
+                job.submitFlags += 's'
             if job.time < 24:
                 job.submitFlags += f' -H {time}'
+
 
             if job.software == Software.qchem:
                 job.submitFlags += f' -c {job.procs}'
