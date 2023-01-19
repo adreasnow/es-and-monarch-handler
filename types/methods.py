@@ -55,6 +55,6 @@ class Methods(NewEnum):
     soswpbepp86 = 'SOS-PBE-ωPBEPP86', 'ri-sos-wpbepp86',  None,                              None,        None,        None,        Rank.doubleHybrid, True,    Dispersion.none,   Spin_Scaling.sos,    False
     crest       = 'CREST',             None,              None,                              None,        None,        None,        Rank.se,           False,   Dispersion.none,   Spin_Scaling.none,   False   
     casscf      = 'CASSCF',           'CASSCF',           None,                              None,        'casscf',    'casscf',    Rank.cas,          False,   Dispersion.none,   Spin_Scaling.none,   False
-    mp2         = 'MP2',              'RI-MP2',           None,                              None,        None,        None,        Rank.posthf,       False,   Dispersion.none,   Spin_Scaling.none,   False 
-    caspt2      = 'CASPT2',           'RI-CASPT2',        None,                              None,        None,        None,        Rank.cas,          False,   Dispersion.none,   Spin_Scaling.none,   False
-    nevpt2      = 'NEVPT2',           'RI-NEVPT2',        None,                              None,        None,        None,        Rank.cas,          False,   Dispersion.none,   Spin_Scaling.none,   False
+    mp2         = 'MP2',              'MP2',              None,                              None,        None,        None,        Rank.posthf,       False,   Dispersion.none,   Spin_Scaling.none,   False 
+    caspt2      = 'CASPT2',           'CASPT2',           None,                              None,        None,        None,        Rank.cas,          False,   Dispersion.none,   Spin_Scaling.none,   False
+    nevpt2      = 'NEVPT2',           'NEVPT2',           None,                              None,        None,        None,        Rank.cas,          False,   Dispersion.none,   Spin_Scaling.none,   False
