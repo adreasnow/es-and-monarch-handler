@@ -35,16 +35,10 @@ def buildORCA(job:Job, xyz:list[str]) -> str:
     else:
         raise Exception(f'Job type {job.job} not implemented.')
 
-    if job.job in [Jobs.opt, Jobs.casscfOpt]:
-        if job.verytightopt:
-            jobLine += ' verytightopt'
-        else:
-            jobLine += ' tightopt'
-
     riString = 'RIJCOSX ' if job.method not in [Methods.casscf, Methods.mp2, Methods.nevpt2, Methods.caspt2] else ''
     method = job.method.orca if job.method not in [Methods.casscf, Methods.caspt2] else 'CASSCF'
 
-    if job.job in [Jobs.mp2Natorb, Jobs.casscfOpt, Jobs.nevpt2, Jobs.caspt2, Jobs.casscf]:
+    if job.job in [Jobs.mp2Natorb, Jobs.nevpt2, Jobs.caspt2, Jobs.casscf]:
         riBasis = f'{job.basis.orca}/C '
     else:
         riBasis = f''
@@ -117,8 +111,12 @@ def buildORCA(job:Job, xyz:list[str]) -> str:
         ORCAInput += f'\tmult {job.state.mult}\n'
         ORCAInput +=  '\tMaxIter 500\n'
         ORCAInput += f'\tweights[0] = {weightsString}\n'
-        ORCAInput +=  '\tOrbStep SuperCI\n'
-        ORCAInput +=  '\tSwitchStep kdiis\n'
+        if job.method == Methods.casscf and job.orbstep != 'SuperCI_PT (default)':
+            ORCAInput += f'\tOrbStep {job.orbstep}\n'
+        if job.method == Methods.casscf and job.switchstep != 'SuperCI_PT (default)':
+            ORCAInput += f'\tSwitchStep {job.switchstep}\n'
+        if job.method == Methods.casscf and job.switchconv != 0.03:
+            ORCAInput += f'\tSwitchConv {job.switchconv:.2g}\n'
         if job.job != Jobs.casscfOpt: 
             ORCAInput +=  '\ttrafostep ri\n'
         ORCAInput +=  'end\n\n'
@@ -237,7 +235,7 @@ def pullORCA_En(job:Job, out:list[str]) -> tuple[float,
         t += [(tx, ty, tz)]
     electrons = extract_electrons(out)
     occ = extract_occ(out)
-    ref = build_ref(electrons, occ)
+    ref = build_ref(electrons, occ, job.state.root)
     m = m_diag(ref, occ)
 
     return e, e_trans, f, t, m
@@ -267,7 +265,7 @@ def m_diag(occ_ref:list[float]|np.ndarray, occ_no:list[float]|np.ndarray) -> flo
     return round(m, 3)
 
 
-def build_ref(electrons:int, occ:list[float]) -> list[float]:
+def build_ref(electrons:int, occ:list[float], state:int) -> list[float]:
     ref = []
     while electrons > 0:
         if electrons >= 2:
@@ -278,6 +276,16 @@ def build_ref(electrons:int, occ:list[float]) -> list[float]:
             electrons -= 1
     for i in range(len(occ)-len(ref)):
         ref += [0.]
+
+    if state == 1:
+        homo = 0
+        for count, occ in enumerate(ref):
+            if occ < 1.:
+                lumo = count
+                homo = count-1
+                break
+        ref[homo] -= 1.
+        ref[lumo] += 1.
     return ref
 
 def extract_occ(lines:list[str]) -> list[float]:
