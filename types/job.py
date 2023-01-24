@@ -75,6 +75,9 @@ class Job():
     # casscf specific settings
     casscf:tuple[int,int] = (4,4)
     perturbedRoots:int = 4
+    orbstep:str='SuperCI_PT (default)'
+    switchstep:str='SuperCI_PT (default)'
+    switchconv:float=0.03
 
     #orbs
     orbs:Orbs=Orbs.can
