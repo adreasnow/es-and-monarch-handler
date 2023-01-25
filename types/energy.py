@@ -8,7 +8,7 @@ class Energy(NewEnum):
 
     @skip
     class Emission(NewEnum):
-        de      = 'ΔE'
+        de       = 'ΔE'
         e_s1ts0  = 'ΔE_s1->s0'
         e_s1tt1  = 'ΔE_s1->t1'
         e_s2ts0  = 'ΔE_s2->s0'
@@ -30,7 +30,7 @@ class Energy(NewEnum):
 
     @skip
     class Excitation(NewEnum):
-        de      = 'ΔE'
+        de       = 'ΔE'
         e_s0ts1  = 'ΔE_s0->s1'
         e_s0ts2  = 'ΔE_s0->s2'
         e_s0ts3  = 'ΔE_s0->s3'
@@ -61,7 +61,7 @@ class Energy(NewEnum):
 
     @skip
     class CASSCF(NewEnum):
-        de      = 'ΔE'
+        de       = 'ΔE'
         e_s0ts1  = 'ΔE_s0->s1'
         e_s0ts2  = 'ΔE_s0->s2'
         e_s0ts3  = 'ΔE_s0->s3'
@@ -89,5 +89,5 @@ class Energy(NewEnum):
         t_s0ts7  = 't_s0->s7'
         t_s0ts8  = 't_s0->s8'
         t_s0ts9  = 't_s0->s9'
-        m       = 'M-Diagnostic'
+        m        = 'M-Diagnostic'
         # occ     = 'Occupations'
