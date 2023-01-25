@@ -67,10 +67,14 @@ def script_builder(filePath:str, strName:str) -> str:
 
 class dsLoad(object):
     import pandas as pd
+    import os
 
     def __init__(self, ds: str='fluorophores-ds', df:str='dataset') -> None:
-        self.main_path = f'/Users/adrea/gdrive/Notebooks/Excited States/resources/databases/fluorophores-ds'
-        self.db = f'{self.main_path}/{df}'
+        if self.os.name == 'nt':
+            self.main_path = f'C:\\Users\\Adrea\\My Drive\\Notebooks\\Excited States\\resources\\databases\\fluorophores-ds'
+        else:
+            self.main_path = f'/Users/adrea/gdrive/Notebooks/Excited States/resources/databases/fluorophores-ds'
+        self.db = f'{self.main_path}/{df}' 
         return
 
     def __enter__(self) -> pd.DataFrame:
@@ -83,9 +87,13 @@ class dsLoad(object):
 
 class statusLoad(object):
     import pandas as pd
+    import os
 
     def __init__(self, df:str='progress') -> None:
-        self.main_path = f'/Users/adrea/gdrive/Notebooks/Excited States/resources/databases/fluorophores-ds'
+        if self.os.name == 'nt':
+            self.main_path = f'C:\\Users\\Adrea\\My Drive\\Notebooks\\Excited States\\resources\\databases\\fluorophores-ds'
+        else:
+            self.main_path = f'/Users/adrea/gdrive/Notebooks/Excited States/resources/databases/fluorophores-ds'
         self.db = f'{self.main_path}/{df}'
         return
 
