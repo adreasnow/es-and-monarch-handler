@@ -66,12 +66,12 @@ def script_builder(filePath:str, strName:str) -> str:
     return outStr
 
 class dsLoad(object):
-    import pandas as pd
+    import pandas as pd 
     import os
 
     def __init__(self, ds: str='fluorophores-ds', df:str='dataset') -> None:
         if self.os.name == 'nt':
-            self.main_path = f'C:\\Users\\Adrea\\My Drive\\Notebooks\\Excited States\\resources\\databases\\fluorophores-ds'
+            self.main_path = f'C:\\Users\\Adrea\\gdrive\\My Drive\\Notebooks\\Excited States\\resources\\databases\\fluorophores-ds'
         else:
             self.main_path = f'/Users/adrea/gdrive/Notebooks/Excited States/resources/databases/fluorophores-ds'
         self.db = f'{self.main_path}/{df}' 
@@ -85,13 +85,13 @@ class dsLoad(object):
         self.df.to_pickle(self.db)
         return
 
-class statusLoad(object):
+class statusLoad(object): 
     import pandas as pd
     import os
 
     def __init__(self, df:str='progress') -> None:
         if self.os.name == 'nt':
-            self.main_path = f'C:\\Users\\Adrea\\My Drive\\Notebooks\\Excited States\\resources\\databases\\fluorophores-ds'
+            self.main_path = f'C:\\Users\\Adrea\\gdrive\\My Drive\\Notebooks\\Excited States\\resources\\databases\\fluorophores-ds'
         else:
             self.main_path = f'/Users/adrea/gdrive/Notebooks/Excited States/resources/databases/fluorophores-ds'
         self.db = f'{self.main_path}/{df}'
