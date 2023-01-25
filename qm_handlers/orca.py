@@ -30,7 +30,7 @@ def buildORCA(job:Job, xyz:list[str]) -> str:
         jobLine2 = ''
     elif job.job == Jobs.freq and job.pcm == PCM.smd:
         jobLine = 'NumFreq'
-    elif job.job == Jobs.freq:
+    elif job.job in [Jobs.freq, Jobs.casscfFreq]:
         jobLine = 'Freq'   
     else:
         raise Exception(f'Job type {job.job} not implemented.')
@@ -38,7 +38,7 @@ def buildORCA(job:Job, xyz:list[str]) -> str:
     riString = 'RIJCOSX ' if job.method not in [Methods.casscf, Methods.mp2, Methods.nevpt2, Methods.caspt2] else ''
     method = job.method.orca if job.method not in [Methods.casscf, Methods.caspt2] else 'CASSCF'
 
-    if job.job in [Jobs.mp2Natorb, Jobs.nevpt2, Jobs.caspt2, Jobs.casscf]:
+    if job.job in [Jobs.mp2Natorb, Jobs.nevpt2, Jobs.caspt2, Jobs.casscf, Jobs.casscfFreq]:
         riBasis = f'{job.basis.orca}/C '
     else:
         riBasis = f''

@@ -15,19 +15,20 @@ class Jobs(NewEnum):
       return self.long
 
     #       
-    opt       = 'optimisation'
-    freq      = 'frequencies'
-    sp        = 'single_point'
-    td        = 'td-dft'
-    ex        = 'excitation'
-    em        = 'emission'
-    grad      = 'gradient'
-    crest     = 'crest'
-    casscf    = 'casscf_single_point'
-    caspt2    = 'caspt2_single_point'
-    nevpt2    = 'nevpt2_single_point'
-    casscfOpt = 'casscf_optimisation'
-    mp2Natorb = 'mp2-natural-orbitals'
+    opt        = 'optimisation'
+    freq       = 'frequencies'
+    sp         = 'single_point'
+    td         = 'td-dft'
+    ex         = 'excitation'
+    em         = 'emission'
+    grad       = 'gradient'
+    crest      = 'crest'
+    casscf     = 'casscf_single_point'
+    caspt2     = 'caspt2_single_point'
+    nevpt2     = 'nevpt2_single_point'
+    casscfOpt  = 'casscf_optimisation'
+    casscfFreq = 'casscf_frequencies'
+    mp2Natorb  = 'mp2-natural-orbitals'
 
 class MetaJobs(NewEnum):
     def __init__(self, long:str, 
@@ -91,7 +92,7 @@ class MetaJobs(NewEnum):
     qc_wb_opt_es       = 'qchem wb lr opt',                 Software.qchem,   Jobs.opt,         Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.tddft,    PCM.cpcm,  PCM.Eq.eq,      PCM.ExcitedModel.lr,    4,   False,  True,  False, False,   TDDFT.Triplets.off,   PCM.Formalism.iefpcm,    PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0
     qc_wb_opt_ss_es    = 'qchem wb ss opt',                 Software.qchem,   Jobs.opt,         Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.tddft,    PCM.cpcm,  PCM.Eq.eq,      PCM.ExcitedModel.clr,   4,   False,  True,  False, False,   TDDFT.Triplets.off,   PCM.Formalism.iefpcm,    PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0
     crest              = 'crest',                           Software.crest,   Jobs.crest,       Methods.crest,      Basis.none,        Grids.none,      TDDFT.none,     PCM.alpb,  PCM.Eq.none,    PCM.ExcitedModel.none,  1,   True,   False, False, False,   TDDFT.Triplets.off,   PCM.Formalism.pb,        PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0
-    casscf_opt         = 'casscf_optimisation',             Software.orca,    Jobs.casscfOpt,   Methods.casscf,     Basis.augccpvdz,   Grids.none,      TDDFT.none,     PCM.none,  PCM.Eq.none,    PCM.ExcitedModel.none,  4,  True,   True,  True,  True,    TDDFT.Triplets.off,   PCM.Formalism.none,      PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0
+    casscf_opt         = 'casscf_optimisation',             Software.orca,    Jobs.casscfOpt,   Methods.casscf,     Basis.augccpvdz,   Grids.none,      TDDFT.none,     PCM.none,  PCM.Eq.none,    PCM.ExcitedModel.none,  4,   True,   True,  True,  True,    TDDFT.Triplets.off,   PCM.Formalism.none,      PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0
     mp2Natorb          = 'mp2-natural-orbitals',            Software.orca,    Jobs.mp2Natorb,   Methods.mp2,        Basis.augccpvdz,   Grids.none,      TDDFT.none,     PCM.none,  PCM.Eq.none,    PCM.ExcitedModel.none,  1,   True,   False, True,  True,    TDDFT.Triplets.off,   PCM.Formalism.none,      PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0
     
     # frequencies 
@@ -100,7 +101,8 @@ class MetaJobs(NewEnum):
     qc_wb_freq_gs      = 'qchem wb gs freq',                Software.qchem,   Jobs.freq,        Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.none,     PCM.cpcm,  PCM.Eq.eq,      PCM.ExcitedModel.none,  4,   True,   False, False, False,   TDDFT.Triplets.off,   PCM.Formalism.iefpcm,    PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0
     qc_wb_freq_es      = 'qchem wb es freq',                Software.qchem,   Jobs.freq,        Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.tddft,    PCM.cpcm,  PCM.Eq.eq,      PCM.ExcitedModel.lr,    4,   False,  True,  False, False,   TDDFT.Triplets.off,   PCM.Formalism.iefpcm,    PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0
     qc_wb_freq_ss_es   = 'qchem wb es freq',                Software.qchem,   Jobs.freq,        Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.tddft,    PCM.cpcm,  PCM.Eq.eq,      PCM.ExcitedModel.clr,   4,   False,  True,  False, False,   TDDFT.Triplets.off,   PCM.Formalism.iefpcm,    PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0
-    
+    casscf_freq        = 'casscf_freq',                     Software.orca,    Jobs.casscfFreq,  Methods.casscf,     Basis.augccpvdz,   Grids.none,      TDDFT.none,     PCM.none,  PCM.Eq.none,    PCM.ExcitedModel.clr,   3,   True,   True,  True,  True,    TDDFT.Triplets.off,   PCM.Formalism.none,      PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    4     
+
     # excitations
     or_wb_ex           = 'orca wb smd ex',                  Software.orca,    Jobs.ex,          Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.tddft,    PCM.smd,   PCM.Eq.neq,     PCM.ExcitedModel.lr,   10,   True,   True,  False, False,   TDDFT.Triplets.off,   PCM.Formalism.cpcm,      PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0
     qc_wb_ex           = 'qchem wb ex',                     Software.qchem,   Jobs.ex,          Methods.wb97xd,     Basis.augccpvdz,   Grids.g75_302,   TDDFT.tddft,    PCM.cpcm,  PCM.Eq.neq,     PCM.ExcitedModel.lr,   10,   True,   True,  False, False,   TDDFT.Triplets.off,   PCM.Formalism.iefpcm,    PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0
