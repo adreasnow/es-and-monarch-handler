@@ -40,8 +40,8 @@ class Fluorophores(NewEnum):
     #                                                                                                                                                     10.1002/marc.201900234 (SI)     10.1016/0047-2670(76)85019-8    10.1016/1010-6030(92)85181-S
     aaq       = '1-Aminoanthraquinone',                       'C1=CC=C2C(=C1)C(=O)C3=C(C2=O)C(=CC=C3)N',                                         (8,8),   7380,   Solvents.acn,    465,   0.07,    Solvents.nhex,  450,   2.10,  Solvents.none,  False, True,  False
     #                                                                                                                                                                                                                     Multiexponential fit also had 30% 1.27 ns
-    #                                                                                                                                                                                     10.1021/ac101329h               10.1063/1.3276680
-    c153      = 'Coumarin 153',                               'C1CC2=CC3=C(C4=C2N(C1)CCC4)OC(=O)C=C3C(F)(F)F',                                   (8,7),   0,      Solvents.none,   000,   0.546,   Solvents.etoh,  402,   0.12,  Solvents.acn,   False, True,  True    
+    #                                                                                                                                                                                     (10.1021/ac101329h) <- For EtOH 10.1063/1.3276680
+    c153      = 'Coumarin 153',                               'C1CC2=CC3=C(C4=C2N(C1)CCC4)OC(=O)C=C3C(F)(F)F',                                   (8,7),   0,      Solvents.none,   000,   0.90,     Solvents.chex,  393,   0.12,  Solvents.acn,   False, True,  True    
     #                                                                                                                                                     10.1021/ac60235a020             10.1021/jo061369v               10.1117/1.JBO.20.9.096002
     nr        = 'Nile Red',                                   'O=C1C=C2OC(C=C(N(CC)CC)C=C3)=C3N=C2C4=C1C=CC=C4',                                 (10,10), 38000,  Solvents.dox,    519,   0.38,    Solvents.meoh,  554,   3.656, Solvents.etoh,  False, True,  False
     #                                                                                                                                                                                     0.93 toluene
@@ -62,7 +62,7 @@ class Fluorophores(NewEnum):
 
     # Gas DS
     r575      = 'Rhodamine 575',                              'CCNc1cc2OC3=CC(=[N+]/CC)\C(C)=CC3=C(c2cc1C)c4ccccc4C([O-])=O',                    (6,6),   0,      Solvents.none,   000,   0.00,    Solvents.none,  000,   0.00,  Solvents.none,  False, False, True,    1
-    fl        = 'Fluorescein',                                'c1ccc2c(c1)C(=O)OC23c4ccc(cc4Oc5c3ccc(c5)O)O',                                    (12,11), 0,      Solvents.none,   000,   0.00,    Solvents.none,  000,   0.00,  Solvents.none,  False, False, True,   -1
+    fl        = 'Fluorescein',                                'c1ccc2c(c1)C(=O)OC23c4ccc(cc4Oc5c3ccc(c5)O)O',                                    (12,11), 0,      Solvents.none,   000,   0.91,    Solvents.naoh,  470,   0.00,  Solvents.none,  False, False, True,   -1
     bod8m     = '8-methoxy BODIPY',                           'c1c2N(cc1)[B-](F)(F)[N+]1c([C]2(OC))c(cc1)',                                      (8,8),   0,      Solvents.none,   000,   0.00,    Solvents.none,  000,   0.00,  Solvents.none,  False, False, True
 
 
@@ -70,6 +70,7 @@ class Fluorophores(NewEnum):
     #                                                                                                                                https://omlc.org/spectra/PhotochemCAD/html/083.html  10.1351/PAC-REP-10-09-31
     r6g       = 'Rhodamine 6G',                               'CC1=CC(C(C2=CC=CC=C2C(OCC)=O)=C3C=C/4C)=C(C=C1NCC)OC3=CC4=[NH+]\\CC',             (0,0),   116000, Solvents.etoh,   530,   0.94,    Solvents.etoh,  488,   0.00,  Solvents.none,  True,  False, False,  +1
     #                                                                                                                                https://omlc.org/spectra/PhotochemCAD/html/009.html  10.1351/PAC-REP-10-09-31
-    rb        = 'Rhodamine B',                                'CC/[N+](CC)=C1C=CC2=C(C3=CC=CC=C3C(O)=O)C4=C(C=C(N(CC)CC)C=C4)OC2=C\\1',          (0,0),   106000, Solvents.etoh,   543,   0.31,    Solvents.h2o,   514,   0.00,  Solvents.none,  True,  False, False,  +1
+    rb        = 'Rhodamine B',                                'CC/[N+](CC)=C1C=CC2=C(C3=CC=CC=C3C(O)=O)C4=C(C=C(N(CC)CC)C=C4)OC2=C\\1',          (0,0),   106000, Solvents.etoh,   543,   0.7,     Solvents.meoh,  348,   0.00,  Solvents.none,  True,  False, False,  +1
     #                                                                                                                                                     10.1021/ac101329h               https://iss.com/resources/reference/data_tables/FL_QuantumYieldStandards.html
-    cv        = 'Cresyl Violet',                              'N=1c4c(OC=3C=1c2ccccc2\C(=[NH2+])\C=3)cc(c(c4)C)N(C)C',                           (0,0),   63574,  Solvents.etoh,   611,   0.578,   Solvents.etoh,  580,   0.00,  Solvents.none,  True,  False, False,  +1
+    cv        = 'Cresyl Violet',                              'N=1c4c(OC=3C=1c2ccccc2\C(=[NH2+])\C=3)cc(c(c4)C)N(C)C',                           (0,0),   63574,  Solvents.etoh,   611,   0.553,   Solvents.meoh,  580,   0.00,  Solvents.none,  True,  False, False,  +1
+    qs        = 'Quinine Sulphate',                           'COC1=CC2=C(C=CN=C2C=C1)C(C3CC4CCN3CC4C=C)O.OS(=O)(=O)O',                          (0,0),   0,      Solvents.none,   000,   0.577,   Solvents.h2so4, 350,   0.00,  Solvents.none,  True,  False, False,  +1
