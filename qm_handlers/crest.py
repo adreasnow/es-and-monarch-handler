@@ -1,6 +1,7 @@
 from ..types.job import Job
 
-def buildCRESTOpt(job:Job) -> str:
+
+def buildCRESTOpt(job: Job) -> str:
         uhfString = '' if job.state.spin == 0 else f' --uhf {job.state.spin}'
 
         slmString = '#!/bin/bash\n' 

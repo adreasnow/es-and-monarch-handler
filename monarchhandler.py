@@ -19,17 +19,21 @@ from .qm_handlers.qchem import buildQChem, pullQChem
 from time import time
 from typing import Any 
 
+
 class monarchHandler:
     from paramiko import SSHClient, AutoAddPolicy
-    def __init__(self, host:str="monarch.erc.monash.edu", user:str="asnow", jobid:str="job_id_done", jobkey:str="eEvfCdvzr4jy_SX51JYjKhAILZjPa53n8MFcQd1FErB", pythonEXE:str='/home/asnow/miniconda3/bin/python3') -> None:
+
+    def __init__(self, host: str = "monarch.erc.monash.edu", user: str = "asnow",
+                 jobid: str = "job_id_done", jobkey: str = "eEvfCdvzr4jy_SX51JYjKhAILZjPa53n8MFcQd1FErB",
+                 pythonEXE: str = '/home/asnow/miniconda3/bin/python3') -> None:
         self.host = host
         self.user = user
         self.jobid = jobid
         self.jobkey = jobkey
         self.slurmTime = 0
-        self.slurmFreq = 60 # seconds
+        self.slurmFreq = 60  # seconds
         self.TOTime = 0
-        self.TOFreq = 60 # seconds
+        self.TOFreq = 60  # seconds
         self.pythonEXE = pythonEXE
         return
 
@@ -41,15 +45,15 @@ class monarchHandler:
         self._closeSSH()
         return
 
-    def _checkSLURM(self, job:Job | None = None ) -> slurmStatus:
+    def _checkSLURM(self, job: Job | None = None) -> slurmStatus:
         if self.slurmTime == 0 or (time() - self.slurmTime) > 60:
             self.jobdict = {}
             scratchFolders = []
             self.slurmTime = time()
             statusDict = {"PENDING": slurmStatus.PENDING,
-                         "RUNNING": slurmStatus.RUNNING, 
-                         "COMPLETING": slurmStatus.COMPLETING, 
-                         "FAILED": slurmStatus.FAILED}
+                          "RUNNING": slurmStatus.RUNNING,
+                          "COMPLETING": slurmStatus.COMPLETING,
+                          "FAILED": slurmStatus.FAILED}
 
             out, err = self.run('/opt/slurm-latest/bin/squeue -o\'%.18i %u %.100j %.8T\' --sort=\'-T,j\' | grep asnow')
             for line in out:
@@ -131,7 +135,7 @@ class monarchHandler:
         err = stderr.read().decode().split('\n')
         return out, err
 
-    def fetchXYZGeom(self, job:Job) -> str: 
+    def fetchXYZGeom(self, job: Job) -> str: 
         if job.software not in [Software.orca, Software.crest]:
             raise Exception('Software not implemented')
 
@@ -144,7 +148,7 @@ class monarchHandler:
             xyz = ''.join(lines[2:])
         return xyz
 
-    def sbatch(self, job:Job) -> None:
+    def sbatch(self, job: Job) -> None:
         if job.software in [Software.crest]:
             out, err = self.run(f'cd {job.path} && /opt/slurm-latest/bin/sbatch {job.infile}')
         elif job.software in [Software.psi4Script, Software.pyscf]:
@@ -165,17 +169,19 @@ class monarchHandler:
                 print(out[1])
         return
 
-    def pullJobEnergy(self, job:Job) -> Any:
+    def pullJobEnergy(self, job: Job) -> Any:
         if job.software in [Software.orca, Software.qchem]:
             out, err = self.run(f'cat {job.finaloutfile}')
             if err != ['']:
                 raise Exception(f'There was an error catting {job.name}\nDid you select the right states?\nError:\n{err}')
-            elif job.software == Software.orca: return pullORCA(job, out)
-            elif job.software == Software.qchem: return pullQChem(job, out)
+            elif job.software == Software.orca:
+                return pullORCA(job, out)
+            elif job.software == Software.qchem:
+                return pullQChem(job, out)
         else:
             raise Exception(f'{job.software} not implemented')
 
-    def checkJobStatus(self, job:Job) -> Status:
+    def checkJobStatus(self, job: Job) -> Status:
         slurm = self._checkSLURM(job)
         slurmTo = {slurmStatus.RUNNING: Status.running,
                    slurmStatus.PENDING: Status.queued,
@@ -201,7 +207,7 @@ class monarchHandler:
                 raise Exception(f'Job type {job.software} not implemented')
         return status
 
-    def buildJob(self, job:Job) -> None:
+    def buildJob(self, job: Job) -> None:
         if job.software not in [Software.orca, Software.crest, Software.psi4Script, Software.pyscf, Software.qchem]:
             raise Exception(f'Job type {job.software} not implemented')
 
@@ -212,7 +218,7 @@ class monarchHandler:
             py, slm = psi4CasscfScan(job, lines[2:])
             self.writeFile(py, job.infile)
             self.writeFile(slm, f'{job.path}/{job.name}.slm')
-        
+
         if job.software == Software.pyscf:
             if job.job == Jobs.casscf:
                 lines, err = self.run(f'cat "{job.catxyzpath}"')
@@ -230,7 +236,7 @@ class monarchHandler:
             py, slm = pyscfCasscfOpt(job, lines[2:])
             self.writeFile(py, job.infile)
             self.writeFile(slm, f'{job.path}/{job.name}.slm')
-    
+
         if job.software == Software.orca:
             lines, err = self.run(f'cat "{job.catxyzpath}"')
             self.writeFile(buildORCA(job, lines), job.infile)
@@ -242,7 +248,7 @@ class monarchHandler:
         elif job.software == Software.qchem:
             lines, err = self.run(f'cat "{job.catxyzpath}"')
             self.writeFile(buildQChem(job, lines), job.infile)
-            
+
         # submit block
         if job.submit == True and job.software in [Software.orca, Software.qchem]:
             if job.partner == False:
@@ -266,7 +272,7 @@ class monarchHandler:
                 print(out[0])
         return
 
-    def checkCrestStatus(self, job:Job) -> Status:
+    def checkCrestStatus(self, job: Job) -> Status:
         out, err = self.run(f'ls -lah {job.path}')
         started = False
         finished = False
@@ -295,7 +301,7 @@ class monarchHandler:
         finished = False
         failed = False
         queued = False
-        none = True   
+        none = True
         for line in out:
             if f'{job.name}.py' in line:
                 none = False
@@ -316,8 +322,8 @@ class monarchHandler:
         elif finished == True: return Status.finished
         elif started == True: return Status.running
         elif queued == True: return Status.queued
-        
-    def checkPyscfStatus(self, job:Job) -> Status | None:
+
+    def checkPyscfStatus(self, job: Job) -> Status | None:
         if job.job == Jobs.mp2Natorb:
             out, err = self.run(f'ls {job.path} | grep \'.molden.input\'')
             for line in out:
@@ -352,7 +358,7 @@ class monarchHandler:
                         if job.job == Jobs.mp2Natorb: return Status.failed
                         else: return Status.failed
 
-    def checkOrcaStatus(self, job:Job) -> Status | None:
+    def checkOrcaStatus(self, job: Job) -> Status | None:
         out, err = self.run(f'tail -n 100 {job.path}/{job.name}/{job.name}.out')
         if 'No such file or directory' in err[0]:
             return None
@@ -361,7 +367,7 @@ class monarchHandler:
                 return Status.finished
         return Status.failed
 
-    def checkQChemStatus(self, job:Job) -> Status | None:
+    def checkQChemStatus(self, job: Job) -> Status | None:
         out, err = self.run(f'ls {job.path} | grep slurm | tail -n 1')
         slurmOut = []
         for line in out: 

@@ -1,27 +1,31 @@
-from .newenum import *
+from .newenum import NewEnum
 from .states import States
 from .solvents import Solvents
 
+
 class Fluorophores(NewEnum):
-    def __init__(self, fluorophore:str, smiles:str, active:tuple[int,int], extinction:int, extinctionSolv:Solvents, extinctionLambda:int, qy:float, qySolvent:Solvents, qyLambda:int, lifetime:float, lifetimeSolvent:Solvents, ref:bool, revised:bool=False, gas:bool=False, charge:int=0, root:States=States.s1) -> None:
-            self.fluorophore       = fluorophore
-            self.smiles            = smiles
-            self.charge            = charge
-            self.root              = root
-            self.ref               = ref
-            self.extinction        = extinction
-            self.extinctionSolvent = extinctionSolv
-            self.extinctionLambda  = extinctionLambda
-            self.qy                = qy
-            self.qysolvent         = qySolvent
-            self.qyLambda          = qyLambda
-            self.lifetime          = lifetime
-            self.lifetimeSolvent   = lifetimeSolvent
-            self.revised           = revised
-            self.active            = active
-            self.gas               = gas
-            return
-    
+    def __init__(self, fluorophore: str, smiles: str, active: tuple[int, int], extinction: int,
+                 extinctionSolv: Solvents, extinctionLambda: int, qy: float, qySolvent: Solvents,
+                 qyLambda: int, lifetime: float, lifetimeSolvent: Solvents, ref: bool, 
+                 revised: bool = False, gas: bool = False, charge: int = 0, root: States = States.s1) -> None:
+        self.fluorophore       = fluorophore
+        self.smiles            = smiles
+        self.charge            = charge
+        self.root              = root
+        self.ref               = ref
+        self.extinction        = extinction
+        self.extinctionSolvent = extinctionSolv
+        self.extinctionLambda  = extinctionLambda
+        self.qy                = qy
+        self.qysolvent         = qySolvent
+        self.qyLambda          = qyLambda
+        self.lifetime          = lifetime
+        self.lifetimeSolvent   = lifetimeSolvent
+        self.revised           = revised
+        self.active            = active
+        self.gas               = gas
+        return
+
     def __str__(self):
         return self.name
 
@@ -31,10 +35,10 @@ class Fluorophores(NewEnum):
     def __bool__(self):
         return self.revised
 
-    #index         name                                                     SMILES                                                         Active space   ε         ε solvent      ελ       Φ         Φ Solvent     Φλ     τ     τ Solvent       ref  revised   Gas         q   root
+    # index         name                                                    SMILES                                                         Active space   ε         ε solvent      ελ       Φ         Φ Solvent     Φλ     τ     τ Solvent       ref  revised   Gas         q   root
     #                                                                                                                                                                                                                     S1 -> S0 is 2ps  10.1016/0047-2670(80)80022-0
     #                                                                                                                                                                                     10.1016/0009-2614(72)85047-4    10.1016/0009-2614(72)85047-4
-    az        = 'Azulene',                                    'c1cccc2cccc2c1',                                                                  (10,10), 0,      Solvents.none,   000,   0.24,    Solvents.meoh,  347,   5,     Solvents.meoh,  False, True,  True,    0, States.s2 
+    az        = 'Azulene',                                    'c1cccc2cccc2c1',                                                                  (10,10), 0,      Solvents.none,   000,   0.24,    Solvents.meoh,  347,   5,     Solvents.meoh,  False, True,  True,    0, States.s2
     #                                                                                                                                                     10.1016/j.jlumin.2012.08.017    10.1016/j.jlumin.2012.08.017    10.1016/j.jlumin.2012.08.017
     r800      = 'Rhodamine 800',                              'C1CC2=CC3=C(C4=C2N(C1)CCC4)OC5=C6CCC[N+]7=C6C(=CC5=C3C#N)CCC7',                   (8,8),   113302, Solvents.etoh,   682,   0.25,    Solvents.etoh,  623,   1.93,  Solvents.etoh,  False, True,  False,  +1
     #                                                                                                                                                     10.1002/marc.201900234 (SI)     10.1016/0047-2670(76)85019-8    10.1016/1010-6030(92)85181-S
@@ -51,7 +55,7 @@ class Fluorophores(NewEnum):
     nda       = 'Naphthalamide',                              'O=C1C=2C=CC=C3C(O)=CC=C(C(=O)N1CCC)C32',                                          (6,6),   10000,  Solvents.dmso,   378,   0.77,    Solvents.dmso,  554,   0.00,  Solvents.none,  False, True,  False
     #                                                                                                                                                                                                                             Multiexponential fit also had small contribution of 0.19 ns
     #                                                                                                                                                     10.1016/0307-4412(94)90083-3    10.1111/j.1751-1097.1990.tb01686.x 10.  1016/0304-4165(89)90160-8
-    dapi      = 'DAPI',                                       'N=C(C1=CC2=C(C=C1)C=C(C3=CC=C(C(N)=N)C=C3)N2)N',                                  (12,12), 27000,  Solvents.dmso,   333,   0.58,    Solvents.dmso,  310,   2.81,  Solvents.h2o,   False, True,  False  
+    dapi      = 'DAPI',                                       'N=C(C1=CC2=C(C=C1)C=C(C3=CC=C(C(N)=N)C=C3)N2)N',                                  (12,12), 27000,  Solvents.dmso,   333,   0.58,    Solvents.dmso,  310,   2.81,  Solvents.h2o,   False, True,  False
     #                                                                                                                                                                                     10.1016/0003-2697(92)90003-P   10.1016/0003-2697(92)90003-P
     daa       = 'Dansyl amide',                               'CN(C)C1=CC=CC2=C1C=CC=C2S(=O)(=O)N',                                              (6,6),   0,      Solvents.none,   000,   0.39,    Solvents.etoh,  000,  17.1,   Solvents.etoh,  False, True,  False
     #                                                                                                                                                     10.1021/ja980508q               10.1021/ja980508q               10.1021/ja980508q
@@ -59,12 +63,10 @@ class Fluorophores(NewEnum):
     #                                                                                                                                                                                     10.1039/c4cc09206f              10.1039/c4cc09206f
     asp       = 'α-Sexithiophene',                            'c1csc(c1)-c2ccc(s2)-c3ccc(s3)-c4ccc(s4)-c5ccc(s5)-c6cccs6',                       (8,8),   0,      Solvents.none,   000,   0.41,    Solvents.dcm,   436,   1.0,   Solvents.dcm,   False, True,  False
 
-
     # Gas DS
     r575      = 'Rhodamine 575',                              'CCNc1cc2OC3=CC(=[N+]/CC)\C(C)=CC3=C(c2cc1C)c4ccccc4C([O-])=O',                    (6,6),   0,      Solvents.none,   000,   0.00,    Solvents.none,  000,   0.00,  Solvents.none,  False, False, True,    1
     fl        = 'Fluorescein',                                'c1ccc2c(c1)C(=O)OC23c4ccc(cc4Oc5c3ccc(c5)O)O',                                    (12,11), 0,      Solvents.none,   000,   0.91,    Solvents.naoh,  470,   0.00,  Solvents.none,  False, False, True,   -1
     bod8m     = '8-methoxy BODIPY',                           'c1c2N(cc1)[B-](F)(F)[N+]1c([C]2(OC))c(cc1)',                                      (8,8),   0,      Solvents.none,   000,   0.00,    Solvents.none,  000,   0.00,  Solvents.none,  False, False, True
-
 
     # ref
     #                                                                                                                                https://omlc.org/spectra/PhotochemCAD/html/083.html  10.1351/PAC-REP-10-09-31

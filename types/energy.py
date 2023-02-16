@@ -1,10 +1,12 @@
-from .newenum import *
+from .newenum import NewEnum, skip
+
+
 class Energy(NewEnum):    
     @skip
     class Freq(NewEnum):
         de    = 'ΔE'
         zpve  = 'ΔE_ZPVE'
-        neg   = '#-ve_freqs' 
+        neg   = '#-ve_freqs'
 
     @skip
     class Emission(NewEnum):

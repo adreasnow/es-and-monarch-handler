@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from .newenum import NewEnum, auto
+from .newenum import NewEnum
+
 
 class slurmStatus(NewEnum):
     PENDING    = 'pending'
@@ -8,6 +9,7 @@ class slurmStatus(NewEnum):
     FAILED     = 'failed'
     TIMED_OUT  = 'timedout'
     NONE       = 'none'
+
 
 @dataclass
 class slurmJob():
@@ -20,4 +22,3 @@ class slurmJob():
 
     def __repr__(self):
         return self.jobName
-

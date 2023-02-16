@@ -1,7 +1,8 @@
 from ..types.job import Job, Solvents, PCM, Jobs, Orbs, TDDFT, Methods
 import numpy as np
 
-def buildORCA(job:Job, xyz:list[str]) -> str:
+
+def buildORCA(job: Job, xyz: list[str]) -> str:
     multiJob = False
     moinp = 'moread ' if job.mopath != '' else ''
     mostring = f'\n\n%moinp "{job.mopath}"' if job.mopath != '' else ''
@@ -13,7 +14,7 @@ def buildORCA(job:Job, xyz:list[str]) -> str:
         multiJob = True
 
     if job.pcm in [PCM.cpcm, PCM.smd, PCM.none]:
-        cpcm = f'CPCM ' if (job.solv != Solvents.gas) or (job.pcm != PCM.none) else ''
+        cpcm = 'CPCM ' if (job.solv != Solvents.gas) or (job.pcm != PCM.none) else ''
     else:
         raise Exception("Solvation type not implemented.")
 
@@ -21,8 +22,10 @@ def buildORCA(job:Job, xyz:list[str]) -> str:
 
     if job.job in [Jobs.opt, Jobs.casscfOpt]:
         jobLine = 'Opt'
-        if job.verytightopt: jobLine += ' verytightopt'
-        else: jobLine += ' tightopt'
+        if job.verytightopt:
+            jobLine += ' verytightopt'
+        else:
+            jobLine += ' tightopt'
     elif job.job in [Jobs.casscf, Jobs.mp2Natorb, Jobs.sp]:
         jobLine = ''
     elif job.job in [Jobs.nevpt2, Jobs.caspt2]:
@@ -31,7 +34,7 @@ def buildORCA(job:Job, xyz:list[str]) -> str:
     elif job.job == Jobs.freq and job.pcm == PCM.smd:
         jobLine = 'NumFreq'
     elif job.job in [Jobs.freq, Jobs.casscfFreq]:
-        jobLine = 'Freq'   
+        jobLine = 'Freq'
     else:
         raise Exception(f'Job type {job.job} not implemented.')
 
@@ -41,7 +44,7 @@ def buildORCA(job:Job, xyz:list[str]) -> str:
     if job.job in [Jobs.mp2Natorb, Jobs.nevpt2, Jobs.caspt2, Jobs.casscf, Jobs.casscfFreq]:
         riBasis = f'{job.basis.orca}/C '
     else:
-        riBasis = f''
+        riBasis = ''
 
     ORCAInput = f'! {jobLine} {method} {riString}{job.basis.orca} {riBasis}tightscf {cpcm}{moinp}{kdiisstring}{soscfstring}{notrahstring}'
     ORCAInput += mostring
@@ -50,14 +53,14 @@ def buildORCA(job:Job, xyz:list[str]) -> str:
     ORCAInput +=  '\n%pal\n'
     ORCAInput += f'\tnprocs {job.procs}\n'
     ORCAInput +=  'end\n\n'
-    
-    if (job.solv != 'gas' and job.pcm == PCM.smd): 
+
+    if (job.solv != 'gas' and job.pcm == PCM.smd):
         ORCAInput +=  '%cpcm\n'
         ORCAInput +=  '\tsmd true\n'
         ORCAInput += f'\tSMDSolvent "{job.solv.smd}"\n'
         ORCAInput +=  'end\n\n'
 
-    elif (job.solv != 'gas' and job.pcm == PCM.cpcm): 
+    elif (job.solv != 'gas' and job.pcm == PCM.cpcm):
         ORCAInput +=  '%cpcm\n'
         ORCAInput += f'\tepsilon {job.solv.e}\n'
         ORCAInput += f'\trefrac {job.solv.n}\n'
@@ -76,7 +79,7 @@ def buildORCA(job:Job, xyz:list[str]) -> str:
         ORCAInput +=  '\trestart true\n'
         ORCAInput +=  'end\n\n'
 
-    if job.scfstring != '': 
+    if job.scfstring != '':
         ORCAInput +=  '%scf\n'
         ORCAInput += f'\t{job.scfstring}\n'
         ORCAInput +=  'end\n\n'
@@ -89,7 +92,7 @@ def buildORCA(job:Job, xyz:list[str]) -> str:
 
     if job.tddft == TDDFT.tddft: 
         if job.tda == TDDFT.TDA.off:
-             tdaLine = '\n\ttda false'
+            tdaLine = '\n\ttda false'
         ORCAInput +=  '%tddft\n'
         ORCAInput += f'\tnroots {job.nroots}\n'
         ORCAInput += f'\tIRoot {job.state.root}\n'
@@ -117,13 +120,13 @@ def buildORCA(job:Job, xyz:list[str]) -> str:
             ORCAInput += f'\tSwitchStep {job.switchstep}\n'
         if job.method == Methods.casscf and job.switchconv != 0.03:
             ORCAInput += f'\tSwitchConv {job.switchconv:.2g}\n'
-        if job.job != Jobs.casscfOpt: 
+        if job.job != Jobs.casscfOpt:
             ORCAInput +=  '\ttrafostep ri\n'
         ORCAInput +=  'end\n\n'
 
     if job.xyzpath == '':
         ORCAInput += f'* xyz {job.fluorophore.charge} {job.state.mult}\n'
-        
+
         for line in xyz[2:]:
             if len(line.split()) > 2:
                 ORCAInput += f'{line}\n'
@@ -137,13 +140,13 @@ def buildORCA(job:Job, xyz:list[str]) -> str:
         ORCAInput += f'! {jobLine2} {job.method.orca} {riString}{job.basis.orca} {riBasis}verytightscf {cpcm} MOREAD noiter'
         ORCAInput += '\n\n'
 
-        if (job.solv != 'gas' and job.pcm == PCM.smd): 
+        if (job.solv != 'gas' and job.pcm == PCM.smd):
             ORCAInput +=  '%cpcm\n'
             ORCAInput +=  '\tsmd true\n'
             ORCAInput += f'\tSMDSolvent "{job.solv.smd}"\n'
             ORCAInput +=  'end\n\n'
 
-        elif (job.solv != 'gas' and job.pcm == PCM.cpcm): 
+        elif (job.solv != 'gas' and job.pcm == PCM.cpcm):
             ORCAInput +=  '%cpcm\n'
             ORCAInput += f'\tepsilon {job.solv.e}\n'
             ORCAInput += f'\trefrac {job.solv.n}\n'
@@ -174,7 +177,7 @@ def buildORCA(job:Job, xyz:list[str]) -> str:
 
         if job.xyzpath == '':
             ORCAInput += f'* xyz {job.fluorophore.charge} {job.state.mult}\n'
-            
+
             for line in xyz[2:]:
                 if len(line.split()) > 2:
                     ORCAInput += f'{line}\n'
@@ -184,7 +187,8 @@ def buildORCA(job:Job, xyz:list[str]) -> str:
 
     return ORCAInput
 
-def pullORCA(job:Job, out:list[str]):
+
+def pullORCA(job: Job, out: list[str]):
     if job.job in [Jobs.freq]:
         return pullORCA_Freq(job, out)
     elif job.job in [Jobs.ex, Jobs.em, Jobs.td, Jobs.casscf, Jobs.casscfOpt, Jobs.opt]:
@@ -192,11 +196,8 @@ def pullORCA(job:Job, out:list[str]):
     else:
         raise Exception(f'Job type {job.software} {job.job} not implemented')
 
-def pullORCA_En(job:Job, out:list[str]) -> tuple[float, 
-                                                 list[float], 
-                                                 list[float], 
-                                                 tuple[float, float, float]
-                                                ]:
+
+def pullORCA_En(job: Job, out: list[str]) -> tuple[float, list[float], list[float], tuple[float, float, float]]:
     e_trans = []
     f = []
     t = []
@@ -211,7 +212,7 @@ def pullORCA_En(job:Job, out:list[str]) -> tuple[float,
             if 'THE OPTIMIZATION HAS CONVERGED ' in line:
                 splitPoint = count
     out = out[splitPoint:]
-    
+
     for state in range(1, nroots+1):
         if job.job not in [Jobs.casscf, Jobs.casscfOpt, Jobs.caspt2, Jobs.nevpt2]:
             stateList += [f'STATE{state:3}:  E=  ']
@@ -240,7 +241,8 @@ def pullORCA_En(job:Job, out:list[str]) -> tuple[float,
 
     return e, e_trans, f, t, m
 
-def pullORCA_Freq(job:Job, out:list[str]) -> tuple[float, float, float]:
+
+def pullORCA_Freq(job: Job, out: list[str]) -> tuple[float, float, float]:
     neg = 0
     e = 0
     zpve = 0
@@ -253,7 +255,8 @@ def pullORCA_Freq(job:Job, out:list[str]) -> tuple[float, float, float]:
             e = float(line.split()[3])
     return e, zpve, neg
 
-def m_diag(occ_ref:list[float]|np.ndarray, occ_no:list[float]|np.ndarray) -> float:
+
+def m_diag(occ_ref: list[float]|np.ndarray, occ_no: list[float]|np.ndarray) -> float:
     if type(occ_ref) == list: occ_ref = np.array(occ_ref)
     if type(occ_no) == list: occ_no = np.array(occ_no)
 
@@ -265,7 +268,7 @@ def m_diag(occ_ref:list[float]|np.ndarray, occ_no:list[float]|np.ndarray) -> flo
     return round(m, 3)
 
 
-def build_ref(electrons:int, occ:list[float], state:int) -> list[float]:
+def build_ref(electrons: int, occ: list[float], state: int) -> list[float]:
     ref = []
     while electrons > 0:
         if electrons >= 2:
@@ -288,7 +291,8 @@ def build_ref(electrons:int, occ:list[float], state:int) -> list[float]:
         ref[lumo] += 1.
     return ref
 
-def extract_occ(lines:list[str]) -> list[float]:
+
+def extract_occ(lines: list[str]) -> list[float]:
     for count, line in enumerate(lines):
         if '  NO   OCC          E(Eh)            E(eV) ' in line:
             start = count+1
@@ -300,7 +304,8 @@ def extract_occ(lines:list[str]) -> list[float]:
                     break
     return occs
 
-def extract_electrons(lines:list[str]) -> int:
+
+def extract_electrons(lines: list[str]) -> int:
     for line in lines:
         if 'Total number of electrons' in line:
             return int(line.split()[5])

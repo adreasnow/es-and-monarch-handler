@@ -3,7 +3,8 @@ from ..types.jobs import Jobs
 from ..types.job import Solvents
 from ..types.job import PCM
 
-def psi4CasscfScan(job:Job, xyz:str) -> tuple[str, str]:
+
+def psi4CasscfScan(job: Job, xyz: str) -> tuple[str, str]:
     psi4String = 'import numpy as np\n'
     psi4String += 'import psi4\n'
     psi4String += f'psi4.set_num_threads({job.procs})\n'
@@ -11,7 +12,6 @@ def psi4CasscfScan(job:Job, xyz:str) -> tuple[str, str]:
     psi4String += f'psi4.core.set_output_file("{job.outfile}", True)\n'
     psi4String += 'psi4_io = psi4.core.IOManager.shared_object()\n'
     psi4String += f'psi4_io.set_default_path("/home/asnow/scratch/{job.name}/")\n\n'
-
 
     psi4String += f'with open("{job.path}/occupations.csv", "w+") as f:\n'
     psi4String += '    f.write("Level,Root,Energy\\n")\n'
@@ -54,7 +54,7 @@ def psi4CasscfScan(job:Job, xyz:str) -> tuple[str, str]:
     psi4String += 'e, wfn = psi4.optimize("wb97x-d3", return_wfn=True)\n'
     psi4String += 'e, wfn = psi4.energy("scf", return_wfn=True)\n'
     psi4String += 'writeToFile(f"SCF,0,{e}")\n'
-    psi4String += f'active_elec, active_orbs = (2,2)\n'
+    psi4String += 'active_elec, active_orbs = (2,2)\n'
     psi4String += 'restricted = int(wfn.nalpha() - (active_elec/2))\n'
     psi4String += 'psi4.core.clean()\n\n'
 
@@ -106,7 +106,6 @@ def psi4CasscfScan(job:Job, xyz:str) -> tuple[str, str]:
     psi4String += 'writeOccupations(str(calculateOccupations(wfn, active_orbs+8)))\n'
     psi4String += 'psi4.core.clean()\n\n'
 
-
     psi4SlmString = '#!/bin/bash\n'
     psi4SlmString += '#SBATCH --time=72:00:00\n'
     psi4SlmString += f'#SBATCH --ntasks={job.procs}\n'
@@ -125,10 +124,8 @@ def psi4CasscfScan(job:Job, xyz:str) -> tuple[str, str]:
     psi4SlmString += f'/usr/bin/time -v python {job.name}.py\n'
     psi4SlmString += f'rm -rf /home/asnow/scratch/{job.name}\n\n'
 
-
     return psi4String, psi4SlmString
 
-   
     # def pullEnergyPsi4(self, file: str, state: int=0, roots: int=0) -> Union[None, tuple[Union[float, List[float]], Union[float, List[float]]]]:
     #     # e.g. /home/asnow/p2015120004/asnow/fluorophore-small/geoms/rb0-chcl3/orca-opt/rb0-chcl3-opt/rb0-chcl3-opt.out
     #     out, err = self.run(f'cat {file} | grep \'State   (eV)    (cm^-1)    (nm)     (au)              (l,au)   (v,au)     (s^-1)\' -A 20')

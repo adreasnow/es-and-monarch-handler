@@ -1,8 +1,9 @@
 from ..types.job import Job, PCM, Jobs, TDDFT
 
-def buildQChem(job:Job, xyz:list[str]) -> str:
-    jobDict = {Jobs.opt:  'OPT', 
-               Jobs.freq: 'FREQ', 
+
+def buildQChem(job: Job, xyz: list[str]) -> str:
+    jobDict = {Jobs.opt:  'OPT',
+               Jobs.freq: 'FREQ',
                Jobs.sp:   'SP',
                Jobs.ex:   'SP',
                Jobs.em:   'SP',
@@ -17,9 +18,9 @@ def buildQChem(job:Job, xyz:list[str]) -> str:
     rpa = 0 if job.tda == TDDFT.TDA.on else 1 if job.tda == TDDFT.TDA.fitting else 2
 
     ##################### PCM Params ####################
-    if job.pcm in [PCM.cpcm, PCM.lrpcm, PCM.sspcm]: 
+    if job.pcm in [PCM.cpcm, PCM.lrpcm, PCM.sspcm]:
         pcm = 'PCM'
-    elif job.pcm == PCM.smd: 
+    elif job.pcm == PCM.smd:
         pcm = 'SMD'
     elif job.pcm == PCM.none:
         pcm = ''
@@ -27,10 +28,10 @@ def buildQChem(job:Job, xyz:list[str]) -> str:
         raise Exception("Solvation type not implemented.")
 
     PCMFiller = ''
-    
+
     # Formalism
-    formalismDict = {PCM.Formalism.cpcm:   'CPCM', 
-                     PCM.Formalism.cosmo:  'COSMO', 
+    formalismDict = {PCM.Formalism.cpcm:   'CPCM',
+                     PCM.Formalism.cosmo:  'COSMO',
                      PCM.Formalism.iefpcm: 'IEFPCM',
                      PCM.Formalism.ssvpe:  'SSVPE'}
     try:
@@ -39,8 +40,8 @@ def buildQChem(job:Job, xyz:list[str]) -> str:
         raise Exception("PCM formalism not implemented")
 
     # Radii
-    radiiDict = {PCM.Radii.uff:     'UFF', 
-                 PCM.Radii.bondi:   'BONDI', 
+    radiiDict = {PCM.Radii.uff:     'UFF',
+                 PCM.Radii.bondi:   'BONDI',
                  PCM.Radii.default: ''}
     try:
         if job.pcm_radii != PCM.Radii.default:
@@ -51,20 +52,20 @@ def buildQChem(job:Job, xyz:list[str]) -> str:
     # VDWScale
     if job.pcm_VDWScale != 1.2:
         PCMFiller += f'    vdwScale               {job.pcm_VDWScale}\n'
-    
+
     # Probe Radii
     if job.pcm_probe_radii != 0.0:
         PCMFiller += f'    SASradius              {job.pcm_probe_radii}\n'
     # Cavity
-    cavityDict = {PCM.Cavity.sas:     'VDW_SAS', 
-                  PCM.Cavity.ses:     'SES', 
+    cavityDict = {PCM.Cavity.sas:     'VDW_SAS',
+                  PCM.Cavity.ses:     'SES',
                   PCM.Cavity.default: ''}
     try:
         if job.pcm_surfaceType != PCM.Cavity.default:
             PCMFiller += f'    SurfaceType            {cavityDict[job.pcm_surfaceType]}\n'
     except KeyError:
         raise Exception("Cavity Type not implemented")
-    
+
     #####################################################
     ######################## Job 1 ######################
     #####################################################
@@ -79,7 +80,7 @@ def buildQChem(job:Job, xyz:list[str]) -> str:
     remBlock =  '$rem\n'
     remBlock += f'    MEM_TOTAL             {job.mem.total_mb}\n'
     remBlock +=  '    GUI                   2\n'
-    if jobType != 'SP': 
+    if jobType != 'SP':
         remBlock += f'    JOBTYPE               {jobType}\n'
     remBlock += f'    EXCHANGE              {job.method.qchem}\n'
     remBlock += f'    BASIS                 {job.basis.qchem}\n'
@@ -162,18 +163,14 @@ def buildQChem(job:Job, xyz:list[str]) -> str:
     return QChemInput
 
 
-def pullQChem(job:Job, out:list[str]):
+def pullQChem(job: Job, out: list[str]):
     if job.job in [Jobs.em, Jobs.ex]:
         return pullQChem_En(job, out)
     else:
         raise Exception(f'Job type {job.software} {job.job} not implemented')
 
-def pullQChem_En(job:Job, out:list[str]) -> tuple[float, 
-                                                 list[float], 
-                                                 list[float], 
-                                                 tuple[float, float, float]
-                                                ]:
 
+def pullQChem_En(job: Job, out: list[str]) -> tuple[float, list[float], list[float], tuple[float, float, float]]:
     split = 0
     if job.job == Jobs.em:
         for count, line in enumerate(out):
@@ -199,7 +196,7 @@ def pullQChem_En(job:Job, out:list[str]) -> tuple[float,
             t += [(tx, ty, tz)]
         elif 'Strength   :' in line:
             f += [float(line.split()[2])]
-        
+
     return e[job.state.mult-1], e_trans, f, t
 
 # def pullQChem_Freq(job:Job, out:list[str]) -> tuple[float, float, float]:

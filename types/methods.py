@@ -1,4 +1,6 @@
-from .newenum import *
+from .newenum import NewEnum, Enum
+
+
 class Methods(NewEnum):
     class Rank(Enum):
         lda          = 'lda'
@@ -23,20 +25,21 @@ class Methods(NewEnum):
         srs  = 'srs'
         sns  = 'sns'
 
-    def __init__(self, method:str, orca:str, nwchem:str, qchem:str, psi4:str, pyscf:str,
-                 rank:Rank, range_separated:bool, dispersion:Dispersion, spin_scaling:Spin_Scaling, used:bool) -> None:
-            self.method          = method
-            self.orca            = orca
-            self.qchem           = qchem
-            self.nwchem          = nwchem
-            self.psi4            = psi4
-            self.pyscf           = pyscf
-            self.range_separated = range_separated
-            self.rank            = rank
-            self.dispersion      = dispersion
-            self.spin_scaling    = spin_scaling
-            self.used            = used
-            return
+    def __init__(self, method: str, orca: str, nwchem: str, qchem: str,
+                 psi4: str, pyscf: str, rank: Rank, range_separated: bool,
+                 dispersion: Dispersion, spin_scaling: Spin_Scaling, used: bool) -> None:
+        self.method          = method
+        self.orca            = orca
+        self.qchem           = qchem
+        self.nwchem          = nwchem
+        self.psi4            = psi4
+        self.pyscf           = pyscf
+        self.range_separated = range_separated
+        self.rank            = rank
+        self.dispersion      = dispersion
+        self.spin_scaling    = spin_scaling
+        self.used            = used
+        return
 
     def __str__(self):
         return self.name

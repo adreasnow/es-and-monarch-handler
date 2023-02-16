@@ -1,17 +1,19 @@
-from .newenum import *
+from .newenum import NewEnum
+
+
 class States(NewEnum):
-    def __init__(self, root:int, mult:int, spin:int, latex:str) -> None:
+    def __init__(self, root: int, mult: int, spin: int, latex: str) -> None:
             self.root   = root
             self.mult   = mult
             self.spin   = spin
             self.latex  = latex
             return
-    
+
     def __str__(self):
-      return self.name
+        return self.name
 
     def __int__(self):
-      return self.root
+        return self.root
 
     #       root  mutl  spin   latex   
     s0   =   0,    1,    0,    's_0'

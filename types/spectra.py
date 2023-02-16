@@ -1,5 +1,6 @@
-from .newenum import *
+from .newenum import NewEnum
 from dataclasses import dataclass
+
 
 class spectraType(NewEnum):
     emission   = 'em'
@@ -9,19 +10,22 @@ class spectraType(NewEnum):
     qy         = 'qr'
     lifetime   = 'tr'
 
+
 @dataclass
 class gaussian():
     center: float
     width: float
     amplitude: float
 
+
 @dataclass
 class deconvParams():
-    amplitudes: tuple[float,float]
-    sigma: tuple[int,int]
+    amplitudes: tuple[float, float]
+    sigma: tuple[int, int]
     convergence: float
-    gaussianRange: tuple[int,int]
+    gaussianRange: tuple[int, int]
     maxiter: int
+
 
 @dataclass
 class spectrum():
@@ -47,6 +51,7 @@ class spectrum():
     def peaks_sorted_reverse(self) -> list[gaussian]:
         return reversed(self.peaks_sorted_forward)
 
+
 @dataclass
 class _simpleSpectrum():
     maxy: float
@@ -54,13 +59,15 @@ class _simpleSpectrum():
     x: list[float]
     y: list[float]
 
+
 @dataclass
 class spectrumSeries():
     spectrum: spectraType
     absorbanceSpectra: list[_simpleSpectrum]
     emissionSpectra: list[_simpleSpectrum]
     excitation: int
-    qy: float | None 
+    qy: float | None
+
 
 @dataclass
 class irf():
@@ -69,10 +76,12 @@ class irf():
     b: float
     t: float
 
+
 @dataclass
 class trf():
     t: float
     c: float
+
 
 @dataclass
 class Lifetime():

@@ -1,7 +1,8 @@
-from .newenum import *
+from .newenum import NewEnum, skip
 
 
-class TDDFT(NewEnum):    
+class TDDFT(NewEnum):
+
     @skip
     class Triplets(NewEnum):
         on  = 'on'

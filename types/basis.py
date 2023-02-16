@@ -1,5 +1,7 @@
-from .newenum import *
+from .newenum import NewEnum, Enum
 from .software import Software
+
+
 class Basis(NewEnum):
     class Family(Enum):
         dunning   = 'dunning'
@@ -8,18 +10,19 @@ class Basis(NewEnum):
         karlsruhe = 'karlsruhe'
         none      = 'none'
 
-    def __init__(self, basis:str, orca:str, qchem:str, nwchem:str, psi4:str, pyscf:str, zeta:int, augmented:bool, diffuse:bool, family:Family) -> None:
-            self.basis     = basis
-            self.orca      = orca
-            self.pyscf     = pyscf
-            self.qchem     = qchem
-            self.nwchem    = nwchem
-            self.psi4      = psi4
-            self.zeta      = zeta
-            self.family    = family
-            self.augmented = augmented
-            self.diffuse   = diffuse
-            return
+    def __init__(self, basis: str, orca: str, qchem: str, nwchem: str, psi4: str,
+                 pyscf: str, zeta: int, augmented: bool, diffuse: bool, family: Family) -> None:
+        self.basis     = basis
+        self.orca      = orca
+        self.pyscf     = pyscf
+        self.qchem     = qchem
+        self.nwchem    = nwchem
+        self.psi4      = psi4
+        self.zeta      = zeta
+        self.family    = family
+        self.augmented = augmented
+        self.diffuse   = diffuse
+        return
 
     def __str__(self):
       return self.basis

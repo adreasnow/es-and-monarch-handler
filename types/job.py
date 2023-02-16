@@ -11,15 +11,17 @@ from .jobs import Jobs, MetaJobs
 from .orbs import Orbs
 from .tddft import TDDFT
 
+
 class _mem():
     def __int__(self):
         return self.total_gb
 
-    def __init__(self, mem:int, cores:int):
+    def __init__(self, mem: int, cores: int):
         self.total_gb = mem
-        self.total_mb = self.total_gb*1024
-        self.per_core_gb = int(round(mem/cores))
-        self.per_core_mb = self.per_core_gb*1024
+        self.total_mb = self.total_gb * 1024
+        self.per_core_gb = int(round(mem / cores))
+        self.per_core_mb = self.per_core_gb * 1024
+
 
 @dataclass
 class Job():
@@ -61,26 +63,26 @@ class Job():
     rootfolder: str = 'fluorophores-ds'
 
     # orca specific
-    mopath:str=''
-    xyzpath:str=''
-    catxyzpath:str=''
-    scfstring:str=''
-    kdiis:bool=False
-    soscf:bool=True
-    notrah:bool=True
-    refJob:Jobs=None
-    restart:bool=False
-    verytightopt:bool=False
+    mopath: str = ''
+    xyzpath: str = ''
+    catxyzpath: str = ''
+    scfstring: str = ''
+    kdiis: bool = False
+    soscf: bool = True
+    notrah: bool = True
+    refJob: Jobs = None
+    restart: bool = False
+    verytightopt: bool = False
 
     # casscf specific settings
-    casscf:tuple[int,int] = (4,4)
-    perturbedRoots:int = 4
-    orbstep:str='SuperCI_PT (default)'
-    switchstep:str='SuperCI_PT (default)'
-    switchconv:float=0.03
+    casscf: tuple[int, int] = (4, 4)
+    perturbedRoots: int = 4
+    orbstep: str = 'SuperCI_PT (default)'
+    switchstep: str = 'SuperCI_PT (default)'
+    switchconv: float = 0.03
 
-    #orbs
-    orbs:Orbs=Orbs.can
+    # orbs
+    orbs: Orbs = Orbs.can
 
     def __str__(self):
         return self.name
@@ -89,12 +91,12 @@ class Job():
         return self.name
 
     @classmethod
-    def from_MetaJob(cls, metajob:MetaJobs, fluorophore:Fluorophores, solvent:Solvents, state:States, **kwargs):
-        return cls(metajob.software, fluorophore, solvent, metajob.method, 
-                metajob.basis, metajob.pcm, metajob.eq, state, metajob.job, metajob.tddft, grid=metajob.grid, nroots=metajob.nroots, 
-                pcm_es=metajob.excited, triplets=metajob.triplets, pcm_form=metajob.pcm_form, pcm_disc=metajob.pcm_disc, 
-                pcm_radii=metajob.pcm_radii, pcm_VDWScale=metajob.pcm_VDWScale, perturbedRoots=metajob.perturbed,
-                pcm_probe_radii=metajob.pcm_probe_radii, pcm_surfaceType=metajob.pcm_surfaceType, **kwargs)
+    def from_MetaJob(cls, metajob: MetaJobs, fluorophore: Fluorophores, solvent: Solvents, state: States, **kwargs):
+        return cls(metajob.software, fluorophore, solvent, metajob.method,metajob.basis, metajob.pcm, metajob.eq,
+                   state, metajob.job, metajob.tddft, grid=metajob.grid, nroots=metajob.nroots, pcm_es=metajob.excited,
+                   triplets=metajob.triplets, pcm_form=metajob.pcm_form, pcm_disc=metajob.pcm_disc,
+                   pcm_radii=metajob.pcm_radii, pcm_VDWScale=metajob.pcm_VDWScale, perturbedRoots=metajob.perturbed,
+                   pcm_probe_radii=metajob.pcm_probe_radii, pcm_surfaceType=metajob.pcm_surfaceType, **kwargs)
 
     def __post_init__(self):
         self.casscf = self.fluorophore.active
@@ -119,10 +121,3 @@ class Job():
             self.xyzfile = f'{self.path}/{self.name}/{self.name}.xyz'
         self.outfile = f'{self.path}/{self.name}.out'
         self.finaloutfile = f'{self.path}/{self.name}/{self.name}.out'
-
-
-    
-
-
-
-

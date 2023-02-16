@@ -1,4 +1,5 @@
-from .newenum import *
+from .newenum import NewEnum
+
 
 class Orbs(NewEnum):
 

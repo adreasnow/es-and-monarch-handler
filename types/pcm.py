@@ -1,20 +1,22 @@
-from .newenum import *
+from .newenum import NewEnum, skip
+
 
 class PCM(NewEnum):
+
     @skip
     class Eq(NewEnum):
-        def __init__(self, string:str) -> None:
+        def __init__(self, string: str) -> None:
             self.string   = string
             return
 
         def __str__(self):
             return self.string
-        
+
         eq     = 'eq'
         neq    = 'neq'
         eq_neq = 'eq_neq'
         none   = 'None'
-    
+
     @skip
     class Radii(NewEnum):
         uff      = 'uff'
@@ -24,7 +26,7 @@ class PCM(NewEnum):
         ff       = 'from_ff'
         read     = 'from_file'
         default  = 'default'
-    
+
     @skip
     class Cavity(NewEnum):
         sas        = 'sas'
@@ -32,7 +34,6 @@ class PCM(NewEnum):
         isodensity = 'iso'
         spherical  = 'spherical'
         default    = 'default'
-    
 
     @skip
     class Discretisation(NewEnum):
@@ -41,7 +42,7 @@ class PCM(NewEnum):
         swig     = 'swig'
         iswig    = 'iswig'
         default  = 'default'
-    
+
     @skip
     class ExcitedModel(NewEnum):
         none  = 'none'
@@ -49,7 +50,7 @@ class PCM(NewEnum):
         clr   = 'clr'
         lr    = 'lr'
         ibsf  = 'ibsf'
-    
+
     @skip
     class NonEl(NewEnum):
         smssp = 'smssp'
@@ -57,7 +58,7 @@ class PCM(NewEnum):
 
     @skip
     class Formalism(NewEnum):
-        def __init__(self, string:str) -> None:
+        def __init__(self, string: str) -> None:
             self.string   = string
             return
 

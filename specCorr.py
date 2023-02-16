@@ -1,5 +1,7 @@
 import numpy as np
-def PMCorrect(xIn:list[float], yIn:list[float]) -> list[float]:
+
+
+def PMCorrect(xIn: list[float], yIn: list[float]) -> list[float]:
     iCorr = [0.0 for i in range(0,220)]
     # Professional emCorr
     iCorr += [29.05115151, 25.85133844, 22.71669933, 20.28387154, 17.86487964, 16.48255059, 14.95007632, 
@@ -99,7 +101,8 @@ def PMCorrect(xIn:list[float], yIn:list[float]) -> list[float]:
 
     return yCorr
 
-exCorr = [0.0 for i in range(0,220)]
+
+exCorr = [0.0 for i in range(0, 220)]
 # Professional inverted exCorr/emCorr
 exCorr += [1.652138483, 1.65047901, 1.613321573, 1.612538032, 1.580562532, 1.600383915, 1.590588568, 1.601782741, 
            1.604718664, 1.604957032, 1.60658195, 1.604733032, 1.607811916, 1.606755249, 1.598377224, 1.595680813, 

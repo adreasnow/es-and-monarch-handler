@@ -1,4 +1,6 @@
-from .newenum import *
+from .newenum import NewEnum
+
+
 class Status(NewEnum):
     queued    = 'queued'
     running   = 'running'
