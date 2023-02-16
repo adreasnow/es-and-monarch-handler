@@ -3,11 +3,11 @@ from .newenum import NewEnum
 
 class States(NewEnum):
     def __init__(self, root: int, mult: int, spin: int, latex: str) -> None:
-            self.root   = root
-            self.mult   = mult
-            self.spin   = spin
-            self.latex  = latex
-            return
+        self.root   = root
+        self.mult   = mult
+        self.spin   = spin
+        self.latex  = latex
+        return
 
     def __str__(self):
         return self.name

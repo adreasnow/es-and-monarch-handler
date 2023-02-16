@@ -17,7 +17,7 @@ from .qm_handlers.psi4 import psi4CasscfScan
 from .qm_handlers.pyscf import pyscfCasscfScan, pyscfCasscfOpt, pyscfMP2Natorbs
 from .qm_handlers.qchem import buildQChem, pullQChem
 from time import time
-from typing import Any 
+from typing import Any
 
 
 class monarchHandler:
@@ -63,7 +63,7 @@ class monarchHandler:
             out, err = self.run('ls -lah ~/scratch/')
             for line in out:
                 try:
-                    scratchFolder = line.split()[8] 
+                    scratchFolder = line.split()[8]
                     if scratchFolder not in ['.', '..']:
                         scratchFolders += [scratchFolder]
                 except:
@@ -73,7 +73,7 @@ class monarchHandler:
                 try:
                     self.jobdict[scratch]
                 except KeyError:
-                    self.jobdict[scratch] = slurmJob(0, scratch, slurmStatus.TIMED_OUT) 
+                    self.jobdict[scratch] = slurmJob(0, scratch, slurmStatus.TIMED_OUT)
             self.slurmTime = time()
 
         if job != None:
@@ -89,7 +89,8 @@ class monarchHandler:
         jobs = [i for i in self.jobdict if self.jobdict[i].status == slurmStatus.TIMED_OUT]
         if printJobs:
             for job in jobs:
-                if job != 'qchem': print(job)
+                if job != 'qchem':
+                    print(job)
         return jobs
 
     def _openSSH(self) -> None:
@@ -135,15 +136,15 @@ class monarchHandler:
         err = stderr.read().decode().split('\n')
         return out, err
 
-    def fetchXYZGeom(self, job: Job) -> str: 
+    def fetchXYZGeom(self, job: Job) -> str:
         if job.software not in [Software.orca, Software.crest]:
             raise Exception('Software not implemented')
 
-        if job.software  == Software.orca:
+        if job.software == Software.orca:
             lines = self.readFile(job.xyzfile)
             xyz = ''.join(lines[2:])
 
-        if job.software  == Software.crest:
+        if job.software == Software.crest:
             lines = self.readFile(job.xyzfile)
             xyz = ''.join(lines[2:])
         return xyz
@@ -155,7 +156,7 @@ class monarchHandler:
             out, err = self.run(f'cd {job.path} && /opt/slurm-latest/bin/sbatch {job.path}/{job.name}.slm')
         return out, err
 
-    def submitFiles(self, flags: str, files: str|list[str]) -> None:
+    def submitFiles(self, flags: str, files: str | list[str]) -> None:
         keys = f'export JOBID="{self.jobid}"; export JOBKEY="{self.jobkey}"; '
         if type(files) == str:
             files = [files]
@@ -250,20 +251,19 @@ class monarchHandler:
             self.writeFile(buildQChem(job, lines), job.infile)
 
         # submit block
-        if job.submit == True and job.software in [Software.orca, Software.qchem]:
-            if job.partner == False:
+        if job.submit and job.software in [Software.orca, Software.qchem]:
+            if not job.partner:
                 job.submitFlags += 'o'
             if job.time <= 24:
                 job.submitFlags += 's'
             if job.time < 24:
                 job.submitFlags += f' -H {time}'
 
-
             if job.software == Software.qchem:
                 job.submitFlags += f' -c {job.procs}'
 
             self.submitFiles(job.submitFlags, job.infile)
-        elif job.submit == True and job.software in [Software.crest, Software.psi4Script, Software.pyscf]:
+        elif job.submit and job.software in [Software.crest, Software.psi4Script, Software.pyscf]:
             out, err = self.sbatch(job)
             if err != ['']:
                 print(err)
@@ -281,7 +281,7 @@ class monarchHandler:
             if '.CHRG' in line:
                 started = True
 
-        if started == True:
+        if started:
             out, err = self.run(f'tail -n 100 {job.path}/slurm*.out')
 
         for line in out:
@@ -290,12 +290,16 @@ class monarchHandler:
             elif 'Error termination.' in line:
                 failed = True
 
-        if started == False: return Status.queued
-        elif finished == True: return Status.finished
-        elif failed == True: return Status.failed
-        elif started == True and finished == False: return Status.running
+        if not started:
+            return Status.queued
+        elif finished:
+            return Status.finished
+        elif failed:
+            return Status.failed
+        elif started and not finished:
+            return Status.running
 
-    def checkPsi4Status(self, job:Job) -> Status | None:
+    def checkPsi4Status(self, job: Job) -> Status | None:
         out, err = self.run(f'ls -lah {job.path}')
         started = False
         finished = False
@@ -309,19 +313,24 @@ class monarchHandler:
             if f'{job.name}.out' in line:
                 started = True
 
-        if started == True:
+        if started:
             out, err = self.run(f'tail -n 100 {job.path}/{job.name}.out')
             for line in out:
                 if 'Exit status:' in line:
                     if 'Exit status: 0' in line:
                         finished = True
-                    else: 
+                    else:
                         failed = True
-        if none == True: return None
-        elif failed == True: return Status.failed
-        elif finished == True: return Status.finished
-        elif started == True: return Status.running
-        elif queued == True: return Status.queued
+        if none:
+            return None
+        elif failed:
+            return Status.failed
+        elif finished:
+            return Status.finished
+        elif started:
+            return Status.running
+        elif queued:
+            return Status.queued
 
     def checkPyscfStatus(self, job: Job) -> Status | None:
         if job.job == Jobs.mp2Natorb:
@@ -332,16 +341,20 @@ class monarchHandler:
 
         out, err = self.run(f'ls {job.path} | grep slurm | tail -n 1')
         slurmOut = []
-        for line in out: 
+        for line in out:
             if 'slurm' in line:
                 slurmOut, err = self.run(f'tail -n 100 {job.path}/{line}')
         for slurmLine in slurmOut:
             if 'oom-kill event(s) in StepId=' in slurmLine:
-                if job.job == Jobs.mp2Natorb: return Status.failed
-                else: return Status.failed
+                if job.job == Jobs.mp2Natorb:
+                    return Status.failed
+                else:
+                    return Status.failed
             if 'DUE TO TIME LIMIT ***' in slurmLine:
-                if job.job == Jobs.mp2Natorb: return Status.timed_out
-                else: return Status.timed_out
+                if job.job == Jobs.mp2Natorb:
+                    return Status.timed_out
+                else:
+                    return Status.timed_out
 
         out, err = self.run(f'tail -n 100 {job.path}/{job.name}.out')
         if 'No such file or directory' in err[0]:
@@ -352,11 +365,15 @@ class monarchHandler:
                 if '	Exit status: ' in line:
                     if line.split()[2] == '0':
 
-                        if job.job == Jobs.mp2Natorb: return Status.finished
-                        else: return Status.finished
+                        if job.job == Jobs.mp2Natorb:
+                            return Status.finished
+                        else:
+                            return Status.finished
                     else:
-                        if job.job == Jobs.mp2Natorb: return Status.failed
-                        else: return Status.failed
+                        if job.job == Jobs.mp2Natorb:
+                            return Status.failed
+                        else:
+                            return Status.failed
 
     def checkOrcaStatus(self, job: Job) -> Status | None:
         out, err = self.run(f'tail -n 100 {job.path}/{job.name}/{job.name}.out')
@@ -370,7 +387,7 @@ class monarchHandler:
     def checkQChemStatus(self, job: Job) -> Status | None:
         out, err = self.run(f'ls {job.path} | grep slurm | tail -n 1')
         slurmOut = []
-        for line in out: 
+        for line in out:
             if 'slurm' in line:
                 slurmOut, err = self.run(f'tail -n 100 {job.path}/{line}')
         for line in slurmOut:

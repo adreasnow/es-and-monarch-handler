@@ -62,11 +62,15 @@ def psi4CasscfScan(job: Job, xyz: str) -> tuple[str, str]:
     psi4String += 'e, wfn = psi4.energy("casscf", return_wfn=True)\n'
     psi4String += 'writeToFile(f"4-4,0,{e}")\n'
     psi4String += 'writeOccupations(str(calculateOccupations(wfn, active_orbs+2)))\n'
-    if   job.state.root == 1: psi4String += 'psi4.set_options({"follow_root": 1})\n'
-    elif job.state.root == 2: psi4String += 'psi4.set_options({"follow_root": 2})\n'
+    if job.state.root == 1:
+        psi4String += 'psi4.set_options({"follow_root": 1})\n'
+    elif job.state.root == 2:
+        psi4String += 'psi4.set_options({"follow_root": 2})\n'
     psi4String += 'e, wfn = psi4.energy("casscf", return_wfn=True)\n'
-    if   job.state.root == 1: psi4String += 'writeToFile(f"4-4,1,{e}")\n'
-    elif job.state.root == 2: psi4String += 'writeToFile(f"4-4,2,{e}")\n'
+    if job.state.root == 1:
+        psi4String += 'writeToFile(f"4-4,1,{e}")\n'
+    elif job.state.root == 2:
+        psi4String += 'writeToFile(f"4-4,2,{e}")\n'
     psi4String += 'writeOccupations(str(calculateOccupations(wfn, active_orbs+2)))\n'
     psi4String += 'psi4.core.clean()\n\n'
 
@@ -74,11 +78,15 @@ def psi4CasscfScan(job: Job, xyz: str) -> tuple[str, str]:
     psi4String += 'e, wfn = psi4.energy("casscf", return_wfn=True)\n'
     psi4String += 'writeToFile(f"6-6,0,{e}")\n'
     psi4String += 'writeOccupations(str(calculateOccupations(wfn, active_orbs+4)))\n'
-    if   job.state.root == 1: psi4String += 'psi4.set_options({"follow_root": 1})\n'
-    elif job.state.root == 2: psi4String += 'psi4.set_options({"follow_root": 2})\n'
+    if job.state.root == 1:
+        psi4String += 'psi4.set_options({"follow_root": 1})\n'
+    elif job.state.root == 2:
+        psi4String += 'psi4.set_options({"follow_root": 2})\n'
     psi4String += 'e, wfn = psi4.energy("casscf", return_wfn=True)\n'
-    if   job.state.root == 1: psi4String += 'writeToFile(f"6-6,1,{e}")\n'
-    elif job.state.root == 2: psi4String += 'writeToFile(f"6-6,2,{e}")\n'
+    if job.state.root == 1:
+        psi4String += 'writeToFile(f"6-6,1,{e}")\n'
+    elif job.state.root == 2:
+        psi4String += 'writeToFile(f"6-6,2,{e}")\n'
     psi4String += 'writeOccupations(str(calculateOccupations(wfn, active_orbs+4)))\n'
     psi4String += 'psi4.core.clean()\n\n'
 
@@ -86,11 +94,15 @@ def psi4CasscfScan(job: Job, xyz: str) -> tuple[str, str]:
     psi4String += 'e, wfn = psi4.energy("casscf", return_wfn=True)\n'
     psi4String += 'writeToFile(f"8-8,0,{e}")\n'
     psi4String += 'writeOccupations(str(calculateOccupations(wfn, active_orbs+6)))\n'
-    if   job.state.root == 1: psi4String += 'psi4.set_options({"follow_root": 1})\n'
-    elif job.state.root == 2: psi4String += 'psi4.set_options({"follow_root": 2})\n'
+    if job.state.root == 1:
+        psi4String += 'psi4.set_options({"follow_root": 1})\n'
+    elif job.state.root == 2:
+        psi4String += 'psi4.set_options({"follow_root": 2})\n'
     psi4String += 'e, wfn = psi4.energy("casscf", return_wfn=True)\n'
-    if   job.state.root == 1: psi4String += 'writeToFile(f"8-8,1,{e}")\n'
-    elif job.state.root == 2: psi4String += 'writeToFile(f"8-8,2,{e}")\n'
+    if job.state.root == 1:
+        psi4String += 'writeToFile(f"8-8,1,{e}")\n'
+    elif job.state.root == 2:
+        psi4String += 'writeToFile(f"8-8,2,{e}")\n'
     psi4String += 'writeOccupations(str(calculateOccupations(wfn, active_orbs+6)))\n'
     psi4String += 'psi4.core.clean()\n\n'
 
@@ -98,11 +110,15 @@ def psi4CasscfScan(job: Job, xyz: str) -> tuple[str, str]:
     psi4String += 'e, wfn = psi4.energy("casscf", return_wfn=True)\n'
     psi4String += 'writeToFile(f"10-10,0,{e}")\n'
     psi4String += 'writeOccupations(str(calculateOccupations(wfn, active_orbs+8)))\n'
-    if   job.state.root == 1: psi4String += 'psi4.set_options({"follow_root": 1})\n'
-    elif job.state.root == 2: psi4String += 'psi4.set_options({"follow_root": 2})\n'
+    if job.state.root == 1:
+        psi4String += 'psi4.set_options({"follow_root": 1})\n'
+    elif job.state.root == 2:
+        psi4String += 'psi4.set_options({"follow_root": 2})\n'
     psi4String += 'e, wfn = psi4.energy("casscf", return_wfn=True)\n'
-    if   job.state.root == 1: psi4String += 'writeToFile(f"10-10,1,{e}")\n'
-    elif job.state.root == 2: psi4String += 'writeToFile(f"10-10,2,{e}")\n'
+    if job.state.root == 1:
+        psi4String += 'writeToFile(f"10-10,1,{e}")\n'
+    elif job.state.root == 2:
+        psi4String += 'writeToFile(f"10-10,2,{e}")\n'
     psi4String += 'writeOccupations(str(calculateOccupations(wfn, active_orbs+8)))\n'
     psi4String += 'psi4.core.clean()\n\n'
 
@@ -112,7 +128,8 @@ def psi4CasscfScan(job: Job, xyz: str) -> tuple[str, str]:
     psi4SlmString += '#SBATCH --cpus-per-task=1\n'
     psi4SlmString += f'#SBATCH --ntasks-per-node={job.procs}\n'
     psi4SlmString += f'#SBATCH --mem={job.mem.total_gb}GB\n'
-    if job.partner == True: psi4SlmString += '#SBATCH --qos=partner\n'
+    if job.partner:
+        psi4SlmString += '#SBATCH --qos=partner\n'
     psi4SlmString += '#SBATCH --partition=comp\n\n'
 
     psi4SlmString += 'export PROJECT="p2015120004"\n\n'
@@ -166,7 +183,6 @@ def psi4CasscfScan(job: Job, xyz: str) -> tuple[str, str]:
     #     else:
     #         return
 
-
     # def buildPsi4EOMCCSDOpt(self, key: str, basis: str, charge: int, nroots: int=1, finalNRoots: int=4,
     #                         root: int=0, mult: int=1, cores: int=16, xyzpath: str='', memory: int=320) -> str:
     #     name = stripIllegal(f'{key}-psi4-opt-eomccsd-{basis}-r{root}')
@@ -182,7 +198,7 @@ def psi4CasscfScan(job: Job, xyz: str) -> tuple[str, str]:
     #     Psi4Input +=  'set {\n'
     #     Psi4Input +=  '    reference                   rhf\n'
     #     Psi4Input +=  '    scf_type                    df\n'
-    #     if root > 0: 
+    #     if root > 0:
     #         Psi4Input += f'    roots_per_irrep             [{nroots}]\n'
     #         Psi4Input += f'    follow_root                 {root}\n'
     #         Psi4Input += f'    prop_root                   {root}\n'
@@ -198,7 +214,7 @@ def psi4CasscfScan(job: Job, xyz: str) -> tuple[str, str]:
     #     Psi4Input +=  '    r_convergence               1e-3\n'
     #     Psi4Input +=  '}\n\n'
     #     Psi4Input += f'optimize(\'wb97x-d3/{basis}\')\n\n'
-    #     if root > 0: 
+    #     if root > 0:
     #         Psi4Input += f'optimize(\'eom-ccsd/{basis}\')\n\n'
     #         Psi4Input +=  'set {\n'
     #         Psi4Input +=  '    freeze_core                 true\n'

@@ -68,7 +68,7 @@ def pyscfCasscfScan(job: Job, xyz: str) -> tuple[str, str]:
     pyscfSlmString += '#SBATCH --cpus-per-task=1\n'
     pyscfSlmString += f'#SBATCH --ntasks-per-node={job.procs}\n'
     pyscfSlmString += f'#SBATCH --mem={job.mem.total_gb}GB\n'
-    if job.partner == True:
+    if job.partner:
         pyscfSlmString += '#SBATCH --qos=partner\n'
     pyscfSlmString += '#SBATCH --partition=comp,short\n\n'
 
@@ -82,7 +82,7 @@ def pyscfCasscfScan(job: Job, xyz: str) -> tuple[str, str]:
 
 
 def pyscfCasscfOpt(job: Job, xyz: str) -> tuple[str, str]:
-    PySCFString  =  'from pyscf import gto, lib, mrpt, mcscf, mp\n'
+    PySCFString = 'from pyscf import gto, lib, mrpt, mcscf, mp\n'
     PySCFString += 'import numpy as np\n'
     PySCFString += 'import matplotlib.pyplot as plt\n'
     PySCFString += 'from matplotlib.colors import hsv_to_rgb\n'
@@ -236,11 +236,11 @@ def pyscfCasscfOpt(job: Job, xyz: str) -> tuple[str, str]:
     nelec, norbs = job.casscf
     PySCFString += f'norbs = {norbs}\n'
     PySCFString += f'nelec = {nelec}\n'
-    PySCFString += f'sp_conv_e = 1e-10\n'
-    PySCFString += f'opt_conv_e = 1e-8\n\n'
+    PySCFString += 'sp_conv_e = 1e-10\n'
+    PySCFString += 'opt_conv_e = 1e-8\n\n'
 
     PySCFString += f'mol.charge = {job.fluorophore.charge}\n'
-    PySCFString += f'mol.spin = spin\n'
+    PySCFString += 'mol.spin = spin\n'
     PySCFString += f'mol.basis = "{job.basis.pyscf}"\n'
     PySCFString += f'mol.max_memory = {job.mem.total_mb}\n'
     PySCFString += 'mol.verbose = 4\n'
@@ -360,7 +360,7 @@ def pyscfCasscfOpt(job: Job, xyz: str) -> tuple[str, str]:
     pyscfSlmString += '#SBATCH --cpus-per-task=1\n'
     pyscfSlmString += f'#SBATCH --ntasks-per-node={job.procs}\n'
     pyscfSlmString += f'#SBATCH --mem={job.mem.total_gb}GB\n'
-    if job.partner == True:
+    if job.partner:
         pyscfSlmString += '#SBATCH --qos=partner\n'
     pyscfSlmString += '#SBATCH --partition=comp,short\n\n'
 
@@ -416,7 +416,7 @@ def pyscfMP2Natorbs(job: Job, xyz: str) -> tuple[str, str]:
     pyscfSlmString += '#SBATCH --cpus-per-task=1\n'
     pyscfSlmString += f'#SBATCH --ntasks-per-node={job.procs}\n'
     pyscfSlmString += f'#SBATCH --mem={job.mem.total_gb}GB\n'
-    if job.partner == True:
+    if job.partner:
         pyscfSlmString += '#SBATCH --qos=partner\n'
     pyscfSlmString += '#SBATCH --partition=comp,short\n\n'
 

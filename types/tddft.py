@@ -5,14 +5,14 @@ class TDDFT(NewEnum):
 
     @skip
     class Triplets(NewEnum):
-        on  = 'on'
+        on = 'on'
         off = 'off'
 
     @skip
     class TDA(NewEnum):
-        on  = 'on'
+        on = 'on'
         off = 'off'
         fitting = 'fitting'
 
-    none   =  'none'
-    tddft  =  'tddft'
+    none = 'none'
+    tddft = 'tddft'

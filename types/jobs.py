@@ -13,7 +13,7 @@ class Jobs(NewEnum):
         return
 
     def __str__(self):
-      return self.long
+        return self.long
 
     #
     opt        = 'optimisation'

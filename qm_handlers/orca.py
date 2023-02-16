@@ -6,9 +6,9 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
     multiJob = False
     moinp = 'moread ' if job.mopath != '' else ''
     mostring = f'\n\n%moinp "{job.mopath}"' if job.mopath != '' else ''
-    kdiisstring = 'kdiis ' if job.kdiis == True else ''
-    soscfstring = 'soscf ' if job.soscf == True else 'nososcf '
-    notrahstring = 'notrah ' if job.notrah == True else ''
+    kdiisstring = 'kdiis ' if job.kdiis else ''
+    soscfstring = 'soscf ' if job.soscf else 'nososcf '
+    notrahstring = 'notrah ' if job.notrah else ''
 
     if job.method in [Methods.caspt2, Methods.nevpt2]:
         multiJob = True
@@ -50,54 +50,54 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
     ORCAInput += mostring
     ORCAInput += '\n\n'
     ORCAInput += f'%maxcore {job.mem.per_core_mb}\n'
-    ORCAInput +=  '\n%pal\n'
+    ORCAInput += '\n%pal\n'
     ORCAInput += f'\tnprocs {job.procs}\n'
-    ORCAInput +=  'end\n\n'
+    ORCAInput += 'end\n\n'
 
     if (job.solv != 'gas' and job.pcm == PCM.smd):
-        ORCAInput +=  '%cpcm\n'
-        ORCAInput +=  '\tsmd true\n'
+        ORCAInput += '%cpcm\n'
+        ORCAInput += '\tsmd true\n'
         ORCAInput += f'\tSMDSolvent "{job.solv.smd}"\n'
-        ORCAInput +=  'end\n\n'
+        ORCAInput += 'end\n\n'
 
     elif (job.solv != 'gas' and job.pcm == PCM.cpcm):
-        ORCAInput +=  '%cpcm\n'
+        ORCAInput += '%cpcm\n'
         ORCAInput += f'\tepsilon {job.solv.e}\n'
         ORCAInput += f'\trefrac {job.solv.n}\n'
-        ORCAInput +=  'end\n\n'
+        ORCAInput += 'end\n\n'
 
     ORCAInput += job.grid.orca
 
     if job.job == Jobs.opt and job.refJob.job == Jobs.freq:
-        ORCAInput +=  '%geom\n'
-        ORCAInput +=  '\tInHess Read\n'
+        ORCAInput += '%geom\n'
+        ORCAInput += '\tInHess Read\n'
         ORCAInput += f'\tInHessName "{job.refJob.path}/{job.refJob.name}/{job.refJob.name}.hess"\n'
-        ORCAInput +=  'end\n\n'
+        ORCAInput += 'end\n\n'
 
     if job.job == Jobs.freq and job.restart:
-        ORCAInput +=  '%freq\n'
-        ORCAInput +=  '\trestart true\n'
-        ORCAInput +=  'end\n\n'
+        ORCAInput += '%freq\n'
+        ORCAInput += '\trestart true\n'
+        ORCAInput += 'end\n\n'
 
     if job.scfstring != '':
-        ORCAInput +=  '%scf\n'
+        ORCAInput += '%scf\n'
         ORCAInput += f'\t{job.scfstring}\n'
-        ORCAInput +=  'end\n\n'
+        ORCAInput += 'end\n\n'
 
     if job.job == Jobs.mp2Natorb:
-        ORCAInput +=  '%mp2\n'
-        ORCAInput +=  '\tNatOrbs true\n'
-        ORCAInput +=  '\tDensity relaxed\n'
-        ORCAInput +=  'end\n\n'
+        ORCAInput += '%mp2\n'
+        ORCAInput += '\tNatOrbs true\n'
+        ORCAInput += '\tDensity relaxed\n'
+        ORCAInput += 'end\n\n'
 
-    if job.tddft == TDDFT.tddft: 
+    if job.tddft == TDDFT.tddft:
         if job.tda == TDDFT.TDA.off:
             tdaLine = '\n\ttda false'
-        ORCAInput +=  '%tddft\n'
+        ORCAInput += '%tddft\n'
         ORCAInput += f'\tnroots {job.nroots}\n'
         ORCAInput += f'\tIRoot {job.state.root}\n'
         ORCAInput += f'\tcpcmeq {cpcmeq}{tdaLine}\n'
-        ORCAInput +=  'end\n\n'
+        ORCAInput += 'end\n\n'
 
     if job.method in [Methods.casscf, Methods.caspt2, Methods.nevpt2]:
         nelec, norbs = job.casscf
@@ -106,13 +106,13 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
         weightsString = ','.join(weights)
 
         if job.method in [Methods.caspt2, Methods.nevpt2]:
-            ORCAInput +=  '%base "casscf"\n\n'
-        ORCAInput +=  '%casscf\n'
+            ORCAInput += '%base "casscf"\n\n'
+        ORCAInput += '%casscf\n'
         ORCAInput += f'\tnroots {job.nroots}\n'
         ORCAInput += f'\tnel {nelec}\n'
         ORCAInput += f'\tnorb {norbs}\n'
         ORCAInput += f'\tmult {job.state.mult}\n'
-        ORCAInput +=  '\tMaxIter 500\n'
+        ORCAInput += '\tMaxIter 500\n'
         ORCAInput += f'\tweights[0] = {weightsString}\n'
         if job.method == Methods.casscf and job.orbstep != 'SuperCI_PT (default)':
             ORCAInput += f'\tOrbStep {job.orbstep}\n'
@@ -121,8 +121,8 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
         if job.method == Methods.casscf and job.switchconv != 0.03:
             ORCAInput += f'\tSwitchConv {job.switchconv:.2g}\n'
         if job.job != Jobs.casscfOpt:
-            ORCAInput +=  '\ttrafostep ri\n'
-        ORCAInput +=  'end\n\n'
+            ORCAInput += '\ttrafostep ri\n'
+        ORCAInput += 'end\n\n'
 
     if job.xyzpath == '':
         ORCAInput += f'* xyz {job.fluorophore.charge} {job.state.mult}\n'
@@ -135,45 +135,45 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
         ORCAInput += f'* xyzfile {job.fluorophore.charge} {job.fluorophore.mult} {job.xyzpath}\n\n'
 
     if multiJob:
-        ORCAInput +=  '$new_job\n\n'
+        ORCAInput += '$new_job\n\n'
 
         ORCAInput += f'! {jobLine2} {job.method.orca} {riString}{job.basis.orca} {riBasis}verytightscf {cpcm} MOREAD noiter'
         ORCAInput += '\n\n'
 
         if (job.solv != 'gas' and job.pcm == PCM.smd):
-            ORCAInput +=  '%cpcm\n'
-            ORCAInput +=  '\tsmd true\n'
+            ORCAInput += '%cpcm\n'
+            ORCAInput += '\tsmd true\n'
             ORCAInput += f'\tSMDSolvent "{job.solv.smd}"\n'
-            ORCAInput +=  'end\n\n'
+            ORCAInput += 'end\n\n'
 
         elif (job.solv != 'gas' and job.pcm == PCM.cpcm):
-            ORCAInput +=  '%cpcm\n'
+            ORCAInput += '%cpcm\n'
             ORCAInput += f'\tepsilon {job.solv.e}\n'
             ORCAInput += f'\trefrac {job.solv.n}\n'
-            ORCAInput +=  'end\n\n'
+            ORCAInput += 'end\n\n'
 
         if job.method in [Methods.caspt2, Methods.nevpt2]:
-            ORCAInput +=  '%moinp "casscf.gbw"\n\n'
-            ORCAInput +=  '%casscf\n'
+            ORCAInput += '%moinp "casscf.gbw"\n\n'
+            ORCAInput += '%casscf\n'
             ORCAInput += f'\tnroots {job.nroots}\n'
             ORCAInput += f'\tnel {nelec}\n'
             ORCAInput += f'\tnorb {norbs}\n'
             ORCAInput += f'\tmult {job.state.mult}\n'
-            ORCAInput +=  '\tMaxIter 500\n'
+            ORCAInput += '\tMaxIter 500\n'
             # ORCAInput += f'\tweights[0] = {weightsString}\n'
             if job.job != Jobs.casscfOpt:
-                ORCAInput +=  '\ttrafostep ri\n'
+                ORCAInput += '\ttrafostep ri\n'
             if job.method == Methods.nevpt2:
-                ORCAInput +=  '\tPTMethod sc_nevpt2\n'
+                ORCAInput += '\tPTMethod sc_nevpt2\n'
             if job.method in [Methods.nevpt2, Methods.caspt2]:
-                ORCAInput +=  '\t\tPTSettings\n'
-                ORCAInput +=  '\t\tMaxIter 200\n'
-                ORCAInput +=  '\t\tD4TPre 1e-14\n'
+                ORCAInput += '\t\tPTSettings\n'
+                ORCAInput += '\t\tMaxIter 200\n'
+                ORCAInput += '\t\tD4TPre 1e-14\n'
                 # ORCAInput += f'\t\tselectedRoots[0] = {perturbedString}\n'
                 if job.method == Methods.nevpt2:
-                    ORCAInput +=  'QDType QD_VanVleck\n'
-                ORCAInput +=  '\tend\n'
-            ORCAInput +=  'end\n\n'
+                    ORCAInput += 'QDType QD_VanVleck\n'
+                ORCAInput += '\tend\n'
+            ORCAInput += 'end\n\n'
 
         if job.xyzpath == '':
             ORCAInput += f'* xyz {job.fluorophore.charge} {job.state.mult}\n'
@@ -213,7 +213,7 @@ def pullORCA_En(job: Job, out: list[str]) -> tuple[float, list[float], list[floa
                 splitPoint = count
     out = out[splitPoint:]
 
-    for state in range(1, nroots+1):
+    for state in range(1, nroots + 1):
         if job.job not in [Jobs.casscf, Jobs.casscfOpt, Jobs.caspt2, Jobs.nevpt2]:
             stateList += [f'STATE{state:3}:  E=  ']
         else:
@@ -222,13 +222,13 @@ def pullORCA_En(job: Job, out: list[str]) -> tuple[float, list[float], list[floa
         if 'FINAL SINGLE POINT ENERGY' in line:
             e = float(line.split()[4])
         elif 'ABSORPTION SPECTRUM VIA TRANSITION ELECTRIC DIPOLE MOMENTS' in line:
-            startList = count+5
+            startList = count + 5
         elif 'ABSORPTION SPECTRUM' in line and job.job in [Jobs.casscf, Jobs.casscfOpt, Jobs.caspt2, Jobs.nevpt2]:
-            startList = count+5
+            startList = count + 5
         for stateCheck in stateList:
             if stateCheck in line:
                 e_trans += [float(line.split()[5])]
-    for line in out[startList:startList+nroots-1]:
+    for line in out[startList:startList + nroots - 1]:
         f += [float(line.split()[7])]
         tx = float(line.split()[9])
         ty = float(line.split()[10])
@@ -256,15 +256,17 @@ def pullORCA_Freq(job: Job, out: list[str]) -> tuple[float, float, float]:
     return e, zpve, neg
 
 
-def m_diag(occ_ref: list[float]|np.ndarray, occ_no: list[float]|np.ndarray) -> float:
-    if type(occ_ref) == list: occ_ref = np.array(occ_ref)
-    if type(occ_no) == list: occ_no = np.array(occ_no)
+def m_diag(occ_ref: list[float] | np.ndarray, occ_no: list[float] | np.ndarray) -> float:
+    if type(occ_ref) == list:
+        occ_ref = np.array(occ_ref)
+    if type(occ_no) == list:
+        occ_no = np.array(occ_no)
 
     docc = occ_no[np.equal(occ_ref, 2.)].tolist()
     socc = occ_no[np.equal(occ_ref, 1.)].tolist()
     uocc = occ_no[np.equal(occ_ref, 0.)].tolist()
     soccm1 = np.abs(np.subtract(socc, 1))
-    m = 0.5*(2-min(docc)+np.sum(soccm1)+max(uocc))
+    m = 0.5 * (2 - min(docc) + np.sum(soccm1) + max(uocc))
     return round(m, 3)
 
 
@@ -277,7 +279,7 @@ def build_ref(electrons: int, occ: list[float], state: int) -> list[float]:
         else:
             ref += [1.]
             electrons -= 1
-    for i in range(len(occ)-len(ref)):
+    for i in range(len(occ) - len(ref)):
         ref += [0.]
 
     if state == 1:
@@ -285,7 +287,7 @@ def build_ref(electrons: int, occ: list[float], state: int) -> list[float]:
         for count, occ in enumerate(ref):
             if occ < 1.:
                 lumo = count
-                homo = count-1
+                homo = count - 1
                 break
         ref[homo] -= 1.
         ref[lumo] += 1.
@@ -295,7 +297,7 @@ def build_ref(electrons: int, occ: list[float], state: int) -> list[float]:
 def extract_occ(lines: list[str]) -> list[float]:
     for count, line in enumerate(lines):
         if '  NO   OCC          E(Eh)            E(eV) ' in line:
-            start = count+1
+            start = count + 1
             occs = []
             for orbs in lines[start:]:
                 try:

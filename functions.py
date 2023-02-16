@@ -13,7 +13,7 @@ def evToNm(eV: float | list[float], error: float = 0.0) -> float | tuple[float, 
         return np.divide(np.multiply(h, c), np.multiply(eV, 1e-9))
 
     if type(eV) == float:
-        nm = ev2nm([eV, eV+error, eV-error])
+        nm = ev2nm([eV, eV + error, eV - error])
         if error == 0:
             return nm[0]
         elif error != 0:
@@ -52,8 +52,8 @@ def rmsd(expectation: float, predictedlist: list[float]) -> float:
 
 def fluorophores_solvents_methods() -> tuple[list[Fluorophores], list[Solvents], list[Methods]]:
     fluorophores = [fluorophore for fluorophore in Fluorophores if bool(fluorophore)]
-    solvents = [solvent for solvent in Solvents if bool(solvent) == True]
-    methods = [method for method in Methods if bool(method) == True]
+    solvents = [solvent for solvent in Solvents if bool(solvent)]
+    methods = [method for method in Methods if bool(method)]
     return fluorophores, solvents, methods
 
 
@@ -76,9 +76,9 @@ class dsLoad(object):
 
     def __init__(self, ds: str = 'fluorophores-ds', df: str = 'dataset') -> None:
         if self.os.name == 'nt':
-            self.main_path = f'C:\\Users\\Adrea\\gdrive\\My Drive\\Notebooks\\Excited States\\resources\\databases\\fluorophores-ds'
+            self.main_path = 'C:\\Users\\Adrea\\gdrive\\My Drive\\Notebooks\\Excited States\\resources\\databases\\fluorophores-ds'
         else:
-            self.main_path = f'/Users/adrea/gdrive/Notebooks/Excited States/resources/databases/fluorophores-ds'
+            self.main_path = '/Users/adrea/gdrive/Notebooks/Excited States/resources/databases/fluorophores-ds'
         self.db = f'{self.main_path}/{df}'
         return
 
