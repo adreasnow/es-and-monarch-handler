@@ -1,8 +1,8 @@
 import numpy as np
 
-
 def gaussian_func(x, amp1, cen1, sigma1):
-    return np.multiply(amp1, np.exp(np.negative(np.divide(np.square(np.subtract(cen1, x)), (2 * sigma1)**2))))
+    first = np.multiply(amp1, np.exp(np.negative(np.divide(np.square(np.subtract(cen1, x)), (2 * sigma1)**2))))
+    return np.negative(np.divide(np.multiply(np.subtract(x, cen1), first), sigma1**2))
 
 
 def gaussian_2(x, amp1, cen1, sigma1,
@@ -495,3 +495,9 @@ def gaussian_20(x, amp1, cen1, sigma1,
     gList = np.add(gList, gaussian_func(x, amp18, cen18, sigma18))
     gList = np.add(gList, gaussian_func(x, amp19, cen19, sigma19))
     gList = np.add(gList, gaussian_func(x, amp20, cen20, sigma20))
+
+
+derivFuncList1 = [gaussian_func, gaussian_func, gaussian_2,  gaussian_3,  gaussian_4,  gaussian_5,  gaussian_6,  gaussian_7,
+                gaussian_8,    gaussian_9,    gaussian_10, gaussian_11, gaussian_12, gaussian_13, gaussian_14, gaussian_15,
+                gaussian_16,   gaussian_17,   gaussian_18, gaussian_19, gaussian_20]
+
