@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def gaussian_func(x, amp1, cen1, sigma1):
     return np.multiply(amp1, np.exp(np.negative(np.divide(np.square(np.subtract(cen1, x)), (2 * sigma1)**2))))
 

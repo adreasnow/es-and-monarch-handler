@@ -1,5 +1,6 @@
 from .newenum import NewEnum
 from dataclasses import dataclass
+from typing import Optional
 
 
 class spectraType(NewEnum):
@@ -9,7 +10,6 @@ class spectraType(NewEnum):
     ftir       = 'ftir'
     qy         = 'qr'
     lifetime   = 'tr'
-
 
 @dataclass
 class gaussian():
@@ -30,26 +30,50 @@ class deconvParams():
 @dataclass
 class spectrum():
     spectrum: spectraType
+    derivLevel: int
     params: deconvParams | None
     residual: float | None
+    peaks: list[gaussian] | None
     x: list[float]
     y: list[float]
-    peaks: list[gaussian] | None
+    smoothing: int
+    smoothing_deriv: int
+    residual_deriv: Optional[float | None] = None
+    peaks_deriv: Optional[list[gaussian] | None] = None
 
-    @property
-    def peaks_sorted_forward(self) -> list[gaussian]:
-        centerList = [gauss.center for gauss in self.peaks]
+    def _peaks_sorted(self, direction, level) -> list[gaussian]:
+        if level == 'deriv':
+            peaks = self.peaks_deriv
+        else:
+            peaks = self.peaks
+
+        centerList = [gauss.center for gauss in peaks]
         sortList = sorted(centerList)
         outGaussList = []
         for center in sortList:
-            for gauss in self.peaks:
+            for gauss in peaks:
                 if gauss.center == center:
                     outGaussList += [gauss]
-        return outGaussList
+        if direction == 'forward':
+            return outGaussList
+        else:
+            return reversed(outGaussList)
 
     @property
-    def peaks_sorted_reverse(self) -> list[gaussian]:
-        return reversed(self.peaks_sorted_forward)
+    def peaks_sorted(self) -> list[gaussian]:
+        if self.spectrum == spectraType.emission:
+            return self._peaks_sorted('backward', 'zeroth')
+        else:
+            return self._peaks_sorted('forward', 'zeroth')
+
+    @property
+    def peaks_sorted_deriv(self) -> list[gaussian]:
+        if self.spectrum == spectraType.emission:
+            return self._peaks_sorted('backward', 'deriv')
+        else:
+            return self._peaks_sorted('forward', 'deriv')
+
+
 
 
 @dataclass
