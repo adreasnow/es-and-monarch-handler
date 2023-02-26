@@ -1,4 +1,5 @@
 from ..types.job import Job, Solvents, PCM, Jobs, Orbs, TDDFT, Methods
+from ..functions import nmToEv
 import numpy as np
 
 
@@ -10,8 +11,10 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
     soscfstring = 'soscf ' if job.soscf else 'nososcf '
     notrahstring = 'notrah ' if job.notrah else ''
 
-    if job.method in [Methods.caspt2, Methods.nevpt2]:
-        multiJob = True
+    # Not currently used since no multi-job runs are needed
+
+    # if job.method in []:
+    #     multiJob = True
 
     if job.pcm in [PCM.cpcm, PCM.smd, PCM.none]:
         cpcm = 'CPCM ' if (job.solv != Solvents.gas) or (job.pcm != PCM.none) else ''
@@ -39,7 +42,9 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
         raise Exception(f'Job type {job.job} not implemented.')
 
     riString = 'RIJCOSX ' if job.method not in [Methods.casscf, Methods.mp2, Methods.nevpt2, Methods.caspt2] else ''
-    method = job.method.orca if job.method not in [Methods.casscf, Methods.caspt2] else 'CASSCF'
+
+    # exception only needed for setting the fist job in multijob
+    method = job.method.orca if job.method not in [] else 'CASSCF'
 
     if job.job in [Jobs.mp2Natorb, Jobs.nevpt2, Jobs.caspt2, Jobs.casscf, Jobs.casscfFreq]:
         riBasis = f'{job.basis.orca}/C '
@@ -105,23 +110,34 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
         weights[job.state.root] = '1'
         weightsString = ','.join(weights)
 
-        if job.method in [Methods.caspt2, Methods.nevpt2]:
-            ORCAInput += '%base "casscf"\n\n'
         ORCAInput += '%casscf\n'
         ORCAInput += f'\tnroots {job.nroots}\n'
         ORCAInput += f'\tnel {nelec}\n'
         ORCAInput += f'\tnorb {norbs}\n'
         ORCAInput += f'\tmult {job.state.mult}\n'
         ORCAInput += '\tMaxIter 500\n'
-        ORCAInput += f'\tweights[0] = {weightsString}\n'
-        if job.method == Methods.casscf and job.orbstep != 'SuperCI_PT (default)':
+        if job.job == Jobs.casscfOpt:
+            ORCAInput += f'\tweights[0] = {weightsString}\n' # CASPT methods I think need a SA inpur wavefn
+        if job.orbstep != 'SuperCI_PT (default)':
             ORCAInput += f'\tOrbStep {job.orbstep}\n'
-        if job.method == Methods.casscf and job.switchstep != 'SuperCI_PT (default)':
+        if job.switchstep != 'SuperCI_PT (default)':
             ORCAInput += f'\tSwitchStep {job.switchstep}\n'
-        if job.method == Methods.casscf and job.switchconv != 0.03:
+        if job.switchconv != 0.03:
             ORCAInput += f'\tSwitchConv {job.switchconv:.2g}\n'
         if job.job != Jobs.casscfOpt:
             ORCAInput += '\ttrafostep ri\n'
+        if job.method == Methods.nevpt2:
+            ORCAInput += '\tPTMethod sc_nevpt2\n'
+        elif job.method == Methods.caspt2:
+            ORCAInput += '\tPTMethod fic_caspt2k\n'
+        if job.method in [Methods.nevpt2, Methods.caspt2]:
+            ORCAInput += '\tPTSettings\n'
+            ORCAInput += '\t\tMaxIter 200\n'
+            ORCAInput += '\t\tD4TPre 1e-14\n'
+            # ORCAInput += f'\t\tselectedRoots[0] = {perturbedString}\n'
+            if job.method == Methods.nevpt2:
+                ORCAInput += '\t\tQDType QD_VanVleck\n'
+            ORCAInput += '\tend\n'
         ORCAInput += 'end\n\n'
 
     if job.xyzpath == '':
@@ -134,56 +150,34 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
     else:
         ORCAInput += f'* xyzfile {job.fluorophore.charge} {job.fluorophore.mult} {job.xyzpath}\n\n'
 
-    if multiJob:
-        ORCAInput += '$new_job\n\n'
+    # Not currently used since no multi-job runs are needed
 
-        ORCAInput += f'! {jobLine2} {job.method.orca} {riString}{job.basis.orca} {riBasis}verytightscf {cpcm} MOREAD noiter'
-        ORCAInput += '\n\n'
+    # if multiJob:
+    #     ORCAInput += '$new_job\n\n'
+    #     ORCAInput += f'! {jobLine2} {job.method.orca} {riString}{job.basis.orca} {riBasis}verytightscf {cpcm} MOREAD noiter'
+    #     ORCAInput += '\n\n'
 
-        if (job.solv != 'gas' and job.pcm == PCM.smd):
-            ORCAInput += '%cpcm\n'
-            ORCAInput += '\tsmd true\n'
-            ORCAInput += f'\tSMDSolvent "{job.solv.smd}"\n'
-            ORCAInput += 'end\n\n'
+    #     if (job.solv != 'gas' and job.pcm == PCM.smd):
+    #         ORCAInput += '%cpcm\n'
+    #         ORCAInput += '\tsmd true\n'
+    #         ORCAInput += f'\tSMDSolvent "{job.solv.smd}"\n'
+    #         ORCAInput += 'end\n\n'
 
-        elif (job.solv != 'gas' and job.pcm == PCM.cpcm):
-            ORCAInput += '%cpcm\n'
-            ORCAInput += f'\tepsilon {job.solv.e}\n'
-            ORCAInput += f'\trefrac {job.solv.n}\n'
-            ORCAInput += 'end\n\n'
+    #     elif (job.solv != 'gas' and job.pcm == PCM.cpcm):
+    #         ORCAInput += '%cpcm\n'
+    #         ORCAInput += f'\tepsilon {job.solv.e}\n'
+    #         ORCAInput += f'\trefrac {job.solv.n}\n'
+    #         ORCAInput += 'end\n\n'
 
-        if job.method in [Methods.caspt2, Methods.nevpt2]:
-            ORCAInput += '%moinp "casscf.gbw"\n\n'
-            ORCAInput += '%casscf\n'
-            ORCAInput += f'\tnroots {job.nroots}\n'
-            ORCAInput += f'\tnel {nelec}\n'
-            ORCAInput += f'\tnorb {norbs}\n'
-            ORCAInput += f'\tmult {job.state.mult}\n'
-            ORCAInput += '\tMaxIter 500\n'
-            # ORCAInput += f'\tweights[0] = {weightsString}\n'
-            if job.job != Jobs.casscfOpt:
-                ORCAInput += '\ttrafostep ri\n'
-            if job.method == Methods.nevpt2:
-                ORCAInput += '\tPTMethod sc_nevpt2\n'
-            if job.method in [Methods.nevpt2, Methods.caspt2]:
-                ORCAInput += '\t\tPTSettings\n'
-                ORCAInput += '\t\tMaxIter 200\n'
-                ORCAInput += '\t\tD4TPre 1e-14\n'
-                # ORCAInput += f'\t\tselectedRoots[0] = {perturbedString}\n'
-                if job.method == Methods.nevpt2:
-                    ORCAInput += 'QDType QD_VanVleck\n'
-                ORCAInput += '\tend\n'
-            ORCAInput += 'end\n\n'
+    #     if job.xyzpath == '':
+    #         ORCAInput += f'* xyz {job.fluorophore.charge} {job.state.mult}\n'
 
-        if job.xyzpath == '':
-            ORCAInput += f'* xyz {job.fluorophore.charge} {job.state.mult}\n'
-
-            for line in xyz[2:]:
-                if len(line.split()) > 2:
-                    ORCAInput += f'{line}\n'
-            ORCAInput += '*\n\n'
-        else:
-            ORCAInput += f'* xyzfile {job.fluorophore.charge} {job.fluorophore.mult} {job.xyzpath}\n\n'
+    #         for line in xyz[2:]:
+    #             if len(line.split()) > 2:
+    #                 ORCAInput += f'{line}\n'
+    #         ORCAInput += '*\n\n'
+    #     else:
+    #         ORCAInput += f'* xyzfile {job.fluorophore.charge} {job.fluorophore.mult} {job.xyzpath}\n\n'
 
     return ORCAInput
 
@@ -191,7 +185,7 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
 def pullORCA(job: Job, out: list[str]):
     if job.job in [Jobs.freq]:
         return pullORCA_Freq(job, out)
-    elif job.job in [Jobs.ex, Jobs.em, Jobs.td, Jobs.casscf, Jobs.casscfOpt, Jobs.opt]:
+    elif job.job in [Jobs.ex, Jobs.em, Jobs.td, Jobs.casscf, Jobs.casscfOpt, Jobs.opt, Jobs.caspt2]:
         return pullORCA_En(job, out)
     else:
         raise Exception(f'Job type {job.software} {job.job} not implemented')
@@ -213,22 +207,31 @@ def pullORCA_En(job: Job, out: list[str]) -> tuple[float, list[float], list[floa
                 splitPoint = count
     out = out[splitPoint:]
 
-    for state in range(1, nroots + 1):
+    for state in range(1, nroots):
         if job.job not in [Jobs.casscf, Jobs.casscfOpt, Jobs.caspt2, Jobs.nevpt2]:
             stateList += [f'STATE{state:3}:  E=  ']
+            e_trans += [0.0]
         else:
             stateList += [f'ROOT{state:4}:  E=  ']
+            e_trans += [0.0]
     for count, line in enumerate(out):
         if 'FINAL SINGLE POINT ENERGY' in line:
             e = float(line.split()[4])
         elif 'ABSORPTION SPECTRUM VIA TRANSITION ELECTRIC DIPOLE MOMENTS' in line:
             startList = count + 5
+            e_trans = []
         elif 'ABSORPTION SPECTRUM' in line and job.job in [Jobs.casscf, Jobs.casscfOpt, Jobs.caspt2, Jobs.nevpt2]:
             startList = count + 5
-        for stateCheck in stateList:
+
+        for count, stateCheck in enumerate(stateList):
             if stateCheck in line:
-                e_trans += [float(line.split()[5])]
+                e_trans[count] = float(line.split()[5])
+
+    if job.job in [Jobs.caspt2, Jobs.nevpt2]:
+        e_trans = []
     for line in out[startList:startList + nroots - 1]:
+        if job.job in [Jobs.caspt2, Jobs.nevpt2]:
+            e_trans += [nmToEv(float(line.split()[6]))]
         f += [float(line.split()[7])]
         tx = float(line.split()[9])
         ty = float(line.split()[10])
