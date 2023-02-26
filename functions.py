@@ -2,7 +2,6 @@ from .types.solvents import Solvents
 from .types.fluorophores import Fluorophores
 from .types.methods import Methods
 import numpy as np
-import pandas as pd
 import tomli
 import os
 from openbabel.pybel import readstring as pbreadstring
@@ -80,9 +79,11 @@ def script_builder(filePath: str, strName: str) -> str:
 
 
 class dsLoad(object):
+    import pandas as pd
+
     def __init__(self, ds: str = 'fluorophores-ds', df: str = 'dataset') -> None:
         config = loadConfig()
-        if self.os.name == 'nt':
+        if os.name == 'nt':
             self.main_path = config['local']['dbLocationWin']
         else:
             self.main_path = config['local']['dbLocationMac']
@@ -99,9 +100,11 @@ class dsLoad(object):
 
 
 class statusLoad(object):
+    import pandas as pd
+
     def __init__(self, df: str = 'progress') -> None:
         config = loadConfig()
-        if self.os.name == 'nt':
+        if os.name == 'nt':
             self.main_path = config['local']['dbLocationWin']
         else:
             self.main_path = config['local']['dbLocationMac']
