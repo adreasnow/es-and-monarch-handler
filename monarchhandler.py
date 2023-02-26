@@ -34,7 +34,7 @@ class monarchHandler:
         self.TOTime = 0
         self.TOFreq = self.config['monarch']['timedOutCheckFreq']   # seconds
         self.pythonEXE = self.config['monarch']['python']
-        self.squeueCommand = self.config['monarch']['squeueCommand']
+        self.squeue = self.config['monarch']['squeue']
         self.sbatch = self.config['monarch']['sbatch']
         self.toslm = self.config['monarch']['2slm']
         print()
@@ -58,7 +58,7 @@ class monarchHandler:
                           "COMPLETING": slurmStatus.COMPLETING,
                           "FAILED": slurmStatus.FAILED}
 
-            out, err = self.run(f'{self.squeueCommand} | grep {self.user}')
+            out, err = self.run(f'{self.squeue} -o\'%.18i %u %.100j %.8T\' --sort=\'-T,j\' | grep {self.user}')
             for line in out:
                 if line != '':
                     splitline = line.split()

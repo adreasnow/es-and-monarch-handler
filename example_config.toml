@@ -18,10 +18,6 @@ user = 'your monarch username here'
 python = 'the location of your python3 on monarch'
 sbatch = '/opt/slurm-latest/bin/sbatch'
 2slm = 'where do you keep your 2slm.py file?'
-
-# Dont thange ⬇︎⬇︎these⬇︎⬇︎ unless you know what you're doing...
 slurmCheckFreq = 60
 timedOutCheckFreq = 60
-squeueCommand = "/opt/slurm-latest/bin/squeue -o\\'%.18i %u %.100j %.8T\\' --sort=\\'-T,j\\'"
-
-
+squeue = '/opt/slurm-latest/bin/squeue'
