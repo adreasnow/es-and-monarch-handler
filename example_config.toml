@@ -1,21 +1,27 @@
 # Rename to config.toml and put in your own settings
 
 [local]
-dbLocationMac = '/Users/adrea/gdrive/Notebooks/Excited States/resources/databases/fluorophores-ds'
-dbLocationWin = 'C:\\Users\\Adrea\\gdrive\\My Drive\\Notebooks\\Excited States\\resources\\databases\\fluorophores-ds'
-dataFolderMac = '/Users/adrea/gdrive/Monash/PhD/Fluorophore/data'
-dataFolderWin = 'C:\\Users\\Adrea\\gdrive\\My Drive\\Monash\\PhD\\Fluorophore\\data'
+dbLocationMac = 'full path to fluorophores-ds if on mac'
+dbLocationWin = 'full path to fluorophores-ds if on win'
+dataFolderMac = 'full path to .csv spectrum data if on mac'
+dataFolderWin = 'full path to .csv spectrum data if on win'
+
+[ifttt]
+# This is for webhooks notifications wityh ifttt as documented at:
+# http://mccg.erc.monash.edu/Group%20Wiki/Cluster%20Matters/notifications/#ifttt-webhooks
+jobid = 'job_id_done'
+jobkey = 'your ifttt webhooks key'
 
 [monarch]
 host = 'monarch.erc.monash.edu'
-user = 'asnow'
-python = '/home/asnow/mambaforge/bin/python3'
+user = 'your monarch username here'
+python = 'the location of your python3 on monarch'
+sbatch = '/opt/slurm-latest/bin/sbatch'
+2slm = 'where do you keep your 2slm.py file?'
+
+# Dont thange ⬇︎⬇︎these⬇︎⬇︎ unless you know what you're doing...
 slurmCheckFreq = 60
 timedOutCheckFreq = 60
 squeueCommand = "/opt/slurm-latest/bin/squeue -o\\'%.18i %u %.100j %.8T\\' --sort=\\'-T,j\\'"
-sbatch = '/opt/slurm-latest/bin/sbatch'
-2slm = '/home/asnow/p2015120004/asnow/bin/slmUtilities/2slm.py'
 
-[ifttt]
-jobid = 'job_id_done'
-jobkey = 'eEvfCdvzr4jy_SX51JYjKhAILZjPa53n8MFcQd1FErB'
+
