@@ -2,8 +2,17 @@ from .types.solvents import Solvents
 from .types.fluorophores import Fluorophores
 from .types.methods import Methods
 import numpy as np
+import pandas as pd
+import tomli
+import os
 from openbabel.pybel import readstring as pbreadstring
 
+
+def loadConfig() -> dict:
+    root_dir = os.path.dirname(os.path.abspath(__file__))
+    with open(f'{root_dir}/config.toml', 'rb') as f:
+        global_config = tomli.load(f)
+    return global_config
 
 def evToNm(eV: float | list[float], error: float = 0.0) -> float | tuple[float, float, float]:
     '''Converts eV values to nm'''
@@ -71,14 +80,12 @@ def script_builder(filePath: str, strName: str) -> str:
 
 
 class dsLoad(object):
-    import pandas as pd
-    import os
-
     def __init__(self, ds: str = 'fluorophores-ds', df: str = 'dataset') -> None:
+        config = loadConfig()
         if self.os.name == 'nt':
-            self.main_path = 'C:\\Users\\Adrea\\gdrive\\My Drive\\Notebooks\\Excited States\\resources\\databases\\fluorophores-ds'
+            self.main_path = config['local']['dbLocationWin']
         else:
-            self.main_path = '/Users/adrea/gdrive/Notebooks/Excited States/resources/databases/fluorophores-ds'
+            self.main_path = config['local']['dbLocationMac']
         self.db = f'{self.main_path}/{df}'
         return
 
@@ -92,14 +99,12 @@ class dsLoad(object):
 
 
 class statusLoad(object):
-    import pandas as pd
-    import os
-
     def __init__(self, df: str = 'progress') -> None:
+        config = loadConfig()
         if self.os.name == 'nt':
-            self.main_path = 'C:\\Users\\Adrea\\gdrive\\My Drive\\Notebooks\\Excited States\\resources\\databases\\fluorophores-ds'
+            self.main_path = config['local']['dbLocationWin']
         else:
-            self.main_path = '/Users/adrea/gdrive/Notebooks/Excited States/resources/databases/fluorophores-ds'
+            self.main_path = config['local']['dbLocationMac']
         self.db = f'{self.main_path}/{df}'
         return
 

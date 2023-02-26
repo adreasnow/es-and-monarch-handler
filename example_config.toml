@@ -1,0 +1,21 @@
+# Rename to config.toml and put in your own settings
+
+[local]
+db_location_mac = '/Users/adrea/gdrive/Notebooks/Excited States/resources/databases/fluorophores-ds'
+db_location_win = 'C:\\Users\\Adrea\\gdrive\\My Drive\\Notebooks\\Excited States\\resources\\databases\\fluorophores-ds'
+data_folder_mac = '/Users/adrea/gdrive/Monash/PhD/Fluorophore/data/'
+data_folder_win = '/Users/adrea/gdrive/Monash/PhD/Fluorophore/data/'
+
+[monarch]
+host = 'monarch.erc.monash.edu'
+user = 'asnow'
+python = '/home/asnow/mambaforge/bin/python3'
+slurmCheckFreq = 60
+timedOutCheckFreq = 60
+squeueCommand = '/opt/slurm-latest/bin/squeue -o\'%.18i %u %.100j %.8T\' --sort=\'-T,j\''
+sbatch = '/opt/slurm-latest/bin/sbatch'
+2slm = '/home/asnow/p2015120004/asnow/bin/slmUtilities/2slm.py'
+
+[ifttt]
+jobid = 'job_id_done'
+jobkey = 'eEvfCdvzr4jy_SX51JYjKhAILZjPa53n8MFcQd1FErB'

@@ -1,4 +1,4 @@
-from .functions import smiles2xyz
+from .functions import smiles2xyz, loadConfig
 # from .types.solvents import Solvents
 # from .types.fluorophores import Fluorophores
 # from .types.states import States
@@ -23,18 +23,21 @@ from typing import Any
 class monarchHandler:
     from paramiko import SSHClient, AutoAddPolicy
 
-    def __init__(self, host: str = "monarch.erc.monash.edu", user: str = "asnow",
-                 jobid: str = "job_id_done", jobkey: str = "eEvfCdvzr4jy_SX51JYjKhAILZjPa53n8MFcQd1FErB",
-                 pythonEXE: str = '/home/asnow/miniconda3/bin/python3') -> None:
-        self.host = host
-        self.user = user
-        self.jobid = jobid
-        self.jobkey = jobkey
+    def __init__(self) -> None:
+        self.config = loadConfig()
+        self.host = self.config['monarch']['host']
+        self.user = self.config['monarch']['user']
+        self.jobid = self.config['ifttt']['jobid']
+        self.jobkey = self.config['ifttt']['jobkey']
         self.slurmTime = 0
-        self.slurmFreq = 60  # seconds
+        self.slurmFreq = self.config['monarch']['slurmCheckFreq']  # seconds
         self.TOTime = 0
-        self.TOFreq = 60  # seconds
-        self.pythonEXE = pythonEXE
+        self.TOFreq = self.config['monarch']['timedOutCheckFreq']   # seconds
+        self.pythonEXE = self.config['monarch']['python']
+        self.squeueCommand = self.config['monarch']['squeueCommand']
+        self.sbatch = self.config['monarch']['sbatch']
+        self.toslm = self.config['monarch']['2slm']
+        print()
         return
 
     def __enter__(self):
@@ -55,7 +58,7 @@ class monarchHandler:
                           "COMPLETING": slurmStatus.COMPLETING,
                           "FAILED": slurmStatus.FAILED}
 
-            out, err = self.run('/opt/slurm-latest/bin/squeue -o\'%.18i %u %.100j %.8T\' --sort=\'-T,j\' | grep asnow')
+            out, err = self.run(f'{self.squeueCommand} | grep {self.user}')
             for line in out:
                 if line != '':
                     splitline = line.split()
@@ -151,9 +154,9 @@ class monarchHandler:
 
     def sbatch(self, job: Job) -> None:
         if job.software in [Software.crest]:
-            out, err = self.run(f'cd {job.path} && /opt/slurm-latest/bin/sbatch {job.infile}')
+            out, err = self.run(f'cd {job.path} && {self.sbatch} {job.infile}')
         elif job.software in [Software.psi4Script, Software.pyscf]:
-            out, err = self.run(f'cd {job.path} && /opt/slurm-latest/bin/sbatch {job.path}/{job.name}.slm')
+            out, err = self.run(f'cd {job.path} && {self.sbatch} {job.path}/{job.name}.slm')
         return out, err
 
     def submitFiles(self, flags: str, files: str | list[str]) -> None:
@@ -162,7 +165,7 @@ class monarchHandler:
             files = [files]
 
         for file in files:
-            out, err = self.run(f'{keys} {self.pythonEXE} /home/asnow/p2015120004/asnow/bin/slmUtilities/2slm.py {flags} "{file}"')
+            out, err = self.run(f'{keys} {self.pythonEXE} {self.toslm} {flags} "{file}"')
             if err != ['']:
                 print(err)
             else:

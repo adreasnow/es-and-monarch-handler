@@ -17,6 +17,7 @@ from .types.energy import Energy
 from .functions import evToNm, nmToEv, stripIllegal, smiles2xyz, script_builder
 from .functions import rmsd, fluorophores_solvents_methods, dsLoad, statusLoad
 from .monarchhandler import monarchHandler
+import tomli
 
 
 def main() -> None:
