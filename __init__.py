@@ -15,7 +15,7 @@ from .types.slurmJob import slurmStatus, slurmJob
 from .types.spectra import spectraType, spectrum, gaussian, deconvParams, _simpleSpectrum, spectrumSeries, trf, irf, Lifetime
 from .types.energy import Energy
 from .functions import evToNm, nmToEv, stripIllegal, smiles2xyz, script_builder
-from .functions import rmsd, fluorophores_solvents_methods, dsLoad, statusLoad
+from .functions import rmsd, fluorophores_solvents_methods, dsLoad, statusLoad, loadConfig
 from .monarchhandler import monarchHandler
 import tomli
 
