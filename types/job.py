@@ -80,6 +80,7 @@ class Job():
     orbstep: str = 'SuperCI_PT (default)'
     switchstep: str = 'SuperCI_PT (default)'
     switchconv: float = 0.03
+    sa: bool = False
 
     # orbs
     orbs: Orbs = Orbs.can
@@ -96,7 +97,7 @@ class Job():
                    state, metajob.job, metajob.tddft, grid=metajob.grid, nroots=metajob.nroots, pcm_es=metajob.excited,
                    triplets=metajob.triplets, pcm_form=metajob.pcm_form, pcm_disc=metajob.pcm_disc,
                    pcm_radii=metajob.pcm_radii, pcm_VDWScale=metajob.pcm_VDWScale, perturbedRoots=metajob.perturbed,
-                   pcm_probe_radii=metajob.pcm_probe_radii, pcm_surfaceType=metajob.pcm_surfaceType, **kwargs)
+                   pcm_probe_radii=metajob.pcm_probe_radii, pcm_surfaceType=metajob.pcm_surfaceType, sa=metajob.sa, **kwargs)
 
     def __post_init__(self):
         self.casscf = self.fluorophore.active

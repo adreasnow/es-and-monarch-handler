@@ -116,7 +116,7 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
         ORCAInput += f'\tnorb {norbs}\n'
         ORCAInput += f'\tmult {job.state.mult}\n'
         ORCAInput += '\tMaxIter 500\n'
-        if job.job == Jobs.casscfOpt:
+        if not job.sa:
             ORCAInput += f'\tweights[0] = {weightsString}\n' # CASPT methods I think need a SA inpur wavefn
         if job.orbstep != 'SuperCI_PT (default)':
             ORCAInput += f'\tOrbStep {job.orbstep}\n'
@@ -231,6 +231,7 @@ def pullORCA_En(job: Job, out: list[str]) -> tuple[float, list[float], list[floa
         e_trans = []
     for line in out[startList:startList + nroots - 1]:
         if job.job in [Jobs.caspt2, Jobs.nevpt2]:
+            print(float(line.split()[6]))
             e_trans += [nmToEv(float(line.split()[6]))]
         f += [float(line.split()[7])]
         tx = float(line.split()[9])
