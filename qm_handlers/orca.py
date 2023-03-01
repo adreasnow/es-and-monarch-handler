@@ -1,4 +1,4 @@
-from ..types.job import Job, Solvents, PCM, Jobs, Orbs, TDDFT, Methods
+from ..types.job import Job, Solvents, PCM, Jobs, Orbs, TDDFT, Methods, States
 from ..functions import nmToEv
 import numpy as np
 
@@ -95,7 +95,7 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
         ORCAInput += '\tDensity relaxed\n'
         ORCAInput += 'end\n\n'
 
-    if job.tddft == TDDFT.tddft:
+    if job.tddft == TDDFT.tddft and job.state != States.s0:
         if job.tda == TDDFT.TDA.off:
             tdaLine = '\n\ttda false'
         ORCAInput += '%tddft\n'
