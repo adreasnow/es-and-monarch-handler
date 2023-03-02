@@ -29,11 +29,8 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
             jobLine += ' verytightopt'
         else:
             jobLine += ' tightopt'
-    elif job.job in [Jobs.casscf, Jobs.mp2Natorb, Jobs.sp]:
+    elif job.job in [Jobs.casscf, Jobs.mp2Natorb, Jobs.sp, Jobs.nevpt2, Jobs.caspt2, Jobs.pol]:
         jobLine = ''
-    elif job.job in [Jobs.nevpt2, Jobs.caspt2]:
-        jobLine = ''
-        jobLine2 = ''
     elif job.job == Jobs.freq and job.pcm == PCM.smd:
         jobLine = 'NumFreq'
     elif job.job in [Jobs.freq, Jobs.casscfFreq]:
@@ -51,7 +48,7 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
     else:
         riBasis = ''
 
-    ORCAInput = f'! {jobLine} {method} {riString}{job.basis.orca} {riBasis}tightscf {cpcm}{moinp}{kdiisstring}{soscfstring}{notrahstring}'
+    ORCAInput = f'! {jobLine}{" " if jobLine != "" else ""}{method} {riString}{job.basis.orca} {riBasis}tightscf {cpcm}{moinp}{kdiisstring}{soscfstring}{notrahstring}'
     ORCAInput += mostring
     ORCAInput += '\n\n'
     ORCAInput += f'%maxcore {job.mem.per_core_mb}\n'
@@ -73,10 +70,17 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
 
     ORCAInput += job.grid.orca
 
+    ################ Job type blocks ################
     if job.job == Jobs.opt and job.refJob.job == Jobs.freq:
         ORCAInput += '%geom\n'
         ORCAInput += '\tInHess Read\n'
         ORCAInput += f'\tInHessName "{job.refJob.path}/{job.refJob.name}/{job.refJob.name}.hess"\n'
+        ORCAInput += 'end\n\n'
+
+    if job.job == Jobs.mp2Natorb:
+        ORCAInput += '%mp2\n'
+        ORCAInput += '\tNatOrbs true\n'
+        ORCAInput += '\tDensity relaxed\n'
         ORCAInput += 'end\n\n'
 
     if job.job == Jobs.freq and job.restart:
@@ -89,12 +93,13 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
         ORCAInput += f'\t{job.scfstring}\n'
         ORCAInput += 'end\n\n'
 
-    if job.job == Jobs.mp2Natorb:
-        ORCAInput += '%mp2\n'
-        ORCAInput += '\tNatOrbs true\n'
-        ORCAInput += '\tDensity relaxed\n'
+    if job.job == Jobs.pol:
+        ORCAInput += '%elprop\n'
+        ORCAInput += '\tPolar 1\n'
         ORCAInput += 'end\n\n'
 
+
+    ################ Method type blocks ################
     if job.tddft == TDDFT.tddft and job.state != States.s0:
         if job.tda == TDDFT.TDA.off:
             tdaLine = '\n\ttda false'
@@ -187,6 +192,8 @@ def pullORCA(job: Job, out: list[str]):
         return pullORCA_Freq(job, out)
     elif job.job in [Jobs.ex, Jobs.em, Jobs.td, Jobs.casscf, Jobs.casscfOpt, Jobs.opt, Jobs.caspt2]:
         return pullORCA_En(job, out)
+    elif job.job in [Jobs.pol]:
+        return pullORCA_Pol(job, out)
     else:
         raise Exception(f'Job type {job.software} {job.job} not implemented')
 
@@ -259,6 +266,32 @@ def pullORCA_Freq(job: Job, out: list[str]) -> tuple[float, float, float]:
             e = float(line.split()[3])
     return e, zpve, neg
 
+
+def pullORCA_Pol(job: Job, out: list[str]) -> tuple[float, list[float], np.array]:
+    pol = []
+    iso = 0
+    diag = []
+    tensorLine = 0
+    diagLine = 0
+    for count, line in enumerate(out):
+        if 'The raw cartesian tensor' in line:
+            tensorLine = count + 1
+        if 'diagonalized tensor:' in line:
+            diagLine = count + 1
+        elif 'Isotropic polarizability' in line:
+            iso = float(line.split()[3])
+
+    if tensorLine == 0 or diagLine == 0:
+        raise Exception('Pol job not completed!')
+
+    split = out[diagLine].split()
+    diag = [float(split[0]), float(split[1]), float(split[2])]
+
+    for line in out[tensorLine:tensorLine + 3]:
+        split = line.split()
+        pol += [[float(split[0]), float(split[1]), float(split[2])]]
+
+    return iso, diag, pol
 
 def m_diag(occ_ref: list[float] | np.ndarray, occ_no: list[float] | np.ndarray) -> float:
     if type(occ_ref) == list:

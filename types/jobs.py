@@ -30,6 +30,7 @@ class Jobs(NewEnum):
     casscfOpt  = 'casscf_optimisation'
     casscfFreq = 'casscf_frequencies'
     mp2Natorb  = 'mp2-natural-orbitals'
+    pol        = 'polarisabilities'
 
 class MetaJobs(NewEnum):
     def __init__(self, long: str,
@@ -102,7 +103,7 @@ class MetaJobs(NewEnum):
     qc_wb_freq_ss      = 'qchem wb freq',                   Software.qchem,   Jobs.freq,        Methods.wb97xd,     Basis.augccpvdz,   Grids.g99_590,   TDDFT.tddft,    PCM.cpcm,  PCM.Eq.eq,      PCM.ExcitedModel.clr,   4,   True,   True,  False, False,   TDDFT.Triplets.off,   PCM.Formalism.iefpcm,    PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0,        False
     casscf_freq        = 'casscf_freq',                     Software.orca,    Jobs.casscfFreq,  Methods.casscf,     Basis.augccpvdz,   Grids.none,      TDDFT.none,     PCM.none,  PCM.Eq.none,    PCM.ExcitedModel.clr,   4,   True,   True,  True,  True,    TDDFT.Triplets.off,   PCM.Formalism.none,      PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    4,        False
 
-    # excitations
+    # excitation
     or_wb_ex           = 'orca wb smd ex',                  Software.orca,    Jobs.ex,          Methods.wb97xd,     Basis.augccpvdz,   Grids.g99_590,   TDDFT.tddft,    PCM.smd,   PCM.Eq.neq,     PCM.ExcitedModel.lr,   10,   True,   True,  False, False,   TDDFT.Triplets.off,   PCM.Formalism.cpcm,      PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0,        False
     qc_wb_ex           = 'qchem wb ex',                     Software.qchem,   Jobs.ex,          Methods.wb97xd,     Basis.augccpvdz,   Grids.g99_590,   TDDFT.tddft,    PCM.cpcm,  PCM.Eq.neq,     PCM.ExcitedModel.lr,   10,   True,   True,  False, False,   TDDFT.Triplets.off,   PCM.Formalism.iefpcm,    PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0,        False
     qc_wb_ss_ex        = 'qchem wb ss ex',                  Software.qchem,   Jobs.ex,          Methods.wb97xd,     Basis.augccpvdz,   Grids.g99_590,   TDDFT.tddft,    PCM.sspcm, PCM.Eq.neq,     PCM.ExcitedModel.clr,  10,   True,   True,  True,  False,   TDDFT.Triplets.off,   PCM.Formalism.iefpcm,    PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0,        False
@@ -116,4 +117,7 @@ class MetaJobs(NewEnum):
     casscf_sa          = 'casscf_single_point_sa',          Software.orca,    Jobs.casscf,      Methods.casscf,     Basis.augccpvdz,   Grids.none,      TDDFT.none,     PCM.none,  PCM.Eq.none,    PCM.ExcitedModel.clr,   4,   True,   True,  True,  True,    TDDFT.Triplets.off,   PCM.Formalism.none,      PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    4,        True
     caspt2             = 'caspt2_single_point',             Software.orca,    Jobs.caspt2,      Methods.caspt2,     Basis.augccpvdz,   Grids.none,      TDDFT.none,     PCM.none,  PCM.Eq.none,    PCM.ExcitedModel.clr,   4,   True,   True,  True,  True,    TDDFT.Triplets.off,   PCM.Formalism.none,      PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    4,        True
     nevpt2             = 'nevpt2_single_point',             Software.orca,    Jobs.nevpt2,      Methods.nevpt2,     Basis.augccpvdz,   Grids.none,      TDDFT.none,     PCM.none,  PCM.Eq.none,    PCM.ExcitedModel.clr,   4,   True,   True,  True,  True,    TDDFT.Triplets.off,   PCM.Formalism.none,      PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    4,        True
-    or_wb_sp_es        = 'orca wb es sp',                   Software.orca,    Jobs.sp,          Methods.wb97xd,     Basis.augccpvdz,   Grids.g99_590,   TDDFT.tddft,    PCM.none,  PCM.Eq.none,    PCM.ExcitedModel.lr,    4,   False,  True,  True,  True,    TDDFT.Triplets.off,   PCM.Formalism.none,      PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0,        False
+    or_wb_sp_es        = 'orca wb es sp',                   Software.orca,    Jobs.sp,          Methods.wb97xd,     Basis.augccpvdz,   Grids.g99_590,   TDDFT.tddft,    PCM.smd,   PCM.Eq.eq,      PCM.ExcitedModel.lr,    4,   False,  True,  True,  True,    TDDFT.Triplets.off,   PCM.Formalism.none,      PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0,        False
+
+    # Polarisability                                                                                    basis justification; 10.1021/jp502475e
+    polarisability     = 'orca gas pol',                    Software.orca,    Jobs.pol,         Methods.wb97xd,     Basis.augccpvtz,   Grids.g99_590,   TDDFT.tddft,    PCM.none,  PCM.Eq.none,    PCM.ExcitedModel.none,  4,   True,   True,  True,  True,    TDDFT.Triplets.off,   PCM.Formalism.none,      PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0,        False

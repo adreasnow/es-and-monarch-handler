@@ -93,3 +93,9 @@ class Energy(NewEnum):
         t_s0ts9 = 't_s0->s9'
         m       = 'M-Diagnostic'
         # occ    = 'Occupations'
+
+    @skip
+    class Polarisability(NewEnum):
+        iso  = '|⍺|'
+        diag = '⍺_diag'
+        pol  = '⍺'
