@@ -47,7 +47,7 @@ class Solvents(NewEnum):
     dmso   = 'DMSO',       'dmso',         'dmso',            'dmso',            46.83, 1.4793, 0.00, 0.88, 62.40, 0.00, 0.00, 2.00
 
     gas    = 'Gas',         None,           None,              None,              1.00, 1.0000, 0.00, 0.00,  0.00, 0.00, 0.00, 0.00, False
-    nhep   = 'Heptane',    'hexane',       'n-heptane',       'heptane',          1.91, 1.3878, 0.00, 0.00, 28.28, 0.00, 0.00, False
+    nhep   = 'Heptane',    'hexane',       'n-heptane',       'heptane',          1.91, 1.3878, 0.00, 0.00, 28.28, 0.00, 0.00, 0.00, False
     chex   = 'c-Hexane',   'c-hexane',     'c-hexane',        'c-hexane',         2.02, 1.4269, 0.00, 0.00, 26.41, 0.00, 0.00, 0.30, False
     dox    = 'Dioxane',     None,           None,              None,              2.25, 1.4224, 0.00, 0.00,  0.00, 0.00, 0.00, 0.00, False
     meoh   = 'Methanol',   'methanol',     'methanol',        'methanol',        32.70, 1.3270, 0.37, 0.48, 22.50, 0.00, 0.00, 0.00, False
