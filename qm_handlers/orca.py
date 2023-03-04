@@ -1,4 +1,4 @@
-from ..types.job import Job, Solvents, PCM, Jobs, Orbs, TDDFT, Methods, States
+from ..types.job import Job, Solvents, PCM, Jobs, Orbs, TDDFT, Methods, States, Fluorophores
 from ..functions import nmToEv
 import numpy as np
 
@@ -31,10 +31,15 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
             jobLine += ' tightopt'
     elif job.job in [Jobs.casscf, Jobs.mp2Natorb, Jobs.sp, Jobs.nevpt2, Jobs.caspt2, Jobs.pol]:
         jobLine = ''
-    elif job.job == Jobs.freq and job.pcm == PCM.smd:
+    elif job.job in [Jobs.freq] and job.pcm == PCM.smd:
         jobLine = 'NumFreq'
     elif job.job in [Jobs.freq, Jobs.casscfFreq]:
         jobLine = 'Freq'
+    elif job.job in [Jobs.esd]:
+        if job.state == States.s0:
+            jobLine = 'ESD(ABS)'
+        else:
+            jobLine = 'ESD(FLUOR)'
     else:
         raise Exception(f'Job type {job.job} not implemented.')
 
@@ -71,10 +76,17 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
     ORCAInput += job.grid.orca
 
     ################ Job type blocks ################
-    if job.job == Jobs.opt and job.refJob.job == Jobs.freq:
+    if job.job == Jobs.opt:
         ORCAInput += '%geom\n'
-        ORCAInput += '\tInHess Read\n'
-        ORCAInput += f'\tInHessName "{job.refJob.path}/{job.refJob.name}/{job.refJob.name}.hess"\n'
+        if job.refJob.job == Jobs.freq:
+            ORCAInput += '\tInHess Read\n'
+            ORCAInput += f'\tInHessName "{job.refJob.path}/{job.refJob.name}/{job.refJob.name}.hess"\n'
+        if job.calchess:
+            ORCAInput += '\tCalc_Hess True\n'
+        if job.recalchess > 0:
+            ORCAInput += f'\tRecalc_Hess {job.recalchess}\n'
+        if (job.calchess or job.recalchess) and job.pcm == PCM.smd:
+            ORCAInput += '\tNumHess True\n'
         ORCAInput += 'end\n\n'
 
     if job.job == Jobs.mp2Natorb:
@@ -98,15 +110,26 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
         ORCAInput += '\tPolar 1\n'
         ORCAInput += 'end\n\n'
 
+    if job.job == Jobs.esd:
+        ORCAInput += '%esd\n'
+        ORCAInput += f'\tgshessian "{job.esdLowerJob.path}/{job.esdLowerJob.name}/{job.esdLowerJob.name}.hess"\n'
+        ORCAInput += f'\teshessian "{job.esdHigherJob.path}/{job.esdHigherJob.name}/{job.esdHigherJob.name}.hess"\n'
+        ORCAInput += '\tdoht true\n'
+        ORCAInput += '\tlines gauss\n'
+        ORCAInput += '\tunit ev\n'
+        ORCAInput += 'end\n\n'
 
     ################ Method type blocks ################
-    if job.tddft == TDDFT.tddft and job.state != States.s0:
+    if (job.tddft == TDDFT.tddft and job.state != States.s0) or job.job == Jobs.esd:
         if job.tda == TDDFT.TDA.off:
             tdaLine = '\n\ttda false'
         ORCAInput += '%tddft\n'
         ORCAInput += f'\tnroots {job.nroots}\n'
-        ORCAInput += f'\tIRoot {job.state.root}\n'
         ORCAInput += f'\tcpcmeq {cpcmeq}{tdaLine}\n'
+        if (job.job == Jobs.esd and job.state == States.s0):
+            ORCAInput += f'\tiroot {job.esdState.root}\n'
+        else:
+            ORCAInput += f'\tiroot {job.state.root}\n'
         ORCAInput += 'end\n\n'
 
     if job.method in [Methods.casscf, Methods.caspt2, Methods.nevpt2]:

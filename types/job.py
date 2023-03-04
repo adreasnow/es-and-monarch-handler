@@ -71,6 +71,11 @@ class Job():
     soscf: bool = True
     notrah: bool = True
     refJob: Jobs = None
+    esdLowerJob: Jobs = None
+    esdHigherJob: Jobs = None
+    esdState: States = None
+    calchess: bool = False
+    recalchess: int = 0
     restart: bool = False
     verytightopt: bool = False
 
@@ -93,7 +98,7 @@ class Job():
 
     @classmethod
     def from_MetaJob(cls, metajob: MetaJobs, fluorophore: Fluorophores, solvent: Solvents, state: States, **kwargs):
-        return cls(metajob.software, fluorophore, solvent, metajob.method,metajob.basis, metajob.pcm, metajob.eq,
+        return cls(metajob.software, fluorophore, solvent, metajob.method, metajob.basis, metajob.pcm, metajob.eq,
                    state, metajob.job, metajob.tddft, grid=metajob.grid, nroots=metajob.nroots, pcm_es=metajob.excited,
                    triplets=metajob.triplets, pcm_form=metajob.pcm_form, pcm_disc=metajob.pcm_disc,
                    pcm_radii=metajob.pcm_radii, pcm_VDWScale=metajob.pcm_VDWScale, perturbedRoots=metajob.perturbed,
@@ -105,7 +110,10 @@ class Job():
             self.pcm = PCM.none
             self.eq = PCM.Eq.none
         self.mem = _mem(self.mem, self.procs)
-        self.name = f'{self.software.short}_{self.fluorophore.name}_{self.solv.name}_{self.method.name}_{self.basis.name}_{self.pcm.name}_{self.eq}_{self.state.name}_{self.job}'
+        if self.job in [Jobs.esd]:
+            self.name = f'{self.software.short}_{self.fluorophore.name}_{self.solv.name}_{self.method.name}_{self.basis.name}_{self.pcm.name}_{self.eq}_{self.state.name}-{self.esdState.name}_{self.job}'
+        else:
+            self.name = f'{self.software.short}_{self.fluorophore.name}_{self.solv.name}_{self.method.name}_{self.basis.name}_{self.pcm.name}_{self.eq}_{self.state.name}_{self.job}'
         if self.software == Software.crest:
             self.path = f'{self.rootpath}/{self.rootfolder}/{self.fluorophore.name}/{self.solv.name}/crest'
             self.infile = f'{self.path}/{self.fluorophore.name}-crest{self.software.ext}'

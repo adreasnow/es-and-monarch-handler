@@ -31,6 +31,7 @@ class Jobs(NewEnum):
     casscfFreq = 'casscf_frequencies'
     mp2Natorb  = 'mp2-natural-orbitals'
     pol        = 'polarisabilities'
+    esd        = 'excited_state_dynamics'
 
 class MetaJobs(NewEnum):
     def __init__(self, long: str,
@@ -111,6 +112,9 @@ class MetaJobs(NewEnum):
     # emission
     # qc_wb_em           = 'qchem wb em',                     Software.qchem,   Jobs.em,          Methods.wb97xd,     Basis.augccpvdz,   Grids.g99_590,   TDDFT.tddft,    PCM.cpcm,  PCM.Eq.eq_neq,  PCM.ExcitedModel.lr,    4,   False,  True,  False, False,   TDDFT.Triplets.off,   PCM.Formalism.iefpcm,    PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0,        False
     qc_wb_ss_em        = 'qchem wb ss em',                  Software.qchem,   Jobs.em,          Methods.wb97xd,     Basis.augccpvdz,   Grids.g99_590,   TDDFT.tddft,    PCM.sspcm,  PCM.Eq.eq_neq, PCM.ExcitedModel.clr,   4,   False,  True,  True,  False,   TDDFT.Triplets.off,   PCM.Formalism.iefpcm,    PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0,        False
+
+    # esd
+    or_wb_esd          = 'orca wb esd',                     Software.orca,    Jobs.esd,         Methods.wb97xd,     Basis.augccpvdz,   Grids.g99_590,   TDDFT.none,     PCM.smd,   PCM.Eq.neq,     PCM.ExcitedModel.lr,    2,   True,   True,  True,  False,   TDDFT.Triplets.off,   PCM.Formalism.cpcm,      PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    0,        False
 
     # single point
     casscf             = 'casscf_single_point',             Software.orca,    Jobs.casscf,      Methods.casscf,     Basis.augccpvdz,   Grids.none,      TDDFT.none,     PCM.none,  PCM.Eq.none,    PCM.ExcitedModel.clr,   4,   True,   True,  True,  True,    TDDFT.Triplets.off,   PCM.Formalism.none,      PCM.Discretisation.default,     PCM.Radii.default,   1.2,    0.0,      PCM.Cavity.default,    4,        False
