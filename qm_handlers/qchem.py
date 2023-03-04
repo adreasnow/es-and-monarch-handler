@@ -87,7 +87,7 @@ def buildQChem(job: Job, xyz: list[str]) -> str:
     remBlock += f'    XC_GRID               {job.grid.qchem}\n'
     remBlock += '    SYMMETRY              false\n'
     remBlock += '    SYM_IGNORE            true\n'
-    if job.tddft == TDDFT.tddft and job.state != States.s0:
+    if (job.tddft == TDDFT.tddft and job.state != States.s0) or (job.tddft == TDDFT.tddft and job.job == Jobs.ex):
         remBlock += f'    CIS_N_ROOTS           {job.nroots}\n'
         remBlock += f'    RPA                   {rpa}\n'
         remBlock += f'    CIS_TRIPLETS          {triplets}\n'
