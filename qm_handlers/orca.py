@@ -117,6 +117,8 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
         ORCAInput += '\tdoht true\n'
         ORCAInput += '\tlines gauss\n'
         ORCAInput += '\tunit ev\n'
+        ORCAInput += '\tusej true\n'
+        ORCAInput += '\tprintlevel high\n'
         ORCAInput += 'end\n\n'
 
     ################ Method type blocks ################
