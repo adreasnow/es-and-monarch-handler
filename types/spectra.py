@@ -10,6 +10,8 @@ class spectraType(NewEnum):
     ftir       = 'ftir'
     qy         = 'qr'
     lifetime   = 'tr'
+    esdex      = 'esd_abs'
+    esdem      = 'esd_em'
 
 @dataclass
 class gaussian():
@@ -74,8 +76,6 @@ class spectrum():
             return self._peaks_sorted('forward', 'deriv')
 
 
-
-
 @dataclass
 class _simpleSpectrum():
     maxy: float
@@ -91,6 +91,17 @@ class spectrumSeries():
     emissionSpectra: list[_simpleSpectrum]
     excitation: int
     qy: float | None
+
+
+@dataclass
+class esdSpectrum():
+    spectrum: spectraType
+    x: list[float]
+    yT: list[float]
+    yFC: list[float]
+    yHT: list[float]
+    peaks: list[float]
+    amps: list[float]
 
 
 @dataclass

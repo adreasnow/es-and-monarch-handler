@@ -115,7 +115,7 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
         ORCAInput += f'\tgshessian "{job.esdLowerJob.path}/{job.esdLowerJob.name}/{job.esdLowerJob.name}.hess"\n'
         ORCAInput += f'\teshessian "{job.esdHigherJob.path}/{job.esdHigherJob.name}/{job.esdHigherJob.name}.hess"\n'
         ORCAInput += '\tdoht true\n'
-        ORCAInput += '\tlines gauss\n'
+        ORCAInput += '\tlines delta\n'
         ORCAInput += '\tunit ev\n'
         ORCAInput += '\tusej true\n'
         ORCAInput += '\tprintlevel high\n'
@@ -146,6 +146,7 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
         ORCAInput += f'\tnorb {norbs}\n'
         ORCAInput += f'\tmult {job.state.mult}\n'
         ORCAInput += '\tMaxIter 500\n'
+        ORCAInput += '\tSwitchIter 500\n'
         if not job.sa:
             ORCAInput += f'\tweights[0] = {weightsString}\n' # CASPT methods I think need a SA inpur wavefn
         if job.orbstep != 'SuperCI_PT (default)':

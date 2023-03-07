@@ -5,6 +5,8 @@ dbLocationMac = 'full path to fluorophores-ds if on mac'
 dbLocationWin = 'full path to fluorophores-ds if on win'
 dataFolderMac = 'full path to .csv spectrum data if on mac'
 dataFolderWin = 'full path to .csv spectrum data if on win'
+MonARCHFolderMac = 'full path to data folder on MonARCH if on win'
+MonARCHFolderWin = 'full path to data folder on MonARCH if on win'
 
 [ifttt]
 # This is for webhooks notifications wityh ifttt as documented at:
