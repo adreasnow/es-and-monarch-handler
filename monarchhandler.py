@@ -25,18 +25,18 @@ class monarchHandler:
 
     def __init__(self) -> None:
         self.config = loadConfig()
-        self.host = self.config['monarch']['host']
-        self.user = self.config['monarch']['user']
-        self.jobid = self.config['ifttt']['jobid']
-        self.jobkey = self.config['ifttt']['jobkey']
+        self.host = self.config.monarch.host
+        self.user = self.config.monarch.user
+        self.jobid = self.config.ifttt.jobid
+        self.jobkey = self.config.ifttt.jobkey
         self.slurmTime = 0
-        self.slurmFreq = self.config['monarch']['slurmCheckFreq']  # seconds
+        self.slurmFreq = self.config.monarch.slurmCheckFreq
         self.TOTime = 0
-        self.TOFreq = self.config['monarch']['timedOutCheckFreq']   # seconds
-        self.pythonEXE = self.config['monarch']['python']
-        self.squeue = self.config['monarch']['squeue']
-        self.sbatch = self.config['monarch']['sbatch']
-        self.toslm = self.config['monarch']['2slm']
+        self.TOFreq = self.config.monarch.timedOutCheckFreq
+        self.pythonEXE = self.config.monarch.python
+        self.squeue = self.config.monarch.squeue
+        self.sbatch = self.config.monarch.sbatch
+        self.toslm = self.config.monarch.toslm
         print()
         return
 

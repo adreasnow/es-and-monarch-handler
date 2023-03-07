@@ -1,17 +1,55 @@
-from .types.solvents import Solvents
-from .types.fluorophores import Fluorophores
-from .types.methods import Methods
 import numpy as np
 import tomli
 import os
+from .types.solvents import Solvents
+from .types.fluorophores import Fluorophores
+from .types.methods import Methods
 from openbabel.pybel import readstring as pbreadstring
+from dataclasses import dataclass
 
+
+@dataclass
+class _local():
+    dbLocationMac: str
+    dbLocationWin: str
+    dataFolderMac: str
+    dataFolderWin: str
+    MonARCHFolderMac: str
+    MonARCHFolderWin: str
+
+
+@dataclass
+class _monarch():
+    host: str
+    user: str
+    python: str
+    slurmCheckFreq: int
+    timedOutCheckFreq: int
+    squeue: str
+    sbatch: str
+    toslm: str
+
+@dataclass
+class _ifttt():
+    jobid: str
+    jobkey: str
+
+@dataclass
+class Config():
+    local: _local
+    monarch: _monarch
+    ifttt: _ifttt
+
+    def __post_init__(self):
+        self.local = _local(**self.local)
+        self.monarch = _monarch(**self.monarch)
+        self.ifttt = _ifttt(**self.ifttt)
 
 def loadConfig() -> dict:
     root_dir = os.path.dirname(os.path.abspath(__file__))
     with open(f'{root_dir}/config.toml', 'rb') as f:
-        global_config = tomli.load(f)
-    return global_config
+        config = tomli.load(f)
+    return Config(**config)
 
 def evToNm(eV: float | list[float], error: float = 0.0) -> float | tuple[float, float, float]:
     '''Converts eV values to nm'''
@@ -84,9 +122,9 @@ class dsLoad(object):
     def __init__(self, ds: str = 'fluorophores-ds', df: str = 'dataset') -> None:
         config = loadConfig()
         if os.name == 'nt':
-            self.main_path = config['local']['dbLocationWin']
+            self.main_path = config.local.dbLocationWin
         else:
-            self.main_path = config['local']['dbLocationMac']
+            self.main_path = config.local.dbLocationMac
         self.db = f'{self.main_path}/{df}'
         return
 
@@ -105,9 +143,9 @@ class statusLoad(object):
     def __init__(self, df: str = 'progress') -> None:
         config = loadConfig()
         if os.name == 'nt':
-            self.main_path = config['local']['dbLocationWin']
+            self.main_path = config.local.dbLocationWin
         else:
-            self.main_path = config['local']['dbLocationMac']
+            self.main_path = config.local.dbLocationMac
         self.db = f'{self.main_path}/{df}'
         return
 
