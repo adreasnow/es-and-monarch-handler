@@ -1,8 +1,8 @@
-from .derivFuncs1 import derivFuncList1
-from .derivFuncs1 import gaussian_func as gaussian_func1
-from .derivFuncs2 import derivFuncList2
-from .derivFuncs2 import gaussian_func as gaussian_func2
-from .derivFuncs3 import derivFuncList3
-from .derivFuncs3 import gaussian_func as gaussian_func3
-from .deconvoluteFuncs import funcList
-from .deconvoluteFuncs import gaussian_func as gaussian_func0
+from .gaussian0 import gaussian0FuncList
+from .gaussian0 import gaussian0_func
+from .gaussian1 import gaussian1FuncList
+from .gaussian1 import gaussian1_func
+from .gaussian2 import gaussian2FuncList
+from .gaussian2 import gaussian2_func
+from .gaussian3 import gaussian3FuncList
+from .gaussian3 import gaussian3_func
