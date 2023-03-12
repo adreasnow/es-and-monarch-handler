@@ -10,6 +10,7 @@ from .grids import Grids
 from .jobs import Jobs, MetaJobs
 from .orbs import Orbs
 from .tddft import TDDFT
+from .clusters import _cluster
 
 
 class _mem():
@@ -36,6 +37,9 @@ class Job():
     job: Jobs
     tddft: TDDFT
 
+    # cluster
+    cluster: _cluster = None
+
     # presets
     grid: Grids = Grids.g75_302
     procs: int = 16
@@ -60,7 +64,7 @@ class Job():
 
     nroots: bool = 4
     rootpath: str = '/home/asnow/p2015120004/asnow'
-    rootfolder: str = 'fluorophores-ds'
+    rootfolder: str = 'fluorophores'
 
     # orca specific
     mopath: str = ''
@@ -78,6 +82,10 @@ class Job():
     recalchess: int = 0
     restart: bool = False
     verytightopt: bool = False
+
+    # nwchem specific
+    gspol: float = 0.0
+    espol: float = 0.0
 
     # casscf specific settings
     casscf: tuple[int, int] = (4, 4)
@@ -105,6 +113,8 @@ class Job():
                    pcm_probe_radii=metajob.pcm_probe_radii, pcm_surfaceType=metajob.pcm_surfaceType, sa=metajob.sa, **kwargs)
 
     def __post_init__(self):
+        if self.cluster != None:
+            self.rootpath = self.cluster.homePath
         self.casscf = self.fluorophore.active
         if self.solv == Solvents.gas:
             self.pcm = PCM.none

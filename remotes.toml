@@ -1,0 +1,38 @@
+[monarch]
+hostName = 'MonARCH'
+host = 'monarch.erc.monash.edu'
+user = 'asnow'
+slurmCheckFreq = 60
+timedOutCheckFreq = 60
+account = 'p2015120004'
+projectPath = '/mnt/lustre/projects'
+squeue = '/opt/slurm-latest/bin/squeue'
+sbatch = '/opt/slurm-latest/bin/sbatch'
+toslm = '/home/asnow/p2015120004/asnow/bin/slmUtilities/2slm.py'
+python = '/monfs01/projects/p2015120004/asnow/mambaforge/bin/python3'
+
+[m3]
+hostName = 'M3'
+host = 'm3.massive.org.au'
+user = 'asnow'
+slurmCheckFreq = 60
+timedOutCheckFreq = 60
+account = 'sn29'
+projectPath = '/projects'
+squeue = '/opt/slurm-latest/bin/squeue'
+sbatch = '/opt/slurm-latest/bin/sbatch'
+toslm = '/projects/sn29/asnow/bin/slmUtilities/2slm.py'
+python = '/projects/sn29/asnow/mambaforge/bin/python3'
+
+[gadi]
+hostName = 'Gadi'
+host = 'gadi.nci.org.au'
+user = 'as1892'
+slurmCheckFreq = 60
+timedOutCheckFreq = 60
+account = 'k96'
+projectPath = '/g/data'
+squeue = ''
+sbatch = ''
+toslm = ''
+python = ''

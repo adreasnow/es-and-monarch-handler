@@ -17,18 +17,6 @@ class _local():
     MonARCHFolderMac: str
     MonARCHFolderWin: str
 
-
-@dataclass
-class _monarch():
-    host: str
-    user: str
-    python: str
-    slurmCheckFreq: int
-    timedOutCheckFreq: int
-    squeue: str
-    sbatch: str
-    toslm: str
-
 @dataclass
 class _ifttt():
     jobid: str
@@ -37,12 +25,10 @@ class _ifttt():
 @dataclass
 class Config():
     local: _local
-    monarch: _monarch
     ifttt: _ifttt
 
     def __post_init__(self):
         self.local = _local(**self.local)
-        self.monarch = _monarch(**self.monarch)
         self.ifttt = _ifttt(**self.ifttt)
 
 def loadConfig() -> dict:

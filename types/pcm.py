@@ -76,7 +76,7 @@ class PCM(NewEnum):
     smd   = 'smd'
     lrpcm = 'lrpcm'
     sspcm = 'sspcm'
-    vem   = 'vem' 
+    vem   = 'vem'
     smssp = 'smssp'
     alpb  = 'alpb'
     none  = 'none'

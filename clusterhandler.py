@@ -11,8 +11,10 @@ from .types.status import Status
 # from .types.grids import Grids
 from .types.job import Job
 from .types.slurmJob import slurmJob, slurmStatus
+from .types.clusters import clusters, loadRemotes
 from .qm_handlers.crest import buildCRESTOpt
 from .qm_handlers.orca import buildORCA, pullORCA
+from .qm_handlers.nwchem import buildNW
 from .qm_handlers.psi4 import psi4CasscfScan
 from .qm_handlers.pyscf import pyscfCasscfScan, pyscfCasscfOpt, pyscfMP2Natorbs
 from .qm_handlers.qchem import buildQChem, pullQChem
@@ -20,24 +22,31 @@ from time import time
 from typing import Any
 
 
-class monarchHandler:
+class clusterHandler:
     from paramiko import SSHClient, AutoAddPolicy
 
-    def __init__(self) -> None:
+    def __init__(self, cluster: clusters) -> None:
         self.config = loadConfig()
-        self.host = self.config.monarch.host
-        self.user = self.config.monarch.user
+        remotes = loadRemotes()
+        if cluster == clusters.monarch:
+            self.cluster = remotes.monarch
+        elif cluster == clusters.m3:
+            self.cluster = remotes.m3
+
+        self.host = self.cluster.host
+        self.user = self.cluster.user
         self.jobid = self.config.ifttt.jobid
         self.jobkey = self.config.ifttt.jobkey
         self.slurmTime = 0
-        self.slurmFreq = self.config.monarch.slurmCheckFreq
+        self.slurmFreq = self.cluster.slurmCheckFreq
         self.TOTime = 0
-        self.TOFreq = self.config.monarch.timedOutCheckFreq
-        self.pythonEXE = self.config.monarch.python
-        self.squeue = self.config.monarch.squeue
-        self.sbatch = self.config.monarch.sbatch
-        self.toslm = self.config.monarch.toslm
-        print()
+        self.TOFreq = self.cluster.timedOutCheckFreq
+        self.pythonEXE = self.cluster.python
+        self.squeue = self.cluster.squeue
+        self.sbatch = self.cluster.sbatch
+        self.toslm = self.cluster.toslm
+        self.scratch = self.cluster.scratch
+        self.project = self.cluster.project
         return
 
     def __enter__(self):
@@ -212,9 +221,8 @@ class monarchHandler:
         return status
 
     def buildJob(self, job: Job) -> None:
-        if job.software not in [Software.orca, Software.crest, Software.psi4Script, Software.pyscf, Software.qchem]:
+        if job.software not in [Software.orca, Software.crest, Software.psi4Script, Software.pyscf, Software.qchem, Software.nwchem]:
             raise Exception(f'Job type {job.software} not implemented')
-
         self.run(f'mkdir -p {job.path}')
 
         if job.software == Software.psi4Script and job.job == Jobs.casscf:
@@ -244,6 +252,10 @@ class monarchHandler:
         if job.software == Software.orca:
             lines, err = self.run(f'cat "{job.catxyzpath}"')
             self.writeFile(buildORCA(job, lines), job.infile)
+
+        if job.software == Software.nwchem:
+            lines, err = self.run(f'cat "{job.catxyzpath}"')
+            self.writeFile(buildNW(job, lines), job.infile)
 
         elif job.software == Software.crest:
             self.writeFile(smiles2xyz(job.fluorophore.smiles), f'{job.path}/{job.fluorophore.name}.xyz')
