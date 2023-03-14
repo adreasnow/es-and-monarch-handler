@@ -176,10 +176,11 @@ class clusterHandler:
         for file in files:
             out, err = self.run(f'{keys} {self.pythonEXE} {self.toslm} {flags} "{file}"')
             if err != ['']:
-                print(err)
+                print(f'out: {out}')
+                print(f'err: {err}')
             else:
-                print(out[0])
-                print(out[1])
+                for line in out:
+                    print(line)
         return
 
     def pullJobEnergy(self, job: Job) -> Any:
@@ -267,12 +268,15 @@ class clusterHandler:
 
         # submit block
         if job.submit and job.software in [Software.orca, Software.qchem]:
-            if not job.partner:
-                job.submitFlags += 'o'
-            if job.time <= 24:
-                job.submitFlags += 's'
-            if job.time < 24:
-                job.submitFlags += f' -H {time}'
+            if job.cluster == clusters.monarch:
+                if not job.partner:
+                    job.submitFlags += 'o'
+                if job.time <= 24:
+                    job.submitFlags += 's'
+                else:
+                    job.submitFlags += f' -H {job.time}'
+            else:
+                job.submitFlags += f' -H {job.time}'
 
             if job.software == Software.qchem:
                 job.submitFlags += f' -c {job.procs}'
