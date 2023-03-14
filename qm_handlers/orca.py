@@ -95,7 +95,7 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
         ORCAInput += '\tDensity relaxed\n'
         ORCAInput += 'end\n\n'
 
-    if job.job == Jobs.freq and job.restart:
+    if job.job in [Jobs.freq, Jobs.casscfFreq] and job.restart:
         ORCAInput += '%freq\n'
         ORCAInput += '\trestart true\n'
         ORCAInput += 'end\n\n'
