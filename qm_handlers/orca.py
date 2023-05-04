@@ -1,4 +1,4 @@
-from ..types.job import Job, Solvents, PCM, Jobs, Orbs, TDDFT, Methods, States, Fluorophores
+from ..types.job import Job, Solvents, PCM, Jobs, Orbs, TDDFT, Methods, States, Fluorophores, MetaJobs
 from ..functions import nmToEv
 import numpy as np
 
@@ -76,9 +76,9 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
     ORCAInput += job.grid.orca
 
     ################ Job type blocks ################
-    if job.job == Jobs.opt:
+    if job.job in [Jobs.opt, Jobs.casscfOpt]:
         ORCAInput += '%geom\n'
-        if job.refJob.job == Jobs.freq:
+        if job.inhess:
             ORCAInput += '\tInHess Read\n'
             ORCAInput += f'\tInHessName "{job.refJob.path}/{job.refJob.name}/{job.refJob.name}.hess"\n'
         if job.calchess:
@@ -114,20 +114,21 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
         ORCAInput += '%esd\n'
         ORCAInput += f'\tgshessian "{job.esdLowerJob.path}/{job.esdLowerJob.name}/{job.esdLowerJob.name}.hess"\n'
         ORCAInput += f'\teshessian "{job.esdHigherJob.path}/{job.esdHigherJob.name}/{job.esdHigherJob.name}.hess"\n'
-        ORCAInput += '\tdoht true\n'
+        # ORCAInput += '\tdoht true\n'
         ORCAInput += '\tlines delta\n'
         ORCAInput += '\tunit ev\n'
-        ORCAInput += '\tusej true\n'
+        # ORCAInput += '\tusej true\n'
         ORCAInput += '\tprintlevel high\n'
         ORCAInput += 'end\n\n'
 
     ################ Method type blocks ################
     if (job.tddft == TDDFT.tddft and job.state != States.s0) or job.job == Jobs.esd:
         if job.tda == TDDFT.TDA.off:
-            tdaLine = '\n\ttda false'
+            tdaLine = '\ttda false'
         ORCAInput += '%tddft\n'
         ORCAInput += f'\tnroots {job.nroots}\n'
-        ORCAInput += f'\tcpcmeq {cpcmeq}{tdaLine}\n'
+        ORCAInput += f'\tcpcmeq {cpcmeq}\n'
+        ORCAInput += f'{tdaLine}\n'
         if (job.job == Jobs.esd and job.state == States.s0):
             ORCAInput += f'\tiroot {job.esdState.root}\n'
         else:
@@ -163,11 +164,10 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
             ORCAInput += '\tPTMethod fic_caspt2k\n'
         if job.method in [Methods.nevpt2, Methods.caspt2]:
             ORCAInput += '\tPTSettings\n'
+            if job.metajob == MetaJobs.qdnevpt2:
+                ORCAInput += '\t\tQDType QD_VanVleck\n'
             ORCAInput += '\t\tMaxIter 200\n'
             ORCAInput += '\t\tD4TPre 1e-14\n'
-            # ORCAInput += f'\t\tselectedRoots[0] = {perturbedString}\n'
-            if job.method == Methods.nevpt2:
-                ORCAInput += '\t\tQDType QD_VanVleck\n'
             ORCAInput += '\tend\n'
         ORCAInput += 'end\n\n'
 
@@ -214,9 +214,9 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
 
 
 def pullORCA(job: Job, out: list[str]):
-    if job.job in [Jobs.freq]:
+    if job.job in [Jobs.freq, Jobs.casscfFreq]:
         return pullORCA_Freq(job, out)
-    elif job.job in [Jobs.ex, Jobs.em, Jobs.td, Jobs.casscf, Jobs.casscfOpt, Jobs.opt, Jobs.caspt2]:
+    elif job.job in [Jobs.ex, Jobs.em, Jobs.td, Jobs.casscf, Jobs.casscfOpt, Jobs.opt, Jobs.caspt2, Jobs.nevpt2]:
         return pullORCA_En(job, out)
     elif job.job in [Jobs.pol]:
         return pullORCA_Pol(job, out)
@@ -264,7 +264,6 @@ def pullORCA_En(job: Job, out: list[str]) -> tuple[float, list[float], list[floa
         e_trans = []
     for line in out[startList:startList + nroots - 1]:
         if job.job in [Jobs.caspt2, Jobs.nevpt2]:
-            print(float(line.split()[6]))
             e_trans += [nmToEv(float(line.split()[6]))]
         f += [float(line.split()[7])]
         tx = float(line.split()[9])
