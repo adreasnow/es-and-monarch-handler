@@ -84,25 +84,8 @@ class spectrum():
 
 
 @dataclass
-class _simpleSpectrum():
-    maxy: float
-    integrand: float
-    x: list[float]
-    y: list[float]
-
-
-@dataclass
-class spectrumSeries():
-    spectrum: spectraType
-    absorbanceSpectra: list[_simpleSpectrum]
-    emissionSpectra: list[_simpleSpectrum]
-    excitation: int
-    qy: float | None
-
-
-@dataclass
 class esdSpectrum():
-    spectrum: spectraType
+    spectraType: spectraType
     x: list[float]
     yT: list[float]
     yFC: list[float]
