@@ -187,7 +187,7 @@ class clusterHandler:
         if job.software in [Software.orca, Software.qchem]:
             out, err = self.run(f'cat {job.finaloutfile}')
             if err != ['']:
-                raise Exception(f'There was an error catting {job.name}\nDid you select the right states?\nError:\n{err}')
+                raise print(f'There was an error catting {job.name}\nDid you select the right states?\nError:\n{err}')
             elif job.software == Software.orca:
                 return pullORCA(job, out)
             elif job.software == Software.qchem:
@@ -267,8 +267,8 @@ class clusterHandler:
             self.writeFile(buildQChem(job, lines), job.infile)
 
         # submit block
-        if job.submit and job.software in [Software.orca, Software.qchem]:
-            if job.cluster == clusters.monarch:
+        if job.submit and job.software in [Software.orca, Software.qchem, Software.nwchem]:
+            if job.cluster.cluster == clusters.monarch:
                 if not job.partner:
                     job.submitFlags += 'o'
                 if job.time <= 24:
@@ -278,7 +278,7 @@ class clusterHandler:
             else:
                 job.submitFlags += f' -H {job.time}'
 
-            if job.software == Software.qchem:
+            if job.software in [Software.qchem, Software.nwchem]:
                 job.submitFlags += f' -c {job.procs}'
 
             self.submitFiles(job.submitFlags, job.infile)
