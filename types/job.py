@@ -120,8 +120,8 @@ class Job():
             self.pcm = PCM.none
             self.eq = PCM.Eq.none
         self.mem = _mem(self.mem, self.procs)
-        if self.job in [Jobs.esd]:
-            self.name = f'{self.software.short}_{self.fluorophore.name}_{self.solv.name}_{self.method.name}_{self.basis.name}_{self.pcm.name}_{self.eq}_{self.state.name}-{self.esdState.name}_{self.job}'
+        if self.metajob in [MetaJobs.qdnevpt2]:
+            self.name = f'{self.software.short}_{self.fluorophore.name}_{self.solv.name}_{self.method.name}_{self.basis.name}_{self.pcm.name}_{self.eq}_{self.state.name}-{self.state.name}_qd-{self.job}'
         else:
             self.name = f'{self.software.short}_{self.fluorophore.name}_{self.solv.name}_{self.method.name}_{self.basis.name}_{self.pcm.name}_{self.eq}_{self.state.name}_{self.job}'
         if self.software == Software.crest:
