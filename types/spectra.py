@@ -28,20 +28,27 @@ class deconvParams():
     gaussianRange: tuple[int, int]
     maxiter: int
 
+@dataclass
+class _simpleSpectrum():
+    x: list[float]
+    y: list[float]
+    exLambda: int = None
+    emLambda: int = None
 
 @dataclass
 class spectrum():
-    spectrum: spectraType
-    derivLevel: int
-    params: deconvParams | None
-    residual: float | None
-    peaks: list[gaussian] | None
-    x: list[float]
-    y: list[float]
-    smoothing: int
-    smoothing_deriv: int
+    spectraType: spectraType
+    spectrum: _simpleSpectrum
+    deconvoluted: bool
+    derivLevel: int = 0
+    params: deconvParams | None = None
+    residual: float | None = None
+    peaks: list[gaussian] | None = None
+    smoothing: int = None
+    smoothing_deriv: int = None
     residual_deriv: Optional[float | None] = None
     peaks_deriv: Optional[list[gaussian] | None] = None
+    solventSpectrum: _simpleSpectrum = None
 
     def _peaks_sorted(self, direction, level) -> list[gaussian]:
         if level == 'deriv':
