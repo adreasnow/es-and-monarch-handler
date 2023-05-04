@@ -24,6 +24,7 @@ class _cluster():
     toslm: str
     scratch: str = None
     project: str = None
+    cluster: clusters = None
 
     def __post_init__(self):
         self.scratch  = f'/home/{self.user}/scratch'
@@ -49,9 +50,10 @@ def loadRemotes(cluster: clusters = None) -> dict:
     if cluster == None:
         return clusterChoices
     elif cluster == clusters.monarch:
-        return clusterChoices.monarch
+        choice = clusterChoices.monarch
     elif cluster == clusters.m3:
-        return clusterChoices.m3
+        choice = clusterChoices.m3
     elif cluster == clusters.gadi:
-        return clusterChoices.gadi
-    
+        choice = clusterChoices.gadi
+    choice.cluster = cluster
+    return choice
