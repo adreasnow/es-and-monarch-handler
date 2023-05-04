@@ -95,14 +95,6 @@ class esdSpectrum():
 
 
 @dataclass
-class irf():
-    I0: float
-    d: float
-    b: float
-    t: float
-
-
-@dataclass
 class trf():
     t: float
     c: float
@@ -110,15 +102,16 @@ class trf():
 
 @dataclass
 class Lifetime():
-    spectrum: spectraType
+    spectraType: spectraType
     irf: list[float]
-    trf: list[float]
-    time: list[float]
-    binWidth: int
-    irf_fit: irf
-    trf_fit: list[trf]
+    trf_raw: list[float]
+    trf_convolved: list[float]
+    trf_fitted: list[trf]
+    binWidth: float
     residual: float
     chi2: float
     I0: float
-    d: float
-    b: float
+    offset: int
+
+    def __post_init__(self):
+        self.expCount = len(self.trf_fitted)
