@@ -110,7 +110,7 @@ class Job():
                    state, metajob.job, metajob.tddft, grid=metajob.grid, nroots=metajob.nroots, pcm_es=metajob.excited,
                    triplets=metajob.triplets, pcm_form=metajob.pcm_form, pcm_disc=metajob.pcm_disc,
                    pcm_radii=metajob.pcm_radii, pcm_VDWScale=metajob.pcm_VDWScale, perturbedRoots=metajob.perturbed,
-                   pcm_probe_radii=metajob.pcm_probe_radii, pcm_surfaceType=metajob.pcm_surfaceType, sa=metajob.sa, **kwargs)
+                   pcm_probe_radii=metajob.pcm_probe_radii, pcm_surfaceType=metajob.pcm_surfaceType, sa=metajob.sa, metajob=metajob, **kwargs)
 
     def __post_init__(self):
         if self.cluster != None:
