@@ -12,7 +12,7 @@ from .types.job import Job
 from .types.orbs import Orbs
 from .types.tddft import TDDFT
 from .types.slurmJob import slurmStatus, slurmJob
-from .types.spectra import spectraType, spectrum, gaussian, deconvParams, _simpleSpectrum, spectrumSeries, trf, irf, Lifetime, esdSpectrum
+from .types.spectra import spectraType, spectrum, gaussian, deconvParams, trf, Lifetime, esdSpectrum, _simpleSpectrum
 from .types.energy import Energy
 from .types.clusters import clusters, loadRemotes
 from .functions import evToNm, nmToEv, stripIllegal, smiles2xyz, script_builder
