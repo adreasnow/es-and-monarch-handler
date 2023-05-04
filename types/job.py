@@ -37,6 +37,9 @@ class Job():
     job: Jobs
     tddft: TDDFT
 
+    # metajob
+    metajob: MetaJobs = None
+
     # cluster
     cluster: _cluster = None
 
@@ -78,6 +81,7 @@ class Job():
     esdLowerJob: Jobs = None
     esdHigherJob: Jobs = None
     esdState: States = None
+    inhess: bool = None
     calchess: bool = False
     recalchess: int = 0
     restart: bool = False
