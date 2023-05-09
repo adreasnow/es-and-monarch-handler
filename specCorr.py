@@ -4,7 +4,7 @@ from .types.spectra import spectraType
 
 def PMCorrect(xIn: list[float], yIn: list[float], spectrum: spectraType, enLambda: int) -> list[float]:
     exCorr = [0.0 for i in range(0, 220)]
-    # Professional inverted exCorr/emCorr
+    # Professional inverted exCorr/emCorr (with extrapolation for 600+ nm)
     exCorr += [1.652138483, 1.65047901, 1.613321573, 1.612538032, 1.580562532, 1.600383915, 1.590588568, 1.601782741,
                1.604718664, 1.604957032, 1.60658195, 1.604733032, 1.607811916, 1.606755249, 1.598377224, 1.595680813,
                1.600811091, 1.606517008, 1.609383747, 1.608124084, 1.597100346, 1.59002206, 1.581311742, 1.566388138,
