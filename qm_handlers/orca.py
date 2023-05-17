@@ -356,5 +356,5 @@ def m_diag(out: list[str], root: int) -> int:
     DUNO = occupations[np.equal(base_occ, 0.)]
     MCDONO = min(DONO)
     MCDUNO = max(DUNO)
-    M = (2 - MCDONO +  np.sum(np.absolute(np.subtract(1,SONO))) + MCDUNO)/2
+    M = (2 - MCDONO + np.sum(np.absolute(np.subtract(1, SONO))) + MCDUNO)/2
     return round(M, 3), weights, configurations, occupations
