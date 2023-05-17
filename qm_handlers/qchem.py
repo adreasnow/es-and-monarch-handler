@@ -82,9 +82,10 @@ def buildQChem(job: Job, xyz: list[str]) -> str:
     remBlock += '    GUI                   2\n'
     if jobType != 'SP':
         remBlock += f'    JOBTYPE               {jobType}\n'
-    remBlock += f'    EXCHANGE              {job.method.qchem}\n'
+    remBlock += f'    METHOD                {job.method.qchem}\n'
     remBlock += f'    BASIS                 {job.basis.qchem}\n'
     remBlock += f'    XC_GRID               {job.grid.qchem}\n'
+    remBlock += '    XC_SMART_GRID         1\n'
     remBlock += '    SYMMETRY              false\n'
     remBlock += '    SYM_IGNORE            true\n'
     if (job.tddft == TDDFT.tddft and job.state != States.s0) or (job.tddft == TDDFT.tddft and job.job == Jobs.ex):
@@ -101,35 +102,38 @@ def buildQChem(job: Job, xyz: list[str]) -> str:
     QChemInput += '$end\n\n'
 
     if pcm != '':
-        if job.solv in [PCM.smd]:
+        if pcm == 'SMD':
             solventBlock = '$smx\n'
-            solventBlock += f'    solvent           {job.solv.smd}\n'
-            solventBlock += '    print             2\n'
+            solventBlock += f'    solvent               {job.solv.smdQChem}\n'
+            solventBlock += '    print                 2\n'
             solventBlock += '$end\n\n'
+            if pcmFormalism != 'CPCM':
+                solventBlock += '$pcm\n'
+                solventBlock += f'    Theory                {pcmFormalism}\n'
+                solventBlock += '$end\n\n'
 
-        if job.pcm in [PCM.cpcm, PCM.lrpcm, PCM.sspcm]:
+        if job.pcm == 'PCM':
             solventBlock = '$solvent\n'
             solventBlock += f'    Dielectric             {job.solv.e:.4f}\n'
             solventBlock += f'    OpticalDielectric      {job.solv.n**2:.4f}\n'
             solventBlock += '$end\n\n'
 
-            # For cLR sxitation
-            if job.pcm == PCM.sspcm and job.job == Jobs.ex:
+            # For cLR excitation/emission and SMD-IEFPCM
+            if (job.pcm == PCM.sspcm and job.job in [Jobs.ex, Jobs.em]) or (job.solv == PCM.smd and job.pcm_form == PCM.Formalism.iefpcm):
                 QChemInput += '$pcm\n'
                 QChemInput += f'    Theory                {pcmFormalism}\n'
-                QChemInput += '    ChargeSeparation      Marcus\n'
-                QChemInput += '    StateSpecific         Perturb\n'
+                # For cLR excitation
+                if job.pcm == PCM.sspcm and job.job == Jobs.ex:
+                    QChemInput += '    ChargeSeparation      Marcus\n'
+                    QChemInput += '    StateSpecific         Perturb\n'
+                # For cLR emission
+                if job.pcm == PCM.sspcm and job.job == Jobs.em:
+                    QChemInput += f'    Theory                {pcmFormalism}\n'
+                    QChemInput += '    ChargeSeparation      Excited\n'
+                    QChemInput += f'    StateSpecific         {job.state.root}\n'
                 QChemInput += PCMFiller
                 QChemInput += '$end\n\n'
 
-            # For cLR emission
-            if job.pcm == PCM.sspcm and job.job == Jobs.em:
-                QChemInput += '$pcm\n'
-                QChemInput += f'    Theory                {pcmFormalism}\n'
-                QChemInput += '    ChargeSeparation      Excited\n'
-                QChemInput += f'    StateSpecific         {job.state.root}\n'
-                QChemInput += PCMFiller
-                QChemInput += '$end\n\n'
 
         # For LR-PCM, no $pcm block is needed
 
