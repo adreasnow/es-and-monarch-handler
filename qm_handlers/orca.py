@@ -270,10 +270,7 @@ def pullORCA_En(job: Job, out: list[str]) -> tuple[float, list[float], list[floa
         ty = float(line.split()[10])
         tz = float(line.split()[11])
         t += [(tx, ty, tz)]
-    electrons = extract_electrons(out)
-    occ = extract_occ(out)
-    ref = build_ref(electrons, occ, job.state.root)
-    m = m_diag(ref, occ)
+    m, weights, configurations, occupations = m_diag(out, job.state.root)
 
     return e, e_trans, f, t, m
 
@@ -318,58 +315,46 @@ def pullORCA_Pol(job: Job, out: list[str]) -> tuple[float, list[float], np.array
 
     return iso, diag, pol
 
-def m_diag(occ_ref: list[float] | np.ndarray, occ_no: list[float] | np.ndarray) -> float:
-    if type(occ_ref) == list:
-        occ_ref = np.array(occ_ref)
-    if type(occ_no) == list:
-        occ_no = np.array(occ_no)
-
-    docc = occ_no[np.equal(occ_ref, 2.)].tolist()
-    socc = occ_no[np.equal(occ_ref, 1.)].tolist()
-    uocc = occ_no[np.equal(occ_ref, 0.)].tolist()
-    soccm1 = np.abs(np.subtract(socc, 1))
-    m = 0.5 * (2 - min(docc) + np.sum(soccm1) + max(uocc))
-    return round(m, 3)
-
-
-def build_ref(electrons: int, occ: list[float], state: int) -> list[float]:
-    ref = []
-    while electrons > 0:
-        if electrons >= 2:
-            ref += [2.]
-            electrons -= 2
-        else:
-            ref += [1.]
-            electrons -= 1
-    for i in range(len(occ) - len(ref)):
-        ref += [0.]
-
-    if state == 1:
-        homo = 0
-        for count, occ in enumerate(ref):
-            if occ < 1.:
-                lumo = count
-                homo = count - 1
-                break
-        ref[homo] -= 1.
-        ref[lumo] += 1.
-    return ref
-
-
-def extract_occ(lines: list[str]) -> list[float]:
-    for count, line in enumerate(lines):
-        if '  NO   OCC          E(Eh)            E(eV) ' in line:
-            start = count + 1
-            occs = []
-            for orbs in lines[start:]:
-                try:
-                    occs += [float(orbs.split()[1])]
-                except IndexError:
-                    break
-    return occs
-
-
-def extract_electrons(lines: list[str]) -> int:
+def extract_occ(lines: list[str], root: int) -> list[float]:
     for line in lines:
-        if 'Total number of electrons' in line:
-            return int(line.split()[5])
+        nevpt2 = False
+        if 'nevpt2' in line:
+            nevpt2 = True
+            break
+        
+    if nevpt2:
+        searchline = f'Reading QDVector (MULT=  1, ROOT=  {root})'
+    else:
+        searchline = f'ROOT   {root}:'
+
+    startline = 0
+    for count, line in enumerate(lines):
+        if searchline in line:
+            startline = count+1
+            if nevpt2:
+                break
+    
+    configurations = []
+    weights = []
+    for line in lines[startline:]:
+        if line.split()[1] == '[':
+            weights += [float(line.split()[0])]
+            configurations += [[int(i) for i in list((line.split()[3]))]]
+        else:
+            break
+    weights_np = np.array(weights).reshape(len(weights), 1)
+    configurations_np = np.array(configurations)
+    occupations = np.einsum('ij, ik->j', configurations_np, weights_np)
+    return weights, configurations, occupations
+
+        
+def m_diag(out: list[str], root: int) -> int:
+    weights, configurations, occupations = extract_occ(out, root)
+    base_occ = configurations[0]
+    DONO = occupations[np.equal(base_occ, 2.)]
+    SONO = occupations[np.equal(base_occ, 1.)]
+    DUNO = occupations[np.equal(base_occ, 0.)]
+    MCDONO = min(DONO)
+    MCDUNO = max(DUNO)
+    M = (2 - MCDONO +  np.sum(np.absolute(np.subtract(1,SONO))) + MCDUNO)/2
+    return M, weights, configurations, occupations
