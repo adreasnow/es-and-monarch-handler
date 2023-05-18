@@ -396,7 +396,7 @@ class clusterHandler:
 
     def checkOrcaStatus(self, job: Job) -> Status | None:
         out, err = self.run(f'tail -n 100 {job.path}/{job.name}/{job.name}.out')
-        if 'No such file or directory' in err[0]:
+        if ('No such file or directory' in err[0]) or ('cannot open' in err[0]):
             return None
         for line in out:
             if '****ORCA TERMINATED NORMALLY****' in line:
