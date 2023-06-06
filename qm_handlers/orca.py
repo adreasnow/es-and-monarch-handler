@@ -10,6 +10,7 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
     kdiisstring = 'kdiis ' if job.kdiis else ''
     soscfstring = 'soscf ' if job.soscf else 'nososcf '
     notrahstring = 'notrah ' if job.notrah else ''
+    frozencore = 'nofrozencore ' if job.fluorophore in [Fluorophores.bpa] else ''
 
     # Not currently used since no multi-job runs are needed
 
@@ -53,7 +54,7 @@ def buildORCA(job: Job, xyz: list[str]) -> str:
     else:
         riBasis = ''
 
-    ORCAInput = f'! {jobLine}{" " if jobLine != "" else ""}{method} {riString}{job.basis.orca} {riBasis}tightscf {cpcm}{moinp}{kdiisstring}{soscfstring}{notrahstring}'
+    ORCAInput = f'! {jobLine}{" " if jobLine != "" else ""}{method} {riString}{job.basis.orca} {riBasis}tightscf {cpcm}{moinp}{kdiisstring}{soscfstring}{notrahstring}{frozencore}'
     ORCAInput += mostring
     ORCAInput += '\n\n'
     ORCAInput += f'%maxcore {job.mem.per_core_mb}\n'
