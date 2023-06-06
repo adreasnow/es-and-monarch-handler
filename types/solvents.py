@@ -23,7 +23,7 @@ class Solvents(NewEnum):
         return
 
     def __str__(self):
-        return self.name
+        return self.solvent
 
     def __float__(self):
         return self.e
