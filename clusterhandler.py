@@ -132,7 +132,7 @@ class clusterHandler:
         print(filename)
         with self.sftp.file(filename, "w+", -1) as f:
             f.write(content)
-        return
+        return filename
 
     def readFile(self, filename: str) -> list[str]:
         '''Opens an SSH connection and reads a file given an input path'''
@@ -178,16 +178,18 @@ class clusterHandler:
             if err != ['']:
                 print(f'out: {out}')
                 print(f'err: {err}')
+                return out + '\n' + err
             else:
                 for line in out:
                     print(line)
+                return out
         return
 
     def pullJobEnergy(self, job: Job) -> Any:
         if job.software in [Software.orca, Software.qchem]:
             out, err = self.run(f'cat {job.finaloutfile}')
             if err != ['']:
-                raise print(f'There was an error catting {job.name}\nDid you select the right states?\nError:\n{err}')
+                print(f'There was an error catting {job.name}\nDid you select the right states?\nError:\n{err}')
             elif job.software == Software.orca:
                 return pullORCA(job, out)
             elif job.software == Software.qchem:
@@ -229,42 +231,42 @@ class clusterHandler:
         if job.software == Software.psi4Script and job.job == Jobs.casscf:
             lines, err = self.run(f'cat "{job.catxyzpath}"')
             py, slm = psi4CasscfScan(job, lines[2:])
-            self.writeFile(py, job.infile)
-            self.writeFile(slm, f'{job.path}/{job.name}.slm')
+            filename = self.writeFile(py, job.infile)
+            filename = self.writeFile(slm, f'{job.path}/{job.name}.slm')
 
         if job.software == Software.pyscf:
             if job.job == Jobs.casscf:
                 lines, err = self.run(f'cat "{job.catxyzpath}"')
                 py, slm = pyscfCasscfScan(job, lines[2:])
-                self.writeFile(py, job.infile)
-                self.writeFile(slm, f'{job.path}/{job.name}.slm')
+                filename = self.writeFile(py, job.infile)
+                filename = self.writeFile(slm, f'{job.path}/{job.name}.slm')
             if job.job == Jobs.mp2Natorb:
                 lines, err = self.run(f'cat "{job.catxyzpath}"')
                 py, slm = pyscfMP2Natorbs(job, lines[2:])
-                self.writeFile(py, job.infile)
-                self.writeFile(slm, f'{job.path}/{job.name}.slm')
+                filename = self.writeFile(py, job.infile)
+                filename = self.writeFile(slm, f'{job.path}/{job.name}.slm')
 
         if job.software == Software.pyscf and job.job == Jobs.casscfOpt:
             lines, err = self.run(f'cat "{job.catxyzpath}"')
             py, slm = pyscfCasscfOpt(job, lines[2:])
-            self.writeFile(py, job.infile)
-            self.writeFile(slm, f'{job.path}/{job.name}.slm')
+            filename = self.writeFile(py, job.infile)
+            filename = self.writeFile(slm, f'{job.path}/{job.name}.slm')
 
         if job.software == Software.orca:
             lines, err = self.run(f'cat "{job.catxyzpath}"')
-            self.writeFile(buildORCA(job, lines), job.infile)
+            filename = self.writeFile(buildORCA(job, lines), job.infile)
 
         if job.software == Software.nwchem:
             lines, err = self.run(f'cat "{job.catxyzpath}"')
-            self.writeFile(buildNW(job, lines), job.infile)
+            filename = self.writeFile(buildNW(job, lines), job.infile)
 
         elif job.software == Software.crest:
-            self.writeFile(smiles2xyz(job.fluorophore.smiles), f'{job.path}/{job.fluorophore.name}.xyz')
-            self.writeFile(buildCRESTOpt(job), job.infile)
+            filename = self.writeFile(smiles2xyz(job.fluorophore.smiles), f'{job.path}/{job.fluorophore.name}.xyz')
+            filename = self.writeFile(buildCRESTOpt(job), job.infile)
 
         elif job.software == Software.qchem:
             lines, err = self.run(f'cat "{job.catxyzpath}"')
-            self.writeFile(buildQChem(job, lines), job.infile)
+            filename = self.writeFile(buildQChem(job, lines), job.infile)
 
         # submit block
         if job.submit and job.software in [Software.orca, Software.qchem, Software.nwchem]:
@@ -281,15 +283,19 @@ class clusterHandler:
             if job.software in [Software.qchem, Software.nwchem]:
                 job.submitFlags += f' -c {job.procs}'
 
-            self.submitFiles(job.submitFlags, job.infile)
+            out = [filename] + self.submitFiles(job.submitFlags, job.infile)
+            return out
         elif job.submit and job.software in [Software.crest, Software.psi4Script, Software.pyscf]:
             out, err = self.sbatch(job)
             if err != ['']:
                 print(err)
+                return filename + '\n' + err
             else:
                 print(job.fluorophore.name)
                 print(out[0])
-        return
+                return filename + '\n' + job.fluorophore.name + '\n' + out[0]
+        else:
+            return filename
 
     def checkCrestStatus(self, job: Job) -> Status:
         out, err = self.run(f'ls -lah {job.path}')
