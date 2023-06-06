@@ -1,10 +1,11 @@
 import os
 import tomli
 from .newenum import NewEnum
+from aenum import StrEnum
 from dataclasses import dataclass
 
 
-class clusters(NewEnum):
+class clusters(StrEnum):
     m3      = 'M3'
     monarch = 'MonARCH'
     gadi    = 'Gadi'
