@@ -6,7 +6,7 @@ from .solvents import Solvents
 class Fluorophores(NewEnum):
     def __init__(self, fluorophore: str, smiles: str, active: tuple[int, int], extinction: int,
                  extinctionSolv: Solvents, extinctionLambda: int, qy: float, qySolvent: Solvents,
-                 qyLambda: int, lifetime: float, lifetimeSolvent: Solvents, ref: bool, 
+                 qyLambda: int, lifetime: float, lifetimeSolvent: Solvents, ref: bool,
                  revised: bool = False, gas: bool = False, charge: int = 0, root: States = States.s1) -> None:
         self.fluorophore       = fluorophore
         self.smiles            = smiles
@@ -62,7 +62,16 @@ class Fluorophores(NewEnum):
     bsc       = 'Boron Subphthalocyanine Chloride',           'B1(N2C3=C4C=CC=CC4=C2N=C5N1C(=NC6=NC(=N3)C7=CC=CC=C76)C8=CC=CC=C85)Cl',           (8,8),   63000,  Solvents.tol,    569,   0.25,    Solvents.tol,   000,   3.3,   Solvents.tol,   False, True,  False
     #                                                                                                                                                                                     10.1039/c4cc09206f              10.1039/c4cc09206f
     asp       = 'α-Sexithiophene',                            'c1csc(c1)-c2ccc(s2)-c3ccc(s3)-c4ccc(s4)-c5ccc(s5)-c6cccs6',                       (8,8),   0,      Solvents.none,   000,   0.41,    Solvents.dcm,   436,   1.0,   Solvents.dcm,   False, False, False
-
+    #                                                                                                                                                     10.1039/C4CP01724B              10.1039/C4CP01724B              10.1039/C4CP01724B
+    fno       = '9-fluorenone',                               'C1=CC=C2C(=C1)C3=CC=CC=C3C2=O',                                                   (8,7),   260,    Solvents.acn,    377,   0.027,   Solvents.acn,   377,   17.8,  Solvents.acn,   False, True,  False
+    #                                                                                                                                                     https://omlc.org/spectra/PhotochemCAD/html/044.html             10.1021/jp507626h
+    bpa       = '9,10-bis(phenylethynyl)anthracene',          'C1=CC=C(C=C1)C#CC2=C3C=CC=CC3=C(C4=CC=CC=C42)C#CC5=CC=CC=C5',                     (12,12), 35400,  Solvents.chex,   451,   1.00,    Solvents.chex,  451,   3.61,  Solvents.none,  False, True,  False
+    #                                                                                                                                                     
+    fat       = 'fluoranthene',                               'C1=CC=C2C(=C1)C3=CC=CC4=C3C2=CC=C4',                                              (10,10), 10000,  Solvents.dmf,    330,   0.30,    Solvents.chex,  000,   0.00,  Solvents.none,  False, True,  False
+    
+    
+    
+    
     # Gas DS
     r575      = 'Rhodamine 575',                              'CCNc1cc2OC3=CC(=[N+]/CC)\C(C)=CC3=C(c2cc1C)c4ccccc4C([O-])=O',                    (8,7),   0,      Solvents.none,   000,   0.00,    Solvents.none,  000,   0.00,  Solvents.none,  False, False, True,    1
     fl        = 'Fluorescein',                                'c1ccc2c(c1)C(=O)OC23c4ccc(cc4Oc5c3ccc(c5)O)O',                                    (12,11), 0,      Solvents.none,   000,   0.91,    Solvents.naoh,  470,   0.00,  Solvents.none,  False, False, True,   -1
