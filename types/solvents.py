@@ -47,8 +47,8 @@ class Solvents(NewEnum):
     acn    = 'ACN',        'acetonitrile', 'mecn',            'acetonitrile',      'acetntrl',        35.69, 1.3441, 0.07, 0.32, 40.82, 0.00, 0.00, 0.34, 0.786
     dmf    = 'DMF',        'dmf',          'dmf',             'dimethylformamide', 'dmf',             37.22, 1.4305, 0.00, 0.74, 52.85, 0.00, 0.00, 0.92, 0.944
     dmso   = 'DMSO',       'dmso',         'dmso',            'dmso',              'dmso',            46.83, 1.4793, 0.00, 0.88, 62.40, 0.00, 0.00, 2.00, 1.100
-
-    gas    = 'Gas',         None,           None,              None,                None,              1.00, 1.0000, 0.00, 0.00,  0.00, 0.00, 0.00, 0.00, 0.000, False
+    gas    = 'Gas',         None,           None,              None,                None,              1.00, 1.0000, 0.00, 0.00,  0.00, 0.00, 0.00, 0.00, 0.000
+    
     nhep   = 'Heptane',    'hexane',       'n-heptane',       'n-heptane',         'heptane',          1.91, 1.3878, 0.00, 0.00, 28.28, 0.00, 0.00, 0.00, 0.000, False
     chex   = 'c-Hexane',   'c-hexane',     'c-hexane',        'c-hexane',          'c-hexane',         2.02, 1.4269, 0.00, 0.00, 26.41, 0.00, 0.00, 0.30, 0.000, False
     dox    = 'Dioxane',     None,           None,              None,                None,              2.25, 1.4224, 0.00, 0.00,  0.00, 0.00, 0.00, 0.00, 0.000, False
