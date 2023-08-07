@@ -261,6 +261,11 @@ def pullORCA_En(job: Job, out: list[str]) -> tuple[float, list[float], list[floa
             if stateCheck in line:
                 e_trans[count] = float(line.split()[5])
 
+    if job.job in [Jobs.nevpt2]:
+        for line in out:
+            if f'   {job.state.root}:    {job.state.root}    1 ' in line:
+                e = float(line.split()[3])
+
     if job.job in [Jobs.caspt2, Jobs.nevpt2]:
         e_trans = []
     for line in out[startList:startList + nroots - 1]:
@@ -322,7 +327,7 @@ def extract_occ(lines: list[str], root: int) -> list[float]:
         if 'nevpt2' in line:
             nevpt2 = True
             break
-        
+
     if nevpt2:
         searchline = f'Reading QDVector (MULT=  1, ROOT=  {root})'
     else:
@@ -334,7 +339,7 @@ def extract_occ(lines: list[str], root: int) -> list[float]:
             startline = count+1
             if nevpt2:
                 break
-    
+
     configurations = []
     weights = []
     for line in lines[startline:]:
@@ -348,7 +353,6 @@ def extract_occ(lines: list[str], root: int) -> list[float]:
     occupations = np.einsum('ij, ik->j', configurations_np, weights_np)
     return weights, configurations, occupations
 
-        
 def m_diag(out: list[str], root: int) -> int:
     weights, configurations, occupations = extract_occ(out, root)
     base_occ = configurations[0]
