@@ -49,7 +49,7 @@ class clusterHandler:
         self.project = self.cluster.project
         return
 
-    def __enter__(self):
+    def __enter__(self) -> None:
         self._openSSH()
         return self
 
