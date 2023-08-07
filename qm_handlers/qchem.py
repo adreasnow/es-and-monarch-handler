@@ -112,7 +112,7 @@ def buildQChem(job: Job, xyz: list[str]) -> str:
                 solventBlock += f'    Theory                {pcmFormalism}\n'
                 solventBlock += '$end\n\n'
 
-        if job.pcm == 'PCM':
+        if pcm == 'PCM':
             solventBlock = '$solvent\n'
             solventBlock += f'    Dielectric             {job.solv.e:.4f}\n'
             solventBlock += f'    OpticalDielectric      {job.solv.n**2:.4f}\n'
@@ -131,6 +131,9 @@ def buildQChem(job: Job, xyz: list[str]) -> str:
                     QChemInput += f'    Theory                {pcmFormalism}\n'
                     QChemInput += '    ChargeSeparation      Excited\n'
                     QChemInput += f'    StateSpecific         {job.state.root}\n'
+                    if job.eq == PCM.Eq.eq:
+                        QChemInput += '    Method                SwiG\n'
+                        QChemInput += '    TdNonEq               3\n'
                 QChemInput += PCMFiller
                 QChemInput += '$end\n\n'
 
@@ -156,7 +159,13 @@ def buildQChem(job: Job, xyz: list[str]) -> str:
 
         QChemInput += '$pcm\n'
         QChemInput += f'    Theory                {pcmFormalism}\n'
-        QChemInput += '    StateSpecific         Marcus\n'
+        if job.eq == PCM.Eq.neq:
+            QChemInput += '    StateSpecific         Marcus\n'
+        elif job.eq == PCM.Eq.eq:
+            QChemInput += '    Method                SwiG\n'
+            QChemInput += '    StateSpecific         Pekar\n'
+            QChemInput += '    ChargeSeparation      Pekar\n'
+            QChemInput += '    TdNonEq               4\n'
         QChemInput += PCMFiller
         QChemInput += '$end\n\n'
 
@@ -187,8 +196,10 @@ def pullQChem_En(job: Job, out: list[str]) -> tuple[float, list[float], list[flo
     e = []
 
     for count, line in enumerate(out):
-        if 'Total energy for state' in line:
+        if 'Total energy for state' in line and job.state != States.s0:
             e += [float(line.split()[5])]
+        elif 'Total energy in the final basis set' in line and job.state == States.s0:
+            e += [float(line.split()[8])]
         elif 'excitation energy (eV) =' in line:
             e_trans += [float(line.split()[7])]
         elif 'Trans. Mom.:' in line:
@@ -199,7 +210,7 @@ def pullQChem_En(job: Job, out: list[str]) -> tuple[float, list[float], list[flo
         elif 'Strength   :' in line:
             f += [float(line.split()[2])]
 
-    return e[job.state.mult - 1], e_trans, f, t
+    return e[job.state.root - 1], e_trans, f, t
 
 # def pullQChem_Freq(job:Job, out:list[str]) -> tuple[float, float, float]:
 #     neg = 0
